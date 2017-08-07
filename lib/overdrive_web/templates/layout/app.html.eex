@@ -7,13 +7,13 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Hello Overdrive!</title>
+    <title>S33D OVERDRIVE</title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
   </head>
 
   <body>
     <div class="container">
-  
+
       <main role="main">
         <%= render @view_module, @view_template, assigns %>
       </main>

@@ -46,10 +46,10 @@ exports.config = {
   plugins: {
     babel: {
       // Do not use ES6 compiler in vendor code
-      ignore: [/vendor/]
+      ignore: [/vendor/, 'js/overdrive.js']
     },
     elmBrunch: {
-      mainModules: ['elm/HelloElm.elm'],
+      mainModules: ['elm/Overdrive.elm'],
       makeParameters: ['--debug'],
       outputFolder: "../assets/js"
     }

@@ -13,7 +13,7 @@
 // to also remove its path from "config.paths.watched".
 import "phoenix_html"
 
-import Elm from "./helloelm.js"
+import Elm from "./overdrive.js"
 
 // Import local files
 //
@@ -23,4 +23,4 @@ import Elm from "./helloelm.js"
 // import socket from "./socket"
 
 const elmDiv = document.getElementById('elm-main')
-    , elmApp = Elm.HelloElm.embed(elmDiv)
+    , elmApp = Elm.Overdrive.embed(elmDiv)

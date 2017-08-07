@@ -1,0 +1,369 @@
+var _user$project$Overdrive$printMomentum = function (m) {
+	return (!_elm_lang$core$Native_Utils.eq(m.element, '')) ? ((!_elm_lang$core$Native_Utils.eq(m.strength, 0)) ? A2(
+		_elm_lang$core$Basics_ops['++'],
+		m.element,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			' +',
+			_elm_lang$core$Basics$toString(m.strength))) : m.element) : '';
+};
+var _user$project$Overdrive$Momentum = F3(
+	function (a, b, c) {
+		return {element: a, strength: b, id: c};
+	});
+var _user$project$Overdrive$model = {
+	momenta: {ctor: '[]'},
+	selectedMomentum: A3(_user$project$Overdrive$Momentum, '', 0, 0),
+	momentumIndex: 1,
+	mdl: _debois$elm_mdl$Material$model
+};
+var _user$project$Overdrive$Model = F4(
+	function (a, b, c, d) {
+		return {momenta: a, selectedMomentum: b, momentumIndex: c, mdl: d};
+	});
+var _user$project$Overdrive$Mdl = function (a) {
+	return {ctor: 'Mdl', _0: a};
+};
+var _user$project$Overdrive$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'Add':
+				return _elm_lang$core$Native_Utils.eq(model.selectedMomentum.element, '') ? {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none} : {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							momenta: {ctor: '::', _0: model.selectedMomentum, _1: model.momenta},
+							selectedMomentum: A3(_user$project$Overdrive$Momentum, '', 0, model.momentumIndex),
+							momentumIndex: model.momentumIndex + 1
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Clear':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							momenta: {ctor: '[]'}
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SetMomentumType':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							selectedMomentum: A3(_user$project$Overdrive$Momentum, _p0._0, model.selectedMomentum.strength, model.momentumIndex)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SetMomentumStrength':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							selectedMomentum: A3(_user$project$Overdrive$Momentum, model.selectedMomentum.element, _p0._0, model.momentumIndex)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Remove':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							momenta: A2(
+								_elm_lang$core$List$filter,
+								function (m) {
+									return !_elm_lang$core$Native_Utils.eq(m.id, _p0._0);
+								},
+								model.momenta)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return A3(_debois$elm_mdl$Material$update, _user$project$Overdrive$Mdl, _p0._0, model);
+		}
+	});
+var _user$project$Overdrive$SetMomentumStrength = function (a) {
+	return {ctor: 'SetMomentumStrength', _0: a};
+};
+var _user$project$Overdrive$SetMomentumType = function (a) {
+	return {ctor: 'SetMomentumType', _0: a};
+};
+var _user$project$Overdrive$makeMomentumRadio = F3(
+	function (model, instance, momentum) {
+		return A5(
+			_debois$elm_mdl$Material_Toggles$radio,
+			_user$project$Overdrive$Mdl,
+			{
+				ctor: '::',
+				_0: instance,
+				_1: {ctor: '[]'}
+			},
+			model.mdl,
+			{
+				ctor: '::',
+				_0: _debois$elm_mdl$Material_Toggles$value(
+					_elm_lang$core$Native_Utils.eq(momentum, model.selectedMomentum.element)),
+				_1: {
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Toggles$group('momentumtype'),
+					_1: {
+						ctor: '::',
+						_0: _debois$elm_mdl$Material_Toggles$ripple,
+						_1: {
+							ctor: '::',
+							_0: _debois$elm_mdl$Material_Options$onToggle(
+								_user$project$Overdrive$SetMomentumType(momentum)),
+							_1: {
+								ctor: '::',
+								_0: A2(_debois$elm_mdl$Material_Options$css, 'margin', '3px 3px'),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(momentum),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$Overdrive$addMomentumInput = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 2, 'Fire'),
+					_1: {
+						ctor: '::',
+						_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 3, 'Water'),
+						_1: {
+							ctor: '::',
+							_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 4, 'Earth'),
+							_1: {
+								ctor: '::',
+								_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 5, 'Air'),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 6, 'Launch'),
+						_1: {
+							ctor: '::',
+							_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 7, 'Pin'),
+							_1: {
+								ctor: '::',
+								_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 8, 'Rush'),
+								_1: {ctor: '[]'}
+							}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 9, 'Recovery'),
+							_1: {
+								ctor: '::',
+								_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 10, 'Supreme'),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _debois$elm_mdl$Material_Slider$view(
+									{
+										ctor: '::',
+										_0: _debois$elm_mdl$Material_Slider$onChange(_user$project$Overdrive$SetMomentumStrength),
+										_1: {
+											ctor: '::',
+											_0: _debois$elm_mdl$Material_Slider$value(model.selectedMomentum.strength),
+											_1: {
+												ctor: '::',
+												_0: _debois$elm_mdl$Material_Slider$max(10),
+												_1: {
+													ctor: '::',
+													_0: _debois$elm_mdl$Material_Slider$min(0),
+													_1: {
+														ctor: '::',
+														_0: _debois$elm_mdl$Material_Slider$step(1),
+														_1: {ctor: '[]'}
+													}
+												}
+											}
+										}
+									}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _user$project$Overdrive$Clear = {ctor: 'Clear'};
+var _user$project$Overdrive$Remove = function (a) {
+	return {ctor: 'Remove', _0: a};
+};
+var _user$project$Overdrive$toChip = function (momentum) {
+	return A2(
+		_debois$elm_mdl$Material_Chip$span,
+		{
+			ctor: '::',
+			_0: A2(_debois$elm_mdl$Material_Options$css, 'margin', '5px 5px'),
+			_1: {
+				ctor: '::',
+				_0: _debois$elm_mdl$Material_Chip$deleteIcon('cancel'),
+				_1: {
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Chip$deleteClick(
+						_user$project$Overdrive$Remove(momentum.id)),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_debois$elm_mdl$Material_Chip$content,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(
+						_user$project$Overdrive$printMomentum(momentum)),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Overdrive$renderMomenta = function (momenta) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Current momenta: '),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					A2(_elm_lang$core$List$map, _user$project$Overdrive$toChip, momenta)),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Overdrive$Add = {ctor: 'Add'};
+var _user$project$Overdrive$view = function (model) {
+	return _debois$elm_mdl$Material_Scheme$top(
+		A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _user$project$Overdrive$renderMomenta(model.momenta),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _user$project$Overdrive$addMomentumInput(model),
+							_1: {
+								ctor: '::',
+								_0: A5(
+									_debois$elm_mdl$Material_Button$render,
+									_user$project$Overdrive$Mdl,
+									{
+										ctor: '::',
+										_0: 1,
+										_1: {ctor: '[]'}
+									},
+									model.mdl,
+									{
+										ctor: '::',
+										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$Add),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												'Add ',
+												_user$project$Overdrive$printMomentum(model.selectedMomentum))),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: A5(
+									_debois$elm_mdl$Material_Button$render,
+									_user$project$Overdrive$Mdl,
+									{
+										ctor: '::',
+										_0: 0,
+										_1: {ctor: '[]'}
+									},
+									model.mdl,
+									{
+										ctor: '::',
+										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$Clear),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('Clear Momentum'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			}));
+};
+var _user$project$Overdrive$main = _elm_lang$html$Html$program(
+	{
+		init: {ctor: '_Tuple2', _0: _user$project$Overdrive$model, _1: _elm_lang$core$Platform_Cmd$none},
+		view: _user$project$Overdrive$view,
+		subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
+		update: _user$project$Overdrive$update
+	})();
