@@ -11,7 +11,6 @@ defmodule Overdrive.MomentumServer do
 
   def get(room) do
     Agent.get(__MODULE__, fn(state) ->
-      Logger.debug "inside get inner function"
       state[room]
     end)
   end
@@ -25,7 +24,6 @@ defmodule Overdrive.MomentumServer do
 
   def add(room, momentum) do
     curr_momenta = get(room)
-    #curr_momenta = []
     momenta = curr_momenta ++ [momentum]
     set(room, momenta)
   end

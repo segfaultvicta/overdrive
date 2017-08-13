@@ -6,6 +6,7 @@ defmodule OverdriveWeb.RoomChannel do
 
   def join("room:lobby", payload, socket) do
     if authorized?(payload) do
+      send self(), {:momentum_update}
       {:ok, socket}
     else
       {:error, %{reason: "unauthorized"}}
