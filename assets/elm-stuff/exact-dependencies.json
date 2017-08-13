@@ -1,12 +1,13 @@
 {
-    "elm-lang/dom": "1.1.1",
-    "elm-lang/html": "2.0.0",
-    "elm-lang/websocket": "1.0.2",
-    "fbonetti/elm-phoenix-socket": "2.2.0",
-    "debois/elm-dom": "1.2.3",
-    "elm-lang/window": "1.0.1",
-    "elm-lang/core": "5.1.1",
-    "debois/elm-mdl": "8.1.0",
-    "elm-lang/virtual-dom": "2.0.4",
-    "elm-lang/mouse": "1.0.1"
+  "debois/elm-mdl": "8.1.0",
+  "elm-lang/core": "5.1.1",
+  "elm-lang/html": "2.0.0",
+  "elm-lang/websocket": "1.0.2",
+  "saschatimme/elm-phoenix": "0.3.0",
+  "NoRedInk/elm-decode-pipeline": "3.0.0",
+  "debois/elm-dom": "1.2.3",
+  "elm-lang/mouse": "1.0.1",
+  "elm-lang/window": "1.0.1",
+  "elm-lang/virtual-dom": "2.0.4",
+  "elm-lang/dom": "1.1.1"
 }

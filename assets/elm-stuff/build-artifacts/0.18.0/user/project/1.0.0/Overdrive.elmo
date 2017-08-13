@@ -7,56 +7,187 @@ var _user$project$Overdrive$printMomentum = function (m) {
 			' +',
 			_elm_lang$core$Basics$toString(m.strength))) : m.element) : '';
 };
-var _user$project$Overdrive$Momentum = F3(
-	function (a, b, c) {
-		return {element: a, strength: b, id: c};
+var _user$project$Overdrive$lobbySocket = 'ws://gaius.ddns.net:4000/socket/websocket';
+var _user$project$Overdrive$roundDownToSecond = function (ms) {
+	return _elm_lang$core$Basics$toFloat(
+		A2(
+			F2(
+				function (x, y) {
+					return x * y;
+				}),
+			1000,
+			_elm_lang$core$Basics$truncate(ms / 1000)));
+};
+var _user$project$Overdrive$Momentum = F2(
+	function (a, b) {
+		return {element: a, strength: b};
 	});
-var _user$project$Overdrive$model = {
+var _user$project$Overdrive$momentumDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (element, strength) {
+			return A4(_elm_lang$core$Debug$log, 'momentum decoded: ', _user$project$Overdrive$Momentum, element, strength);
+		}),
+	A2(_elm_lang$core$Json_Decode$field, 'element', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'strength', _elm_lang$core$Json_Decode$float));
+var _user$project$Overdrive$momentaDecoder = A2(
+	_elm_lang$core$Json_Decode$at,
+	{
+		ctor: '::',
+		_0: 'momenta',
+		_1: {ctor: '[]'}
+	},
+	_elm_lang$core$Json_Decode$list(_user$project$Overdrive$momentumDecoder));
+var _user$project$Overdrive$Model = F5(
+	function (a, b, c, d, e) {
+		return {momenta: a, selectedMomentum: b, connectionStatus: c, currentTime: d, mdl: e};
+	});
+var _user$project$Overdrive$ScheduledReconnect = function (a) {
+	return {ctor: 'ScheduledReconnect', _0: a};
+};
+var _user$project$Overdrive$Disconnected = {ctor: 'Disconnected'};
+var _user$project$Overdrive$init = {
 	momenta: {ctor: '[]'},
-	selectedMomentum: A3(_user$project$Overdrive$Momentum, '', 0, 0),
-	momentumIndex: 1,
+	selectedMomentum: A2(_user$project$Overdrive$Momentum, '', 0),
+	connectionStatus: _user$project$Overdrive$Disconnected,
+	currentTime: 0,
 	mdl: _debois$elm_mdl$Material$model
 };
-var _user$project$Overdrive$Model = F4(
-	function (a, b, c, d) {
-		return {momenta: a, selectedMomentum: b, momentumIndex: c, mdl: d};
-	});
+var _user$project$Overdrive$Connected = {ctor: 'Connected'};
+var _user$project$Overdrive$ConnectionStatusChanged = function (a) {
+	return {ctor: 'ConnectionStatusChanged', _0: a};
+};
+var _user$project$Overdrive$SocketClosedAbnormally = function (a) {
+	return {ctor: 'SocketClosedAbnormally', _0: a};
+};
+var _user$project$Overdrive$socket = A2(
+	_saschatimme$elm_phoenix$Phoenix_Socket$reconnectTimer,
+	function (backoffIteration) {
+		return _elm_lang$core$Basics$toFloat((backoffIteration + 1) * 5000);
+	},
+	A2(
+		_saschatimme$elm_phoenix$Phoenix_Socket$onAbnormalClose,
+		_user$project$Overdrive$SocketClosedAbnormally,
+		A2(
+			_saschatimme$elm_phoenix$Phoenix_Socket$onClose,
+			function (_p0) {
+				return _user$project$Overdrive$ConnectionStatusChanged(_user$project$Overdrive$Disconnected);
+			},
+			A2(
+				_saschatimme$elm_phoenix$Phoenix_Socket$onOpen,
+				_user$project$Overdrive$ConnectionStatusChanged(_user$project$Overdrive$Connected),
+				_saschatimme$elm_phoenix$Phoenix_Socket$init(_user$project$Overdrive$lobbySocket)))));
+var _user$project$Overdrive$MomentumUpdate = function (a) {
+	return {ctor: 'MomentumUpdate', _0: a};
+};
+var _user$project$Overdrive$lobby = function (userName) {
+	return _saschatimme$elm_phoenix$Phoenix_Channel$withDebug(
+		A3(
+			_saschatimme$elm_phoenix$Phoenix_Channel$on,
+			'momentum_update',
+			function (msg) {
+				return _user$project$Overdrive$MomentumUpdate(msg);
+			},
+			A2(
+				_saschatimme$elm_phoenix$Phoenix_Channel$withPayload,
+				_elm_lang$core$Json_Encode$object(
+					{
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'user_name',
+							_1: _elm_lang$core$Json_Encode$string('foobie')
+						},
+						_1: {ctor: '[]'}
+					}),
+				_saschatimme$elm_phoenix$Phoenix_Channel$init('room:lobby'))));
+};
+var _user$project$Overdrive$phoenixSubscription = function (model) {
+	return A2(
+		_saschatimme$elm_phoenix$Phoenix$connect,
+		_user$project$Overdrive$socket,
+		{
+			ctor: '::',
+			_0: _user$project$Overdrive$lobby('foobie'),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Overdrive$Tick = function (a) {
+	return {ctor: 'Tick', _0: a};
+};
+var _user$project$Overdrive$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$batch(
+		{
+			ctor: '::',
+			_0: _user$project$Overdrive$phoenixSubscription(model),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second, _user$project$Overdrive$Tick),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$Overdrive$Mdl = function (a) {
 	return {ctor: 'Mdl', _0: a};
 };
 var _user$project$Overdrive$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
-			case 'Add':
-				return _elm_lang$core$Native_Utils.eq(model.selectedMomentum.element, '') ? {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none} : {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+		var _p1 = msg;
+		switch (_p1.ctor) {
+			case 'AddMomentum':
+				var push = A2(
+					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
+					_elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'element',
+								_1: _elm_lang$core$Json_Encode$string(model.selectedMomentum.element)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'strength',
+									_1: _elm_lang$core$Json_Encode$float(model.selectedMomentum.strength)
+								},
+								_1: {ctor: '[]'}
+							}
+						}),
+					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'new_momentum'));
+				return _elm_lang$core$Native_Utils.eq(model.selectedMomentum.element, '') ? {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none} : A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							momenta: {ctor: '::', _0: model.selectedMomentum, _1: model.momenta},
-							selectedMomentum: A3(_user$project$Overdrive$Momentum, '', 0, model.momentumIndex),
-							momentumIndex: model.momentumIndex + 1
+							selectedMomentum: A2(_user$project$Overdrive$Momentum, '', 0)
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'Clear':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							momenta: {ctor: '[]'}
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+					{
+						ctor: '::',
+						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
+						_1: {ctor: '[]'}
+					});
+			case 'ClearMomentum':
+				var push = A2(
+					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
+					_elm_lang$core$Json_Encode$null,
+					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'clear_momentum'));
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{
+						ctor: '::',
+						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
+						_1: {ctor: '[]'}
+					});
 			case 'SetMomentumType':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedMomentum: A3(_user$project$Overdrive$Momentum, _p0._0, model.selectedMomentum.strength, model.momentumIndex)
+							selectedMomentum: A2(_user$project$Overdrive$Momentum, _p1._0, model.selectedMomentum.strength)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -66,27 +197,87 @@ var _user$project$Overdrive$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedMomentum: A3(_user$project$Overdrive$Momentum, model.selectedMomentum.element, _p0._0, model.momentumIndex)
+							selectedMomentum: A2(_user$project$Overdrive$Momentum, model.selectedMomentum.element, _p1._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'Remove':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+			case 'RemoveMomentum':
+				var _p2 = _p1._0;
+				var push = A2(
+					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
+					_elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'element',
+								_1: _elm_lang$core$Json_Encode$string(_p2.element)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'strength',
+									_1: _elm_lang$core$Json_Encode$float(_p2.strength)
+								},
+								_1: {ctor: '[]'}
+							}
+						}),
+					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'remove_momentum'));
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{
+						ctor: '::',
+						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
+						_1: {ctor: '[]'}
+					});
+			case 'Mdl':
+				return A3(_debois$elm_mdl$Material$update, _user$project$Overdrive$Mdl, _p1._0, model);
+			case 'MomentumUpdate':
+				var _p3 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$momentaDecoder, _p1._0);
+				if (_p3.ctor === 'Ok') {
+					var _p5 = _p3._0;
+					var _p4 = A2(_elm_lang$core$Debug$log, 'ok', _p5);
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{momenta: _p5}),
+						{ctor: '[]'});
+				} else {
+					var _p6 = A2(_elm_lang$core$Debug$log, 'err', _p3._0);
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						{ctor: '[]'});
+				}
+			case 'SocketClosedAbnormally':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							momenta: A2(
-								_elm_lang$core$List$filter,
-								function (m) {
-									return !_elm_lang$core$Native_Utils.eq(m.id, _p0._0);
-								},
-								model.momenta)
+							connectionStatus: _user$project$Overdrive$ScheduledReconnect(
+								{
+									time: _user$project$Overdrive$roundDownToSecond(model.currentTime + _p1._0.reconnectWait)
+								})
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+					{ctor: '[]'});
+			case 'ConnectionStatusChanged':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{connectionStatus: _p1._0}),
+					{ctor: '[]'});
 			default:
-				return A3(_debois$elm_mdl$Material$update, _user$project$Overdrive$Mdl, _p0._0, model);
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{currentTime: _p1._0}),
+					{ctor: '[]'});
 		}
 	});
 var _user$project$Overdrive$SetMomentumStrength = function (a) {
@@ -230,9 +421,9 @@ var _user$project$Overdrive$addMomentumInput = function (model) {
 			}
 		});
 };
-var _user$project$Overdrive$Clear = {ctor: 'Clear'};
-var _user$project$Overdrive$Remove = function (a) {
-	return {ctor: 'Remove', _0: a};
+var _user$project$Overdrive$ClearMomentum = {ctor: 'ClearMomentum'};
+var _user$project$Overdrive$RemoveMomentum = function (a) {
+	return {ctor: 'RemoveMomentum', _0: a};
 };
 var _user$project$Overdrive$toChip = function (momentum) {
 	return A2(
@@ -246,7 +437,7 @@ var _user$project$Overdrive$toChip = function (momentum) {
 				_1: {
 					ctor: '::',
 					_0: _debois$elm_mdl$Material_Chip$deleteClick(
-						_user$project$Overdrive$Remove(momentum.id)),
+						_user$project$Overdrive$RemoveMomentum(momentum)),
 					_1: {ctor: '[]'}
 				}
 			}
@@ -282,7 +473,7 @@ var _user$project$Overdrive$renderMomenta = function (momenta) {
 			}
 		});
 };
-var _user$project$Overdrive$Add = {ctor: 'Add'};
+var _user$project$Overdrive$AddMomentum = {ctor: 'AddMomentum'};
 var _user$project$Overdrive$view = function (model) {
 	return _debois$elm_mdl$Material_Scheme$top(
 		A2(
@@ -312,7 +503,7 @@ var _user$project$Overdrive$view = function (model) {
 									model.mdl,
 									{
 										ctor: '::',
-										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$Add),
+										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$AddMomentum),
 										_1: {ctor: '[]'}
 									},
 									{
@@ -345,7 +536,7 @@ var _user$project$Overdrive$view = function (model) {
 									model.mdl,
 									{
 										ctor: '::',
-										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$Clear),
+										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$ClearMomentum),
 										_1: {ctor: '[]'}
 									},
 									{
@@ -362,8 +553,8 @@ var _user$project$Overdrive$view = function (model) {
 };
 var _user$project$Overdrive$main = _elm_lang$html$Html$program(
 	{
-		init: {ctor: '_Tuple2', _0: _user$project$Overdrive$model, _1: _elm_lang$core$Platform_Cmd$none},
+		init: {ctor: '_Tuple2', _0: _user$project$Overdrive$init, _1: _elm_lang$core$Platform_Cmd$none},
 		view: _user$project$Overdrive$view,
-		subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
+		subscriptions: _user$project$Overdrive$subscriptions,
 		update: _user$project$Overdrive$update
 	})();

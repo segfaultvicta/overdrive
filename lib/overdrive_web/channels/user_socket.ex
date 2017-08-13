@@ -3,6 +3,7 @@ defmodule OverdriveWeb.UserSocket do
 
   ## Channels
   # channel "room:*", OverdriveWeb.RoomChannel
+  channel "room:lobby", OverdriveWeb.RoomChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

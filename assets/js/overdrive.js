@@ -5757,6 +5757,86 @@ var _elm_lang$core$Platform$Task = {ctor: 'Task'};
 var _elm_lang$core$Platform$ProcessId = {ctor: 'ProcessId'};
 var _elm_lang$core$Platform$Router = {ctor: 'Router'};
 
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode = _elm_lang$core$Json_Decode$succeed;
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$resolve = _elm_lang$core$Json_Decode$andThen(_elm_lang$core$Basics$identity);
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom = _elm_lang$core$Json_Decode$map2(
+	F2(
+		function (x, y) {
+			return y(x);
+		}));
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$hardcoded = function (_p0) {
+	return _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom(
+		_elm_lang$core$Json_Decode$succeed(_p0));
+};
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalDecoder = F3(
+	function (pathDecoder, valDecoder, fallback) {
+		var nullOr = function (decoder) {
+			return _elm_lang$core$Json_Decode$oneOf(
+				{
+					ctor: '::',
+					_0: decoder,
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Decode$null(fallback),
+						_1: {ctor: '[]'}
+					}
+				});
+		};
+		var handleResult = function (input) {
+			var _p1 = A2(_elm_lang$core$Json_Decode$decodeValue, pathDecoder, input);
+			if (_p1.ctor === 'Ok') {
+				var _p2 = A2(
+					_elm_lang$core$Json_Decode$decodeValue,
+					nullOr(valDecoder),
+					_p1._0);
+				if (_p2.ctor === 'Ok') {
+					return _elm_lang$core$Json_Decode$succeed(_p2._0);
+				} else {
+					return _elm_lang$core$Json_Decode$fail(_p2._0);
+				}
+			} else {
+				return _elm_lang$core$Json_Decode$succeed(fallback);
+			}
+		};
+		return A2(_elm_lang$core$Json_Decode$andThen, handleResult, _elm_lang$core$Json_Decode$value);
+	});
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalAt = F4(
+	function (path, valDecoder, fallback, decoder) {
+		return A2(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalDecoder,
+				A2(_elm_lang$core$Json_Decode$at, path, _elm_lang$core$Json_Decode$value),
+				valDecoder,
+				fallback),
+			decoder);
+	});
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional = F4(
+	function (key, valDecoder, fallback, decoder) {
+		return A2(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalDecoder,
+				A2(_elm_lang$core$Json_Decode$field, key, _elm_lang$core$Json_Decode$value),
+				valDecoder,
+				fallback),
+			decoder);
+	});
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$requiredAt = F3(
+	function (path, valDecoder, decoder) {
+		return A2(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom,
+			A2(_elm_lang$core$Json_Decode$at, path, valDecoder),
+			decoder);
+	});
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required = F3(
+	function (key, valDecoder, decoder) {
+		return A2(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom,
+			A2(_elm_lang$core$Json_Decode$field, key, valDecoder),
+			decoder);
+	});
+
 var _debois$elm_dom$DOM$className = A2(
 	_elm_lang$core$Json_Decode$at,
 	{
@@ -19747,6 +19827,2404 @@ var _debois$elm_mdl$Material_Slider$Config = F6(
 		return {value: a, min: b, max: c, step: d, input: e, container: f};
 	});
 
+var _elm_lang$websocket$Native_WebSocket = function() {
+
+function open(url, settings)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		try
+		{
+			var socket = new WebSocket(url);
+			socket.elm_web_socket = true;
+		}
+		catch(err)
+		{
+			return callback(_elm_lang$core$Native_Scheduler.fail({
+				ctor: err.name === 'SecurityError' ? 'BadSecurity' : 'BadArgs',
+				_0: err.message
+			}));
+		}
+
+		socket.addEventListener("open", function(event) {
+			callback(_elm_lang$core$Native_Scheduler.succeed(socket));
+		});
+
+		socket.addEventListener("message", function(event) {
+			_elm_lang$core$Native_Scheduler.rawSpawn(A2(settings.onMessage, socket, event.data));
+		});
+
+		socket.addEventListener("close", function(event) {
+			_elm_lang$core$Native_Scheduler.rawSpawn(settings.onClose({
+				code: event.code,
+				reason: event.reason,
+				wasClean: event.wasClean
+			}));
+		});
+
+		return function()
+		{
+			if (socket && socket.close)
+			{
+				socket.close();
+			}
+		};
+	});
+}
+
+function send(socket, string)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		var result =
+			socket.readyState === WebSocket.OPEN
+				? _elm_lang$core$Maybe$Nothing
+				: _elm_lang$core$Maybe$Just({ ctor: 'NotOpen' });
+
+		try
+		{
+			socket.send(string);
+		}
+		catch(err)
+		{
+			result = _elm_lang$core$Maybe$Just({ ctor: 'BadString' });
+		}
+
+		callback(_elm_lang$core$Native_Scheduler.succeed(result));
+	});
+}
+
+function close(code, reason, socket)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+		try
+		{
+			socket.close(code, reason);
+		}
+		catch(err)
+		{
+			return callback(_elm_lang$core$Native_Scheduler.fail(_elm_lang$core$Maybe$Just({
+				ctor: err.name === 'SyntaxError' ? 'BadReason' : 'BadCode'
+			})));
+		}
+		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Maybe$Nothing));
+	});
+}
+
+function bytesQueued(socket)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+		callback(_elm_lang$core$Native_Scheduler.succeed(socket.bufferedAmount));
+	});
+}
+
+return {
+	open: F2(open),
+	send: F2(send),
+	close: F3(close),
+	bytesQueued: bytesQueued
+};
+
+}();
+
+var _elm_lang$websocket$WebSocket_LowLevel$bytesQueued = _elm_lang$websocket$Native_WebSocket.bytesQueued;
+var _elm_lang$websocket$WebSocket_LowLevel$send = _elm_lang$websocket$Native_WebSocket.send;
+var _elm_lang$websocket$WebSocket_LowLevel$closeWith = _elm_lang$websocket$Native_WebSocket.close;
+var _elm_lang$websocket$WebSocket_LowLevel$close = function (socket) {
+	return A2(
+		_elm_lang$core$Task$map,
+		_elm_lang$core$Basics$always(
+			{ctor: '_Tuple0'}),
+		A3(_elm_lang$websocket$WebSocket_LowLevel$closeWith, 1000, '', socket));
+};
+var _elm_lang$websocket$WebSocket_LowLevel$open = _elm_lang$websocket$Native_WebSocket.open;
+var _elm_lang$websocket$WebSocket_LowLevel$Settings = F2(
+	function (a, b) {
+		return {onMessage: a, onClose: b};
+	});
+var _elm_lang$websocket$WebSocket_LowLevel$WebSocket = {ctor: 'WebSocket'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadArgs = {ctor: 'BadArgs'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadSecurity = {ctor: 'BadSecurity'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadReason = {ctor: 'BadReason'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadCode = {ctor: 'BadCode'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadString = {ctor: 'BadString'};
+var _elm_lang$websocket$WebSocket_LowLevel$NotOpen = {ctor: 'NotOpen'};
+
+var _saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops = _saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops || {};
+_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['<&>'] = F2(
+	function (x, f) {
+		return A2(_elm_lang$core$Task$andThen, f, x);
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops = _saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops || {};
+_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'] = F2(
+	function (t1, t2) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (_p0) {
+				return t2;
+			},
+			t1);
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Helpers$statusInfo = function (status) {
+	var _p1 = status;
+	switch (_p1) {
+		case 'ok':
+			return A2(
+				_elm_lang$core$Json_Decode$map,
+				_elm_lang$core$Result$Ok,
+				A2(_elm_lang$core$Json_Decode$field, 'response', _elm_lang$core$Json_Decode$value));
+		case 'error':
+			return A2(
+				_elm_lang$core$Json_Decode$map,
+				_elm_lang$core$Result$Err,
+				A2(_elm_lang$core$Json_Decode$field, 'response', _elm_lang$core$Json_Decode$value));
+		default:
+			return _elm_lang$core$Json_Decode$fail(
+				A2(_elm_lang$core$Basics_ops['++'], status, ' is a not supported status'));
+	}
+};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Helpers$decodeReplyPayload = function (value) {
+	var result = A2(
+		_elm_lang$core$Json_Decode$decodeValue,
+		A2(
+			_elm_lang$core$Json_Decode$andThen,
+			_saschatimme$elm_phoenix$Phoenix_Internal_Helpers$statusInfo,
+			A2(_elm_lang$core$Json_Decode$field, 'status', _elm_lang$core$Json_Decode$string)),
+		value);
+	var _p2 = result;
+	if (_p2.ctor === 'Err') {
+		var _p3 = _elm_lang$core$Debug$log(_p2._0);
+		return _elm_lang$core$Maybe$Nothing;
+	} else {
+		return _elm_lang$core$Maybe$Just(_p2._0);
+	}
+};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Helpers$add = F2(
+	function (value, maybeList) {
+		var _p4 = maybeList;
+		if (_p4.ctor === 'Nothing') {
+			return _elm_lang$core$Maybe$Just(
+				{
+					ctor: '::',
+					_0: value,
+					_1: {ctor: '[]'}
+				});
+		} else {
+			return _elm_lang$core$Maybe$Just(
+				{ctor: '::', _0: value, _1: _p4._0});
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Helpers$removeIn = F3(
+	function (a, b, dict) {
+		var remove = function (maybeDict_) {
+			var _p5 = maybeDict_;
+			if (_p5.ctor === 'Nothing') {
+				return _elm_lang$core$Maybe$Nothing;
+			} else {
+				var newDict = A2(_elm_lang$core$Dict$remove, b, _p5._0);
+				return _elm_lang$core$Dict$isEmpty(newDict) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(newDict);
+			}
+		};
+		return A3(_elm_lang$core$Dict$update, a, remove, dict);
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Helpers$insertIn = F4(
+	function (a, b, value, dict) {
+		var update_ = function (maybeValue) {
+			var _p6 = maybeValue;
+			if (_p6.ctor === 'Nothing') {
+				return _elm_lang$core$Maybe$Just(
+					A2(_elm_lang$core$Dict$singleton, b, value));
+			} else {
+				return _elm_lang$core$Maybe$Just(
+					A3(_elm_lang$core$Dict$insert, b, value, _p6._0));
+			}
+		};
+		return A3(_elm_lang$core$Dict$update, a, update_, dict);
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Helpers$updateIn = F4(
+	function (a, b, update, dict) {
+		var update_ = function (maybeDict) {
+			var dict_ = A3(
+				_elm_lang$core$Dict$update,
+				b,
+				update,
+				A2(_elm_lang$core$Maybe$withDefault, _elm_lang$core$Dict$empty, maybeDict));
+			return _elm_lang$core$Dict$isEmpty(dict_) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(dict_);
+		};
+		return A3(_elm_lang$core$Dict$update, a, update_, dict);
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Helpers$getIn = F3(
+	function (a, b, dict) {
+		return A2(
+			_elm_lang$core$Maybe$andThen,
+			_elm_lang$core$Dict$get(b),
+			A2(_elm_lang$core$Dict$get, a, dict));
+	});
+
+var _saschatimme$elm_phoenix$Phoenix_Push$map = F2(
+	function (func, push) {
+		var f = _elm_lang$core$Maybe$map(
+			F2(
+				function (x, y) {
+					return function (_p0) {
+						return x(
+							y(_p0));
+					};
+				})(func));
+		return _elm_lang$core$Native_Utils.update(
+			push,
+			{
+				onOk: f(push.onOk),
+				onError: f(push.onError)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Push$onError = F2(
+	function (cb, push) {
+		return _elm_lang$core$Native_Utils.update(
+			push,
+			{
+				onError: _elm_lang$core$Maybe$Just(cb)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Push$onOk = F2(
+	function (cb, push) {
+		return _elm_lang$core$Native_Utils.update(
+			push,
+			{
+				onOk: _elm_lang$core$Maybe$Just(cb)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Push$withPayload = F2(
+	function (payload, push) {
+		return _elm_lang$core$Native_Utils.update(
+			push,
+			{payload: payload});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Push$PhoenixPush = F5(
+	function (a, b, c, d, e) {
+		return {topic: a, event: b, payload: c, onOk: d, onError: e};
+	});
+var _saschatimme$elm_phoenix$Phoenix_Push$init = F2(
+	function (topic, event) {
+		return A5(
+			_saschatimme$elm_phoenix$Phoenix_Push$PhoenixPush,
+			topic,
+			event,
+			_elm_lang$core$Json_Encode$object(
+				{ctor: '[]'}),
+			_elm_lang$core$Maybe$Nothing,
+			_elm_lang$core$Maybe$Nothing);
+	});
+
+var _saschatimme$elm_phoenix$Phoenix_Internal_Message$encode = function (_p0) {
+	var _p1 = _p0;
+	return A2(
+		_elm_lang$core$Json_Encode$encode,
+		0,
+		_elm_lang$core$Json_Encode$object(
+			{
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'topic',
+					_1: _elm_lang$core$Json_Encode$string(_p1.topic)
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'event',
+						_1: _elm_lang$core$Json_Encode$string(_p1.event)
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'ref',
+							_1: A2(
+								_elm_lang$core$Maybe$withDefault,
+								_elm_lang$core$Json_Encode$null,
+								A2(_elm_lang$core$Maybe$map, _elm_lang$core$Json_Encode$int, _p1.ref))
+						},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'payload', _1: _p1.payload},
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			}));
+};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Message$ref = F2(
+	function (ref_, message) {
+		return _elm_lang$core$Native_Utils.update(
+			message,
+			{
+				ref: _elm_lang$core$Maybe$Just(ref_)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Message$payload = F2(
+	function (payload_, message) {
+		return _elm_lang$core$Native_Utils.update(
+			message,
+			{payload: payload_});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Message$Message = F4(
+	function (a, b, c, d) {
+		return {topic: a, event: b, payload: c, ref: d};
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Message$init = F2(
+	function (topic, event) {
+		return A4(
+			_saschatimme$elm_phoenix$Phoenix_Internal_Message$Message,
+			topic,
+			event,
+			_elm_lang$core$Json_Encode$object(
+				{ctor: '[]'}),
+			_elm_lang$core$Maybe$Nothing);
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Message$fromPush = function (push) {
+	return A2(
+		_saschatimme$elm_phoenix$Phoenix_Internal_Message$payload,
+		push.payload,
+		A2(_saschatimme$elm_phoenix$Phoenix_Internal_Message$init, push.topic, push.event));
+};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Message$decode = function (msg) {
+	var decoder = A5(
+		_elm_lang$core$Json_Decode$map4,
+		_saschatimme$elm_phoenix$Phoenix_Internal_Message$Message,
+		A2(_elm_lang$core$Json_Decode$field, 'topic', _elm_lang$core$Json_Decode$string),
+		A2(_elm_lang$core$Json_Decode$field, 'event', _elm_lang$core$Json_Decode$string),
+		A2(_elm_lang$core$Json_Decode$field, 'payload', _elm_lang$core$Json_Decode$value),
+		A2(
+			_elm_lang$core$Json_Decode$field,
+			'ref',
+			_elm_lang$core$Json_Decode$oneOf(
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+						_1: {ctor: '[]'}
+					}
+				})));
+	return A2(_elm_lang$core$Json_Decode$decodeString, decoder, msg);
+};
+
+var _saschatimme$elm_phoenix$Phoenix_Internal_Presence$getPresenceState = function (presenceState) {
+	var getMetas = function (_p0) {
+		var _p1 = _p0;
+		return _p1.metas;
+	};
+	var getPayload = F2(
+		function (presenceKey, presenceStateMetaWrapper) {
+			return A2(
+				_elm_lang$core$List$map,
+				function (_) {
+					return _.payload;
+				},
+				getMetas(presenceStateMetaWrapper));
+		});
+	return A2(_elm_lang$core$Dict$map, getPayload, presenceState);
+};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Presence$PresenceDiff = F2(
+	function (a, b) {
+		return {leaves: a, joins: b};
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Presence$PresenceStateMetaWrapper = function (a) {
+	return {metas: a};
+};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Presence$syncPresenceDiff = F2(
+	function (presenceDiff, presenceState) {
+		var mergeLeaves = F2(
+			function (leaves, state) {
+				var mergeMetaWrappers = F3(
+					function (leaves, stateKey, stateMetaWrapper) {
+						var _p2 = A2(_elm_lang$core$Dict$get, stateKey, leaves);
+						if (_p2.ctor === 'Nothing') {
+							return stateMetaWrapper;
+						} else {
+							var leaveRefs = A2(
+								_elm_lang$core$List$map,
+								function (_) {
+									return _.phx_ref;
+								},
+								_p2._0.metas);
+							return _saschatimme$elm_phoenix$Phoenix_Internal_Presence$PresenceStateMetaWrapper(
+								A2(
+									_elm_lang$core$List$filter,
+									function (metaValue) {
+										return !A2(
+											_elm_lang$core$List$any,
+											function (phx_ref) {
+												return _elm_lang$core$Native_Utils.eq(metaValue.phx_ref, phx_ref);
+											},
+											leaveRefs);
+									},
+									stateMetaWrapper.metas));
+						}
+					});
+				return A2(
+					_elm_lang$core$Dict$filter,
+					F2(
+						function (_p3, metaWrapper) {
+							return !_elm_lang$core$Native_Utils.eq(
+								metaWrapper.metas,
+								{ctor: '[]'});
+						}),
+					A2(
+						_elm_lang$core$Dict$map,
+						mergeMetaWrappers(leaves),
+						state));
+			});
+		var mergeJoins = F2(
+			function (joins, state) {
+				var unchangedStep = F3(
+					function (key, stateMetaWrapper, addedMetaWrappers) {
+						return A3(_elm_lang$core$Dict$insert, key, stateMetaWrapper, addedMetaWrappers);
+					});
+				var addedStep = F3(
+					function (key, joinMetaWrapper, addedMetaWrappers) {
+						return A3(_elm_lang$core$Dict$insert, key, joinMetaWrapper, addedMetaWrappers);
+					});
+				var mergeMetaWrappers = F2(
+					function (joinMetaWrapper, stateMetaWrapper) {
+						return _saschatimme$elm_phoenix$Phoenix_Internal_Presence$PresenceStateMetaWrapper(
+							A2(_elm_lang$core$Basics_ops['++'], joinMetaWrapper.metas, stateMetaWrapper.metas));
+					});
+				var retainedStep = F4(
+					function (key, joinMetaWrapper, stateMetaWrapper, addedMetaWrappers) {
+						return A3(
+							_elm_lang$core$Dict$insert,
+							key,
+							A2(mergeMetaWrappers, joinMetaWrapper, stateMetaWrapper),
+							addedMetaWrappers);
+					});
+				return A6(_elm_lang$core$Dict$merge, addedStep, retainedStep, unchangedStep, joins, state, _elm_lang$core$Dict$empty);
+			});
+		return A2(
+			mergeLeaves,
+			presenceDiff.leaves,
+			A2(mergeJoins, presenceDiff.joins, presenceState));
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Presence$PresenceStateMetaValue = F2(
+	function (a, b) {
+		return {phx_ref: a, payload: b};
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Presence$presenceStateMetaValueDecoder = function () {
+	var createFinalRecord = F2(
+		function (phxRef, payload) {
+			return _elm_lang$core$Json_Decode$succeed(
+				A2(_saschatimme$elm_phoenix$Phoenix_Internal_Presence$PresenceStateMetaValue, phxRef, payload));
+		});
+	var decodeWithPhxRef = function (phxRef) {
+		return A2(
+			_elm_lang$core$Json_Decode$andThen,
+			createFinalRecord(phxRef),
+			_elm_lang$core$Json_Decode$value);
+	};
+	return A2(
+		_elm_lang$core$Json_Decode$andThen,
+		decodeWithPhxRef,
+		A2(_elm_lang$core$Json_Decode$field, 'phx_ref', _elm_lang$core$Json_Decode$string));
+}();
+var _saschatimme$elm_phoenix$Phoenix_Internal_Presence$presenceStateMetaWrapperDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	_saschatimme$elm_phoenix$Phoenix_Internal_Presence$PresenceStateMetaWrapper,
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'metas',
+		_elm_lang$core$Json_Decode$list(_saschatimme$elm_phoenix$Phoenix_Internal_Presence$presenceStateMetaValueDecoder)));
+var _saschatimme$elm_phoenix$Phoenix_Internal_Presence$presenceStateDecoder = _elm_lang$core$Json_Decode$dict(_saschatimme$elm_phoenix$Phoenix_Internal_Presence$presenceStateMetaWrapperDecoder);
+var _saschatimme$elm_phoenix$Phoenix_Internal_Presence$decodePresenceState = function (payload) {
+	return A2(_elm_lang$core$Json_Decode$decodeValue, _saschatimme$elm_phoenix$Phoenix_Internal_Presence$presenceStateDecoder, payload);
+};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Presence$presenceDiffDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	_saschatimme$elm_phoenix$Phoenix_Internal_Presence$PresenceDiff,
+	A2(_elm_lang$core$Json_Decode$field, 'leaves', _saschatimme$elm_phoenix$Phoenix_Internal_Presence$presenceStateDecoder),
+	A2(_elm_lang$core$Json_Decode$field, 'joins', _saschatimme$elm_phoenix$Phoenix_Internal_Presence$presenceStateDecoder));
+var _saschatimme$elm_phoenix$Phoenix_Internal_Presence$decodePresenceDiff = function (payload) {
+	return A2(_elm_lang$core$Json_Decode$decodeValue, _saschatimme$elm_phoenix$Phoenix_Internal_Presence$presenceDiffDecoder, payload);
+};
+
+var _saschatimme$elm_phoenix$Phoenix_Presence$map = F2(
+	function (func, pres) {
+		var f = _elm_lang$core$Maybe$map(
+			F2(
+				function (x, y) {
+					return function (_p0) {
+						return x(
+							y(_p0));
+					};
+				})(func));
+		return _elm_lang$core$Native_Utils.update(
+			pres,
+			{
+				onChange: f(pres.onChange),
+				onJoins: f(pres.onJoins),
+				onLeaves: f(pres.onLeaves)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Presence$onLeaves = F2(
+	function (func, presence) {
+		return _elm_lang$core$Native_Utils.update(
+			presence,
+			{
+				onLeaves: _elm_lang$core$Maybe$Just(func)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Presence$onJoins = F2(
+	function (func, presence) {
+		return _elm_lang$core$Native_Utils.update(
+			presence,
+			{
+				onJoins: _elm_lang$core$Maybe$Just(func)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Presence$onChange = F2(
+	function (func, presence) {
+		return _elm_lang$core$Native_Utils.update(
+			presence,
+			{
+				onChange: _elm_lang$core$Maybe$Just(func)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Presence$create = {onChange: _elm_lang$core$Maybe$Nothing, onJoins: _elm_lang$core$Maybe$Nothing, onLeaves: _elm_lang$core$Maybe$Nothing};
+var _saschatimme$elm_phoenix$Phoenix_Presence$PhoenixPresence = F3(
+	function (a, b, c) {
+		return {onChange: a, onJoins: b, onLeaves: c};
+	});
+
+var _saschatimme$elm_phoenix$Phoenix_Channel$withDebug = function (channel) {
+	return _elm_lang$core$Native_Utils.update(
+		channel,
+		{debug: true});
+};
+var _saschatimme$elm_phoenix$Phoenix_Channel$map = F2(
+	function (func, chan) {
+		var f = _elm_lang$core$Maybe$map(
+			F2(
+				function (x, y) {
+					return function (_p0) {
+						return x(
+							y(_p0));
+					};
+				})(func));
+		var channel = _elm_lang$core$Native_Utils.update(
+			chan,
+			{
+				onRequestJoin: A2(_elm_lang$core$Maybe$map, func, chan.onRequestJoin),
+				onJoin: f(chan.onJoin),
+				onJoinError: f(chan.onJoinError),
+				onError: A2(_elm_lang$core$Maybe$map, func, chan.onError),
+				onDisconnect: A2(_elm_lang$core$Maybe$map, func, chan.onDisconnect),
+				onRejoin: f(chan.onRejoin),
+				onLeave: f(chan.onLeave),
+				onLeaveError: f(chan.onLeaveError),
+				presence: A2(
+					_elm_lang$core$Maybe$map,
+					_saschatimme$elm_phoenix$Phoenix_Presence$map(func),
+					chan.presence),
+				on: A2(
+					_elm_lang$core$Dict$map,
+					F2(
+						function (_p1, a) {
+							return function (_p2) {
+								return func(
+									a(_p2));
+							};
+						}),
+					chan.on)
+			});
+		return channel;
+	});
+var _saschatimme$elm_phoenix$Phoenix_Channel$withPresence = F2(
+	function (presence, chan) {
+		return _elm_lang$core$Native_Utils.update(
+			chan,
+			{
+				presence: _elm_lang$core$Maybe$Just(presence)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Channel$onLeaveError = F2(
+	function (onLeaveError_, chan) {
+		return _elm_lang$core$Native_Utils.update(
+			chan,
+			{
+				onLeaveError: _elm_lang$core$Maybe$Just(onLeaveError_)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Channel$onLeave = F2(
+	function (onLeave_, chan) {
+		return _elm_lang$core$Native_Utils.update(
+			chan,
+			{
+				onLeave: _elm_lang$core$Maybe$Just(onLeave_)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Channel$onRejoin = F2(
+	function (onRejoin_, chan) {
+		return _elm_lang$core$Native_Utils.update(
+			chan,
+			{
+				onRejoin: _elm_lang$core$Maybe$Just(onRejoin_)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Channel$onDisconnect = F2(
+	function (onDisconnect_, chan) {
+		return _elm_lang$core$Native_Utils.update(
+			chan,
+			{
+				onDisconnect: _elm_lang$core$Maybe$Just(onDisconnect_)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Channel$onError = F2(
+	function (onError_, chan) {
+		return _elm_lang$core$Native_Utils.update(
+			chan,
+			{
+				onError: _elm_lang$core$Maybe$Just(onError_)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Channel$onJoinError = F2(
+	function (onJoinError_, chan) {
+		return _elm_lang$core$Native_Utils.update(
+			chan,
+			{
+				onJoinError: _elm_lang$core$Maybe$Just(onJoinError_)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Channel$onJoin = F2(
+	function (onJoin_, chan) {
+		var _p3 = chan.onRejoin;
+		if (_p3.ctor === 'Nothing') {
+			return _elm_lang$core$Native_Utils.update(
+				chan,
+				{
+					onJoin: _elm_lang$core$Maybe$Just(onJoin_),
+					onRejoin: _elm_lang$core$Maybe$Just(onJoin_)
+				});
+		} else {
+			return _elm_lang$core$Native_Utils.update(
+				chan,
+				{
+					onJoin: _elm_lang$core$Maybe$Just(onJoin_)
+				});
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix_Channel$onRequestJoin = F2(
+	function (onRequestJoin_, chan) {
+		return _elm_lang$core$Native_Utils.update(
+			chan,
+			{
+				onRequestJoin: _elm_lang$core$Maybe$Just(onRequestJoin_)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Channel$on = F3(
+	function (event, cb, chan) {
+		return _elm_lang$core$Native_Utils.update(
+			chan,
+			{
+				on: A3(_elm_lang$core$Dict$insert, event, cb, chan.on)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Channel$withPayload = F2(
+	function (payload_, chan) {
+		return _elm_lang$core$Native_Utils.update(
+			chan,
+			{
+				payload: _elm_lang$core$Maybe$Just(payload_)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Channel$init = function (topic) {
+	return {topic: topic, payload: _elm_lang$core$Maybe$Nothing, onRequestJoin: _elm_lang$core$Maybe$Nothing, onJoin: _elm_lang$core$Maybe$Nothing, onJoinError: _elm_lang$core$Maybe$Nothing, onDisconnect: _elm_lang$core$Maybe$Nothing, onError: _elm_lang$core$Maybe$Nothing, onRejoin: _elm_lang$core$Maybe$Nothing, onLeave: _elm_lang$core$Maybe$Nothing, onLeaveError: _elm_lang$core$Maybe$Nothing, on: _elm_lang$core$Dict$empty, presence: _elm_lang$core$Maybe$Nothing, debug: false};
+};
+var _saschatimme$elm_phoenix$Phoenix_Channel$PhoenixChannel = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return function (l) {
+												return function (m) {
+													return {topic: a, payload: b, onRequestJoin: c, onJoin: d, onJoinError: e, onDisconnect: f, onError: g, onRejoin: h, onLeave: i, onLeaveError: j, on: k, presence: l, debug: m};
+												};
+											};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+
+var _saschatimme$elm_phoenix$Phoenix_Internal_Channel$get = F3(
+	function (endpoint, topic, channelsDict) {
+		return A3(_saschatimme$elm_phoenix$Phoenix_Internal_Helpers$getIn, endpoint, topic, channelsDict);
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Channel$getState = F3(
+	function (endpoint, topic, channelsDict) {
+		return A2(
+			_elm_lang$core$Maybe$map,
+			function (_p0) {
+				var _p1 = _p0;
+				return _p1.state;
+			},
+			A3(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$get, endpoint, topic, channelsDict));
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Channel$leaveMessage = function (_p2) {
+	var _p3 = _p2;
+	return A2(_saschatimme$elm_phoenix$Phoenix_Internal_Message$init, _p3.channel.topic, 'phx_leave');
+};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Channel$joinMessage = function (_p4) {
+	var _p5 = _p4;
+	var _p7 = _p5.channel;
+	var base = A2(_saschatimme$elm_phoenix$Phoenix_Internal_Message$init, _p7.topic, 'phx_join');
+	var _p6 = _p7.payload;
+	if (_p6.ctor === 'Nothing') {
+		return base;
+	} else {
+		return A2(_saschatimme$elm_phoenix$Phoenix_Internal_Message$payload, _p6._0, base);
+	}
+};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Channel$InternalChannel = F3(
+	function (a, b, c) {
+		return {state: a, presenceState: b, channel: c};
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Channel$map = F2(
+	function (func, _p8) {
+		var _p9 = _p8;
+		return A3(
+			_saschatimme$elm_phoenix$Phoenix_Internal_Channel$InternalChannel,
+			_p9.state,
+			_p9.presenceState,
+			A2(_saschatimme$elm_phoenix$Phoenix_Channel$map, func, _p9.channel));
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Channel$updatePresenceState = F2(
+	function (presenceState, internalChannel) {
+		return A3(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$InternalChannel, internalChannel.state, presenceState, internalChannel.channel);
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Channel$updateState = F2(
+	function (state, internalChannel) {
+		if (internalChannel.channel.debug) {
+			var _p10 = function () {
+				var _p11 = {ctor: '_Tuple2', _0: state, _1: internalChannel.state};
+				_v5_5:
+				do {
+					if (_p11.ctor === '_Tuple2') {
+						switch (_p11._0.ctor) {
+							case 'Closed':
+								if (_p11._1.ctor === 'Closed') {
+									return state;
+								} else {
+									break _v5_5;
+								}
+							case 'Joining':
+								if (_p11._1.ctor === 'Joining') {
+									return state;
+								} else {
+									break _v5_5;
+								}
+							case 'Joined':
+								if (_p11._1.ctor === 'Joined') {
+									return state;
+								} else {
+									break _v5_5;
+								}
+							case 'Errored':
+								if (_p11._1.ctor === 'Errored') {
+									return state;
+								} else {
+									break _v5_5;
+								}
+							default:
+								if (_p11._1.ctor === 'Disconnected') {
+									return state;
+								} else {
+									break _v5_5;
+								}
+						}
+					} else {
+						break _v5_5;
+					}
+				} while(false);
+				return A2(
+					_elm_lang$core$Debug$log,
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'Channel \"',
+						A2(_elm_lang$core$Basics_ops['++'], internalChannel.channel.topic, '\"')),
+					state);
+			}();
+			return A3(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$InternalChannel, state, internalChannel.presenceState, internalChannel.channel);
+		} else {
+			return A3(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$InternalChannel, state, internalChannel.presenceState, internalChannel.channel);
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Channel$insertState = F4(
+	function (endpoint, topic, state, dict) {
+		var update = _elm_lang$core$Maybe$map(
+			_saschatimme$elm_phoenix$Phoenix_Internal_Channel$updateState(state));
+		return A4(_saschatimme$elm_phoenix$Phoenix_Internal_Helpers$updateIn, endpoint, topic, update, dict);
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Channel$updatePayload = F2(
+	function (payload, _p12) {
+		var _p13 = _p12;
+		return A3(
+			_saschatimme$elm_phoenix$Phoenix_Internal_Channel$InternalChannel,
+			_p13.state,
+			_p13.presenceState,
+			_elm_lang$core$Native_Utils.update(
+				_p13.channel,
+				{payload: payload}));
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Channel$updateOn = F2(
+	function (on, _p14) {
+		var _p15 = _p14;
+		return A3(
+			_saschatimme$elm_phoenix$Phoenix_Internal_Channel$InternalChannel,
+			_p15.state,
+			_p15.presenceState,
+			_elm_lang$core$Native_Utils.update(
+				_p15.channel,
+				{on: on}));
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Channel$Disconnected = {ctor: 'Disconnected'};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Channel$Errored = {ctor: 'Errored'};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Channel$Joined = {ctor: 'Joined'};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Channel$Joining = {ctor: 'Joining'};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Channel$Closed = {ctor: 'Closed'};
+
+var _saschatimme$elm_phoenix$Phoenix_Socket$map = F2(
+	function (func, socket) {
+		return _elm_lang$core$Native_Utils.update(
+			socket,
+			{
+				onOpen: A2(_elm_lang$core$Maybe$map, func, socket.onOpen),
+				onClose: A2(
+					_elm_lang$core$Maybe$map,
+					F2(
+						function (x, y) {
+							return function (_p0) {
+								return x(
+									y(_p0));
+							};
+						})(func),
+					socket.onClose),
+				onNormalClose: A2(_elm_lang$core$Maybe$map, func, socket.onNormalClose),
+				onAbnormalClose: A2(
+					_elm_lang$core$Maybe$map,
+					F2(
+						function (x, y) {
+							return function (_p1) {
+								return x(
+									y(_p1));
+							};
+						})(func),
+					socket.onAbnormalClose)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Socket$defaultReconnectTimer = function (failedAttempts) {
+	return (_elm_lang$core$Native_Utils.cmp(failedAttempts, 1) < 0) ? 0 : _elm_lang$core$Basics$toFloat(
+		A2(_elm_lang$core$Basics$min, 15000, 1000 * failedAttempts));
+};
+var _saschatimme$elm_phoenix$Phoenix_Socket$onClose = F2(
+	function (onClose_, socket) {
+		return _elm_lang$core$Native_Utils.update(
+			socket,
+			{
+				onClose: _elm_lang$core$Maybe$Just(onClose_)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Socket$onNormalClose = F2(
+	function (onNormalClose_, socket) {
+		return _elm_lang$core$Native_Utils.update(
+			socket,
+			{
+				onNormalClose: _elm_lang$core$Maybe$Just(onNormalClose_)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Socket$onAbnormalClose = F2(
+	function (onAbnormalClose_, socket) {
+		return _elm_lang$core$Native_Utils.update(
+			socket,
+			{
+				onAbnormalClose: _elm_lang$core$Maybe$Just(onAbnormalClose_)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Socket$onOpen = F2(
+	function (onOpen, socket) {
+		return _elm_lang$core$Native_Utils.update(
+			socket,
+			{
+				onOpen: _elm_lang$core$Maybe$Just(onOpen)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Socket$withDebug = function (socket) {
+	return _elm_lang$core$Native_Utils.update(
+		socket,
+		{debug: true});
+};
+var _saschatimme$elm_phoenix$Phoenix_Socket$reconnectTimer = F2(
+	function (timerFunc, socket) {
+		return _elm_lang$core$Native_Utils.update(
+			socket,
+			{reconnectTimer: timerFunc});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Socket$withoutHeartbeat = function (socket) {
+	return _elm_lang$core$Native_Utils.update(
+		socket,
+		{withoutHeartbeat: true});
+};
+var _saschatimme$elm_phoenix$Phoenix_Socket$heartbeatIntervallSeconds = F2(
+	function (intervall, socket) {
+		return _elm_lang$core$Native_Utils.update(
+			socket,
+			{
+				heartbeatIntervall: _elm_lang$core$Basics$toFloat(intervall) * _elm_lang$core$Time$second
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Socket$withParams = F2(
+	function (params, socket) {
+		return _elm_lang$core$Native_Utils.update(
+			socket,
+			{params: params});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Socket$init = function (endpoint) {
+	return {
+		endpoint: endpoint,
+		params: {ctor: '[]'},
+		heartbeatIntervall: 30 * _elm_lang$core$Time$second,
+		withoutHeartbeat: false,
+		reconnectTimer: _saschatimme$elm_phoenix$Phoenix_Socket$defaultReconnectTimer,
+		debug: false,
+		onOpen: _elm_lang$core$Maybe$Nothing,
+		onClose: _elm_lang$core$Maybe$Nothing,
+		onAbnormalClose: _elm_lang$core$Maybe$Nothing,
+		onNormalClose: _elm_lang$core$Maybe$Nothing
+	};
+};
+var _saschatimme$elm_phoenix$Phoenix_Socket$AbnormalClose = F2(
+	function (a, b) {
+		return {reconnectAttempt: a, reconnectWait: b};
+	});
+var _saschatimme$elm_phoenix$Phoenix_Socket$PhoenixSocket = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return {endpoint: a, params: b, heartbeatIntervall: c, withoutHeartbeat: d, reconnectTimer: e, debug: f, onOpen: g, onClose: h, onAbnormalClose: i, onNormalClose: j};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$debugLogMessage = F2(
+	function (_p0, msg) {
+		var _p1 = _p0;
+		return _p1.socket.debug ? A2(_elm_lang$core$Debug$log, 'Received', msg) : msg;
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$ref = function (_p2) {
+	var _p3 = _p2;
+	var _p4 = _p3.connection;
+	if (_p4.ctor === 'Connected') {
+		return _elm_lang$core$Maybe$Just(_p4._1);
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$get = F2(
+	function (endpoint, dict) {
+		return A2(_elm_lang$core$Dict$get, endpoint, dict);
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$getRef = F2(
+	function (endpoint, dict) {
+		return A2(
+			_elm_lang$core$Maybe$andThen,
+			_saschatimme$elm_phoenix$Phoenix_Internal_Socket$ref,
+			A2(_saschatimme$elm_phoenix$Phoenix_Internal_Socket$get, endpoint, dict));
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$close = function (_p5) {
+	var _p6 = _p5;
+	var _p7 = _p6.connection;
+	switch (_p7.ctor) {
+		case 'Opening':
+			return _elm_lang$core$Process$kill(_p7._1);
+		case 'Connected':
+			return _elm_lang$websocket$WebSocket_LowLevel$close(_p7._0);
+		default:
+			return _elm_lang$core$Task$succeed(
+				{ctor: '_Tuple0'});
+	}
+};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$after = function (backoff) {
+	return (_elm_lang$core$Native_Utils.cmp(backoff, 1) < 0) ? _elm_lang$core$Task$succeed(
+		{ctor: '_Tuple0'}) : _elm_lang$core$Process$sleep(backoff);
+};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$open = F2(
+	function (_p8, settings) {
+		var _p9 = _p8;
+		var _p12 = _p9.socket;
+		var query = A2(
+			_elm_lang$core$String$join,
+			'&',
+			A2(
+				_elm_lang$core$List$map,
+				function (_p10) {
+					var _p11 = _p10;
+					return A2(
+						_elm_lang$core$Basics_ops['++'],
+						_p11._0,
+						A2(_elm_lang$core$Basics_ops['++'], '=', _p11._1));
+				},
+				_p12.params));
+		var url = A2(_elm_lang$core$String$contains, '?', _p12.endpoint) ? A2(
+			_elm_lang$core$Basics_ops['++'],
+			_p12.endpoint,
+			A2(_elm_lang$core$Basics_ops['++'], '&', query)) : A2(
+			_elm_lang$core$Basics_ops['++'],
+			_p12.endpoint,
+			A2(_elm_lang$core$Basics_ops['++'], '?', query));
+		return A2(_elm_lang$websocket$WebSocket_LowLevel$open, url, settings);
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$push = F2(
+	function (message, _p13) {
+		var _p14 = _p13;
+		var _p19 = _p14.socket;
+		var _p15 = _p14.connection;
+		if (_p15.ctor === 'Connected') {
+			var _p18 = _p15._1;
+			var message_ = _p19.debug ? A2(
+				_elm_lang$core$Debug$log,
+				'Send',
+				A2(_saschatimme$elm_phoenix$Phoenix_Internal_Message$ref, _p18, message)) : A2(_saschatimme$elm_phoenix$Phoenix_Internal_Message$ref, _p18, message);
+			return A2(
+				_elm_lang$core$Task$map,
+				function (maybeBadSend) {
+					var _p16 = maybeBadSend;
+					if (_p16.ctor === 'Nothing') {
+						return _elm_lang$core$Maybe$Just(_p18);
+					} else {
+						if (_p19.debug) {
+							var _p17 = A2(_elm_lang$core$Debug$log, 'BadSend', _p16._0);
+							return _elm_lang$core$Maybe$Nothing;
+						} else {
+							return _elm_lang$core$Maybe$Nothing;
+						}
+					}
+				},
+				A2(
+					_elm_lang$websocket$WebSocket_LowLevel$send,
+					_p15._0,
+					_saschatimme$elm_phoenix$Phoenix_Internal_Message$encode(message_)));
+		} else {
+			return _elm_lang$core$Task$succeed(_elm_lang$core$Maybe$Nothing);
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$isOpening = function (internalSocket) {
+	var _p20 = internalSocket.connection;
+	if (_p20.ctor === 'Opening') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$InternalSocket = F2(
+	function (a, b) {
+		return {connection: a, socket: b};
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$Connected = F2(
+	function (a, b) {
+		return {ctor: 'Connected', _0: a, _1: b};
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$connected = F2(
+	function (ws, socket) {
+		return _elm_lang$core$Native_Utils.update(
+			socket,
+			{
+				connection: A2(_saschatimme$elm_phoenix$Phoenix_Internal_Socket$Connected, ws, 0)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$increaseRef = function (socket) {
+	var _p21 = socket.connection;
+	if (_p21.ctor === 'Connected') {
+		return _elm_lang$core$Native_Utils.update(
+			socket,
+			{
+				connection: A2(_saschatimme$elm_phoenix$Phoenix_Internal_Socket$Connected, _p21._0, _p21._1 + 1)
+			});
+	} else {
+		return socket;
+	}
+};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$Opening = F2(
+	function (a, b) {
+		return {ctor: 'Opening', _0: a, _1: b};
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$opening = F3(
+	function (backoff, pid, socket) {
+		return _elm_lang$core$Native_Utils.update(
+			socket,
+			{
+				connection: A2(_saschatimme$elm_phoenix$Phoenix_Internal_Socket$Opening, backoff, pid)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$resetBackoff = function (connection) {
+	var _p22 = connection;
+	if (_p22.ctor === 'Opening') {
+		return A2(_saschatimme$elm_phoenix$Phoenix_Internal_Socket$Opening, 0, _p22._1);
+	} else {
+		return connection;
+	}
+};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$update = F2(
+	function (nextSocket, _p23) {
+		var _p24 = _p23;
+		var _p25 = _p24.connection;
+		var updatedConnection = (!_elm_lang$core$Native_Utils.eq(nextSocket.params, _p24.socket.params)) ? _saschatimme$elm_phoenix$Phoenix_Internal_Socket$resetBackoff(_p25) : _p25;
+		return A2(_saschatimme$elm_phoenix$Phoenix_Internal_Socket$InternalSocket, updatedConnection, nextSocket);
+	});
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$Closed = {ctor: 'Closed'};
+var _saschatimme$elm_phoenix$Phoenix_Internal_Socket$internalSocket = function (socket) {
+	return {connection: _saschatimme$elm_phoenix$Phoenix_Internal_Socket$Closed, socket: socket};
+};
+
+var _saschatimme$elm_phoenix$Phoenix$maybeAndMap = _elm_lang$core$Maybe$map2(
+	F2(
+		function (x, y) {
+			return y(x);
+		}));
+var _saschatimme$elm_phoenix$Phoenix$maybeNotifyApp = F2(
+	function (router, maybeTagger) {
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			_elm_lang$core$Task$succeed(
+				{ctor: '_Tuple0'}),
+			A2(
+				_elm_lang$core$Maybe$map,
+				_elm_lang$core$Platform$sendToApp(router),
+				maybeTagger));
+	});
+var _saschatimme$elm_phoenix$Phoenix$after = function (backoff) {
+	return (_elm_lang$core$Native_Utils.cmp(backoff, 1) < 0) ? _elm_lang$core$Task$succeed(
+		{ctor: '_Tuple0'}) : _elm_lang$core$Process$sleep(backoff);
+};
+var _saschatimme$elm_phoenix$Phoenix$heartbeatMessage = A2(_saschatimme$elm_phoenix$Phoenix_Internal_Message$init, 'phoenix', 'heartbeat');
+var _saschatimme$elm_phoenix$Phoenix$handleChannelDisconnect = F3(
+	function (router, endpoint, state) {
+		var _p0 = A2(_elm_lang$core$Dict$get, endpoint, state.channels);
+		if (_p0.ctor === 'Nothing') {
+			return _elm_lang$core$Task$succeed(state);
+		} else {
+			var _p7 = _p0._0;
+			var updateChannel = F2(
+				function (_p1, channel) {
+					var _p2 = channel.state;
+					if (_p2.ctor === 'Errored') {
+						return channel;
+					} else {
+						return A2(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$updateState, _saschatimme$elm_phoenix$Phoenix_Internal_Channel$Disconnected, channel);
+					}
+				});
+			var updatedEndpointChannels = A2(_elm_lang$core$Dict$map, updateChannel, _p7);
+			var notifyApp = function (_p3) {
+				var _p4 = _p3;
+				var _p5 = _p4.state;
+				if (_p5.ctor === 'Joined') {
+					return A2(_saschatimme$elm_phoenix$Phoenix$maybeNotifyApp, router, _p4.channel.onDisconnect);
+				} else {
+					return _elm_lang$core$Task$succeed(
+						{ctor: '_Tuple0'});
+				}
+			};
+			var notify = A3(
+				_elm_lang$core$Dict$foldl,
+				F3(
+					function (_p6, channel, task) {
+						return A2(
+							_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+							task,
+							notifyApp(channel));
+					}),
+				_elm_lang$core$Task$succeed(
+					{ctor: '_Tuple0'}),
+				_p7);
+			return A2(
+				_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+				notify,
+				_elm_lang$core$Task$succeed(
+					_elm_lang$core$Native_Utils.update(
+						state,
+						{
+							channels: A3(_elm_lang$core$Dict$insert, endpoint, updatedEndpointChannels, state.channels)
+						})));
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix$getEventCb = F3(
+	function (endpoint, message, channels) {
+		var _p8 = A3(_saschatimme$elm_phoenix$Phoenix_Internal_Helpers$getIn, endpoint, message.topic, channels);
+		if (_p8.ctor === 'Nothing') {
+			return _elm_lang$core$Maybe$Nothing;
+		} else {
+			return A2(_elm_lang$core$Dict$get, message.event, _p8._0.channel.on);
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix$dispatchMessage = F4(
+	function (router, endpoint, message, channels) {
+		var _p9 = A3(_saschatimme$elm_phoenix$Phoenix$getEventCb, endpoint, message, channels);
+		if (_p9.ctor === 'Nothing') {
+			return _elm_lang$core$Task$succeed(
+				{ctor: '_Tuple0'});
+		} else {
+			return A2(
+				_elm_lang$core$Platform$sendToApp,
+				router,
+				_p9._0(message.payload));
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix$handleSelfcallback = F4(
+	function (router, endpoint, message, selfCallbacks) {
+		var _p10 = message.ref;
+		if (_p10.ctor === 'Nothing') {
+			return _elm_lang$core$Task$succeed(selfCallbacks);
+		} else {
+			var _p12 = _p10._0;
+			var _p11 = A2(_elm_lang$core$Dict$get, _p12, selfCallbacks);
+			if (_p11.ctor === 'Nothing') {
+				return _elm_lang$core$Task$succeed(selfCallbacks);
+			} else {
+				return A2(
+					_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+					A2(
+						_elm_lang$core$Platform$sendToSelf,
+						router,
+						_p11._0(message)),
+					_elm_lang$core$Task$succeed(
+						A2(_elm_lang$core$Dict$remove, _p12, selfCallbacks)));
+			}
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix$insertSelfCallback = F3(
+	function (ref, maybeSelfCb, state) {
+		var _p13 = maybeSelfCb;
+		if (_p13.ctor === 'Nothing') {
+			return state;
+		} else {
+			return _elm_lang$core$Native_Utils.update(
+				state,
+				{
+					selfCallbacks: A3(_elm_lang$core$Dict$insert, ref, _p13._0, state.selfCallbacks)
+				});
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix$insertSocket = F3(
+	function (endpoint, socket, state) {
+		return _elm_lang$core$Native_Utils.update(
+			state,
+			{
+				sockets: A3(_elm_lang$core$Dict$insert, endpoint, socket, state.sockets)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix$pushSocket_ = F4(
+	function (endpoint, message, maybeSelfCb, state) {
+		var _p14 = A2(_elm_lang$core$Dict$get, endpoint, state.sockets);
+		if (_p14.ctor === 'Nothing') {
+			return _elm_lang$core$Task$succeed(state);
+		} else {
+			var _p16 = _p14._0;
+			return A2(
+				_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['<&>'],
+				A2(_saschatimme$elm_phoenix$Phoenix_Internal_Socket$push, message, _p16),
+				function (maybeRef) {
+					var _p15 = maybeRef;
+					if (_p15.ctor === 'Nothing') {
+						return _elm_lang$core$Task$succeed(state);
+					} else {
+						return _elm_lang$core$Task$succeed(
+							A3(
+								_saschatimme$elm_phoenix$Phoenix$insertSelfCallback,
+								_p15._0,
+								maybeSelfCb,
+								A3(
+									_saschatimme$elm_phoenix$Phoenix$insertSocket,
+									endpoint,
+									_saschatimme$elm_phoenix$Phoenix_Internal_Socket$increaseRef(_p16),
+									state)));
+					}
+				});
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix$pushSocket = F4(
+	function (endpoint, message, selfCb, state) {
+		var queuedState = _elm_lang$core$Task$succeed(
+			_elm_lang$core$Native_Utils.update(
+				state,
+				{
+					channelQueues: A4(
+						_saschatimme$elm_phoenix$Phoenix_Internal_Helpers$updateIn,
+						endpoint,
+						message.topic,
+						_saschatimme$elm_phoenix$Phoenix_Internal_Helpers$add(
+							{ctor: '_Tuple2', _0: message, _1: selfCb}),
+						state.channelQueues)
+				}));
+		var afterSocketPush = F2(
+			function (socket, maybeRef) {
+				var _p17 = maybeRef;
+				if (_p17.ctor === 'Nothing') {
+					return queuedState;
+				} else {
+					return _elm_lang$core$Task$succeed(
+						A3(
+							_saschatimme$elm_phoenix$Phoenix$insertSelfCallback,
+							_p17._0,
+							selfCb,
+							A3(
+								_saschatimme$elm_phoenix$Phoenix$insertSocket,
+								endpoint,
+								_saschatimme$elm_phoenix$Phoenix_Internal_Socket$increaseRef(socket),
+								state)));
+				}
+			});
+		var _p18 = A2(_elm_lang$core$Dict$get, endpoint, state.sockets);
+		if (_p18.ctor === 'Nothing') {
+			return queuedState;
+		} else {
+			var _p23 = _p18._0;
+			var _p19 = A3(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$get, endpoint, message.topic, state.channels);
+			if (_p19.ctor === 'Nothing') {
+				var _p20 = A2(_elm_lang$core$Debug$log, 'Queued message (no channel exists)', message);
+				return queuedState;
+			} else {
+				var _p21 = _p19._0.state;
+				if (_p21.ctor === 'Joined') {
+					return A2(
+						_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['<&>'],
+						A2(_saschatimme$elm_phoenix$Phoenix_Internal_Socket$push, message, _p23),
+						afterSocketPush(_p23));
+				} else {
+					var _p22 = A2(_elm_lang$core$Debug$log, 'Queued message (channel not joined)', message);
+					return queuedState;
+				}
+			}
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix$processQueue = F3(
+	function (endpoint, messages, state) {
+		var _p24 = messages;
+		if (_p24.ctor === '[]') {
+			return _elm_lang$core$Task$succeed(state);
+		} else {
+			return A2(
+				_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['<&>'],
+				A4(_saschatimme$elm_phoenix$Phoenix$pushSocket, endpoint, _p24._0._0, _p24._0._1, state),
+				A2(_saschatimme$elm_phoenix$Phoenix$processQueue, endpoint, _p24._1));
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix$removeChannelQueue = F3(
+	function (endpoint, topic, state) {
+		return _elm_lang$core$Native_Utils.update(
+			state,
+			{
+				channelQueues: A3(_saschatimme$elm_phoenix$Phoenix_Internal_Helpers$removeIn, endpoint, topic, state.channelQueues)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix$updateSelfCallbacks = F2(
+	function (selfCallbacks, state) {
+		return _elm_lang$core$Native_Utils.update(
+			state,
+			{selfCallbacks: selfCallbacks});
+	});
+var _saschatimme$elm_phoenix$Phoenix$updateChannels = F2(
+	function (channels, state) {
+		return _elm_lang$core$Native_Utils.update(
+			state,
+			{channels: channels});
+	});
+var _saschatimme$elm_phoenix$Phoenix$updateSocket = F3(
+	function (endpoint, socket, state) {
+		return _elm_lang$core$Native_Utils.update(
+			state,
+			{
+				sockets: A3(_elm_lang$core$Dict$insert, endpoint, socket, state.sockets)
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix$buildChannelsDict = F2(
+	function (subs, dict) {
+		var _p25 = subs;
+		if (_p25.ctor === '[]') {
+			return dict;
+		} else {
+			var internalChan = function (chan) {
+				return A3(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$InternalChannel, _saschatimme$elm_phoenix$Phoenix_Internal_Channel$Closed, _elm_lang$core$Dict$empty, chan);
+			};
+			var build = F2(
+				function (chan, dict_) {
+					return A2(
+						_saschatimme$elm_phoenix$Phoenix$buildChannelsDict,
+						_p25._1,
+						A4(
+							_saschatimme$elm_phoenix$Phoenix_Internal_Helpers$insertIn,
+							_p25._0._0.endpoint,
+							chan.topic,
+							internalChan(chan),
+							dict_));
+				});
+			return A3(_elm_lang$core$List$foldl, build, dict, _p25._0._1);
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix$buildSocketsDict = function (subs) {
+	var insert = F2(
+		function (sub, dict) {
+			var _p26 = sub;
+			var _p27 = _p26._0;
+			return A3(_elm_lang$core$Dict$insert, _p27.endpoint, _p27, dict);
+		});
+	return A3(_elm_lang$core$List$foldl, insert, _elm_lang$core$Dict$empty, subs);
+};
+var _saschatimme$elm_phoenix$Phoenix$subscription = _elm_lang$core$Native_Platform.leaf('Phoenix');
+var _saschatimme$elm_phoenix$Phoenix$command = _elm_lang$core$Native_Platform.leaf('Phoenix');
+var _saschatimme$elm_phoenix$Phoenix$State = F4(
+	function (a, b, c, d) {
+		return {sockets: a, channels: b, selfCallbacks: c, channelQueues: d};
+	});
+var _saschatimme$elm_phoenix$Phoenix$init = _elm_lang$core$Task$succeed(
+	A4(_saschatimme$elm_phoenix$Phoenix$State, _elm_lang$core$Dict$empty, _elm_lang$core$Dict$empty, _elm_lang$core$Dict$empty, _elm_lang$core$Dict$empty));
+var _saschatimme$elm_phoenix$Phoenix$Connect = F2(
+	function (a, b) {
+		return {ctor: 'Connect', _0: a, _1: b};
+	});
+var _saschatimme$elm_phoenix$Phoenix$connect = F2(
+	function (socket, channels) {
+		return _saschatimme$elm_phoenix$Phoenix$subscription(
+			A2(_saschatimme$elm_phoenix$Phoenix$Connect, socket, channels));
+	});
+var _saschatimme$elm_phoenix$Phoenix$subMap = F2(
+	function (func, sub) {
+		var _p28 = sub;
+		return A2(
+			_saschatimme$elm_phoenix$Phoenix$Connect,
+			A2(_saschatimme$elm_phoenix$Phoenix_Socket$map, func, _p28._0),
+			A2(
+				_elm_lang$core$List$map,
+				_saschatimme$elm_phoenix$Phoenix_Channel$map(func),
+				_p28._1));
+	});
+var _saschatimme$elm_phoenix$Phoenix$Send = F2(
+	function (a, b) {
+		return {ctor: 'Send', _0: a, _1: b};
+	});
+var _saschatimme$elm_phoenix$Phoenix$push = F2(
+	function (endpoint, push_) {
+		return _saschatimme$elm_phoenix$Phoenix$command(
+			A2(_saschatimme$elm_phoenix$Phoenix$Send, endpoint, push_));
+	});
+var _saschatimme$elm_phoenix$Phoenix$cmdMap = F2(
+	function (func, cmd) {
+		var _p29 = cmd;
+		return A2(
+			_saschatimme$elm_phoenix$Phoenix$Send,
+			_p29._0,
+			A2(_saschatimme$elm_phoenix$Phoenix_Push$map, func, _p29._1));
+	});
+var _saschatimme$elm_phoenix$Phoenix$PushResponse = F2(
+	function (a, b) {
+		return {ctor: 'PushResponse', _0: a, _1: b};
+	});
+var _saschatimme$elm_phoenix$Phoenix$sendPushsHelp = F2(
+	function (cmds, state) {
+		var _p30 = cmds;
+		if (_p30.ctor === '[]') {
+			return _elm_lang$core$Task$succeed(state);
+		} else {
+			var _p31 = _p30._0._1;
+			var message = _saschatimme$elm_phoenix$Phoenix_Internal_Message$fromPush(_p31);
+			return A2(
+				_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['<&>'],
+				A4(
+					_saschatimme$elm_phoenix$Phoenix$pushSocket,
+					_p30._0._0,
+					message,
+					_elm_lang$core$Maybe$Just(
+						_saschatimme$elm_phoenix$Phoenix$PushResponse(_p31)),
+					state),
+				_saschatimme$elm_phoenix$Phoenix$sendPushsHelp(_p30._1));
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix$SendHeartbeat = function (a) {
+	return {ctor: 'SendHeartbeat', _0: a};
+};
+var _saschatimme$elm_phoenix$Phoenix$heartbeat = F3(
+	function (router, endpoint, state) {
+		var _p32 = A2(_elm_lang$core$Dict$get, endpoint, state.sockets);
+		if (_p32.ctor === 'Just') {
+			var _p33 = _p32._0.socket;
+			return _p33.withoutHeartbeat ? _elm_lang$core$Task$succeed(state) : A2(
+				_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+				_elm_lang$core$Process$spawn(
+					A2(
+						_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+						_elm_lang$core$Process$sleep(_p33.heartbeatIntervall),
+						A2(
+							_elm_lang$core$Platform$sendToSelf,
+							router,
+							_saschatimme$elm_phoenix$Phoenix$SendHeartbeat(endpoint)))),
+				A4(_saschatimme$elm_phoenix$Phoenix$pushSocket_, endpoint, _saschatimme$elm_phoenix$Phoenix$heartbeatMessage, _elm_lang$core$Maybe$Nothing, state));
+		} else {
+			return _elm_lang$core$Task$succeed(state);
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix$GoodJoin = F2(
+	function (a, b) {
+		return {ctor: 'GoodJoin', _0: a, _1: b};
+	});
+var _saschatimme$elm_phoenix$Phoenix$handleChannelJoinReply = F6(
+	function (router, endpoint, topic, message, prevState, channels) {
+		var newChannels = function (state) {
+			return _elm_lang$core$Task$succeed(
+				A4(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$insertState, endpoint, topic, state, channels));
+		};
+		var handlePayload = F2(
+			function (_p34, payload) {
+				var _p35 = _p34;
+				var _p42 = _p35.channel;
+				var _p36 = payload;
+				if (_p36.ctor === 'Err') {
+					var _p37 = _p42.onJoinError;
+					if (_p37.ctor === 'Nothing') {
+						return newChannels(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$Errored);
+					} else {
+						return A2(
+							_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+							A2(
+								_elm_lang$core$Platform$sendToApp,
+								router,
+								_p37._0(_p36._0)),
+							newChannels(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$Errored));
+					}
+				} else {
+					var _p41 = _p36._0;
+					var join = A2(
+						_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+						A2(
+							_elm_lang$core$Platform$sendToSelf,
+							router,
+							A2(_saschatimme$elm_phoenix$Phoenix$GoodJoin, endpoint, topic)),
+						newChannels(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$Joined));
+					var _p38 = prevState;
+					if (_p38.ctor === 'Disconnected') {
+						var _p39 = _p42.onRejoin;
+						if (_p39.ctor === 'Nothing') {
+							return join;
+						} else {
+							return A2(
+								_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+								A2(
+									_elm_lang$core$Platform$sendToApp,
+									router,
+									_p39._0(_p41)),
+								join);
+						}
+					} else {
+						var _p40 = _p42.onJoin;
+						if (_p40.ctor === 'Nothing') {
+							return join;
+						} else {
+							return A2(
+								_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+								A2(
+									_elm_lang$core$Platform$sendToApp,
+									router,
+									_p40._0(_p41)),
+								join);
+						}
+					}
+				}
+			});
+		var maybePayload = _saschatimme$elm_phoenix$Phoenix_Internal_Helpers$decodeReplyPayload(message.payload);
+		var maybeChannel = A3(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$get, endpoint, topic, channels);
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			_elm_lang$core$Task$succeed(channels),
+			A3(_elm_lang$core$Maybe$map2, handlePayload, maybeChannel, maybePayload));
+	});
+var _saschatimme$elm_phoenix$Phoenix$ChannelJoinReply = F4(
+	function (a, b, c, d) {
+		return {ctor: 'ChannelJoinReply', _0: a, _1: b, _2: c, _3: d};
+	});
+var _saschatimme$elm_phoenix$Phoenix$sendJoinHelper = F3(
+	function (endpoint, channels, state) {
+		var _p43 = channels;
+		if (_p43.ctor === '[]') {
+			return _elm_lang$core$Task$succeed(state);
+		} else {
+			var _p44 = _p43._0;
+			var newChannel = A2(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$updateState, _saschatimme$elm_phoenix$Phoenix_Internal_Channel$Joining, _p44);
+			var newChannels = A4(_saschatimme$elm_phoenix$Phoenix_Internal_Helpers$insertIn, endpoint, _p44.channel.topic, newChannel, state.channels);
+			var message = _saschatimme$elm_phoenix$Phoenix_Internal_Channel$joinMessage(_p44);
+			var selfCb = A3(_saschatimme$elm_phoenix$Phoenix$ChannelJoinReply, endpoint, _p44.channel.topic, _p44.state);
+			return A2(
+				_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['<&>'],
+				A4(
+					_saschatimme$elm_phoenix$Phoenix$pushSocket_,
+					endpoint,
+					message,
+					_elm_lang$core$Maybe$Just(selfCb),
+					A2(_saschatimme$elm_phoenix$Phoenix$updateChannels, newChannels, state)),
+				function (newState) {
+					return A3(_saschatimme$elm_phoenix$Phoenix$sendJoinHelper, endpoint, _p43._1, newState);
+				});
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix$handlePhoenixMessage = F4(
+	function (router, endpoint, message, state) {
+		var _p45 = message.event;
+		switch (_p45) {
+			case 'presence_state':
+				var _p46 = A3(_saschatimme$elm_phoenix$Phoenix_Internal_Helpers$getIn, endpoint, message.topic, state.channels);
+				if (_p46.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(state);
+				} else {
+					var _p50 = _p46._0;
+					var newPresenceState = function () {
+						var _p47 = _saschatimme$elm_phoenix$Phoenix_Internal_Presence$decodePresenceState(message.payload);
+						if (_p47.ctor === 'Ok') {
+							return _p47._0;
+						} else {
+							return _p50.presenceState;
+						}
+					}();
+					var updatedChannel = A2(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$updatePresenceState, newPresenceState, _p50);
+					var updatedChannels = A4(_saschatimme$elm_phoenix$Phoenix_Internal_Helpers$insertIn, endpoint, _p50.channel.topic, updatedChannel, state.channels);
+					var sendToApp = function () {
+						var _p48 = _p50.channel.presence;
+						if (_p48.ctor === 'Nothing') {
+							return _elm_lang$core$Task$succeed(
+								{ctor: '_Tuple0'});
+						} else {
+							var _p49 = _p48._0.onChange;
+							if (_p49.ctor === 'Just') {
+								return A2(
+									_elm_lang$core$Platform$sendToApp,
+									router,
+									_p49._0(
+										_saschatimme$elm_phoenix$Phoenix_Internal_Presence$getPresenceState(newPresenceState)));
+							} else {
+								return _elm_lang$core$Task$succeed(
+									{ctor: '_Tuple0'});
+							}
+						}
+					}();
+					return A2(
+						_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+						sendToApp,
+						_elm_lang$core$Task$succeed(
+							A2(_saschatimme$elm_phoenix$Phoenix$updateChannels, updatedChannels, state)));
+				}
+			case 'presence_diff':
+				var _p51 = A3(_saschatimme$elm_phoenix$Phoenix_Internal_Helpers$getIn, endpoint, message.topic, state.channels);
+				if (_p51.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(state);
+				} else {
+					var _p59 = _p51._0;
+					var diffResult = function () {
+						var _p52 = _saschatimme$elm_phoenix$Phoenix_Internal_Presence$decodePresenceDiff(message.payload);
+						if (_p52.ctor === 'Ok') {
+							var _p53 = _p52._0;
+							var newState = A2(_saschatimme$elm_phoenix$Phoenix_Internal_Presence$syncPresenceDiff, _p53, _p59.presenceState);
+							return {
+								newState: newState,
+								joins: _elm_lang$core$Maybe$Just(_p53.joins),
+								leaves: _elm_lang$core$Maybe$Just(_p53.leaves)
+							};
+						} else {
+							return {newState: _p59.presenceState, joins: _elm_lang$core$Maybe$Nothing, leaves: _elm_lang$core$Maybe$Nothing};
+						}
+					}();
+					var updatedChannel = A2(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$updatePresenceState, diffResult.newState, _p59);
+					var updatedChannels = A4(_saschatimme$elm_phoenix$Phoenix_Internal_Helpers$insertIn, endpoint, _p59.channel.topic, updatedChannel, state.channels);
+					var sendToApp = function () {
+						var _p54 = _p59.channel.presence;
+						if (_p54.ctor === 'Nothing') {
+							return _elm_lang$core$Task$succeed(
+								{ctor: '_Tuple0'});
+						} else {
+							var _p58 = _p54._0;
+							var sendOnChange = function () {
+								var _p55 = _p58.onChange;
+								if (_p55.ctor === 'Just') {
+									return A2(
+										_elm_lang$core$Platform$sendToApp,
+										router,
+										_p55._0(
+											_saschatimme$elm_phoenix$Phoenix_Internal_Presence$getPresenceState(diffResult.newState)));
+								} else {
+									return _elm_lang$core$Task$succeed(
+										{ctor: '_Tuple0'});
+								}
+							}();
+							var sendOnLeaves = function () {
+								var _p56 = {ctor: '_Tuple2', _0: _p58.onLeaves, _1: diffResult.leaves};
+								if ((_p56._0.ctor === 'Just') && (_p56._1.ctor === 'Just')) {
+									return A2(
+										_elm_lang$core$Platform$sendToApp,
+										router,
+										_p56._0._0(
+											_saschatimme$elm_phoenix$Phoenix_Internal_Presence$getPresenceState(_p56._1._0)));
+								} else {
+									return _elm_lang$core$Task$succeed(
+										{ctor: '_Tuple0'});
+								}
+							}();
+							var sendOnJoins = function () {
+								var _p57 = {ctor: '_Tuple2', _0: _p58.onJoins, _1: diffResult.joins};
+								if ((_p57._0.ctor === 'Just') && (_p57._1.ctor === 'Just')) {
+									return A2(
+										_elm_lang$core$Platform$sendToApp,
+										router,
+										_p57._0._0(
+											_saschatimme$elm_phoenix$Phoenix_Internal_Presence$getPresenceState(_p57._1._0)));
+								} else {
+									return _elm_lang$core$Task$succeed(
+										{ctor: '_Tuple0'});
+								}
+							}();
+							return A2(
+								_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+								A2(_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'], sendOnJoins, sendOnLeaves),
+								sendOnChange);
+						}
+					}();
+					return A2(
+						_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+						sendToApp,
+						_elm_lang$core$Task$succeed(
+							A2(_saschatimme$elm_phoenix$Phoenix$updateChannels, updatedChannels, state)));
+				}
+			case 'phx_error':
+				var _p60 = A3(_saschatimme$elm_phoenix$Phoenix_Internal_Helpers$getIn, endpoint, message.topic, state.channels);
+				if (_p60.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(state);
+				} else {
+					var _p62 = _p60._0;
+					var sendToApp = function () {
+						var _p61 = _p62.channel.onError;
+						if (_p61.ctor === 'Nothing') {
+							return _elm_lang$core$Task$succeed(
+								{ctor: '_Tuple0'});
+						} else {
+							return A2(_elm_lang$core$Platform$sendToApp, router, _p61._0);
+						}
+					}();
+					var newChannel = A2(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$updateState, _saschatimme$elm_phoenix$Phoenix_Internal_Channel$Errored, _p62);
+					return A2(
+						_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+						sendToApp,
+						A3(
+							_saschatimme$elm_phoenix$Phoenix$sendJoinHelper,
+							endpoint,
+							{
+								ctor: '::',
+								_0: newChannel,
+								_1: {ctor: '[]'}
+							},
+							state));
+				}
+			case 'phx_close':
+				return _elm_lang$core$Task$succeed(state);
+			default:
+				return _elm_lang$core$Task$succeed(state);
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix$rejoinAllChannels = F2(
+	function (endpoint, state) {
+		var _p63 = A2(_elm_lang$core$Dict$get, endpoint, state.channels);
+		if (_p63.ctor === 'Nothing') {
+			return _elm_lang$core$Task$succeed(state);
+		} else {
+			return A3(
+				_saschatimme$elm_phoenix$Phoenix$sendJoinHelper,
+				endpoint,
+				_elm_lang$core$Dict$values(_p63._0),
+				state);
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix$ChannelLeaveReply = F3(
+	function (a, b, c) {
+		return {ctor: 'ChannelLeaveReply', _0: a, _1: b, _2: c};
+	});
+var _saschatimme$elm_phoenix$Phoenix$LeaveChannel = F2(
+	function (a, b) {
+		return {ctor: 'LeaveChannel', _0: a, _1: b};
+	});
+var _saschatimme$elm_phoenix$Phoenix$sendLeaveChannel = F3(
+	function (router, endpoint, internalChannel) {
+		var _p64 = internalChannel.state;
+		if (_p64.ctor === 'Joined') {
+			return A2(
+				_elm_lang$core$Platform$sendToSelf,
+				router,
+				A2(_saschatimme$elm_phoenix$Phoenix$LeaveChannel, endpoint, internalChannel));
+		} else {
+			return _elm_lang$core$Task$succeed(
+				{ctor: '_Tuple0'});
+		}
+	});
+var _saschatimme$elm_phoenix$Phoenix$JoinChannel = F2(
+	function (a, b) {
+		return {ctor: 'JoinChannel', _0: a, _1: b};
+	});
+var _saschatimme$elm_phoenix$Phoenix$sendJoinChannel = F3(
+	function (router, endpoint, internalChannel) {
+		return A2(
+			_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+			A2(
+				_elm_lang$core$Platform$sendToSelf,
+				router,
+				A2(_saschatimme$elm_phoenix$Phoenix$JoinChannel, endpoint, internalChannel)),
+			A2(_saschatimme$elm_phoenix$Phoenix$maybeNotifyApp, router, internalChannel.channel.onRequestJoin));
+	});
+var _saschatimme$elm_phoenix$Phoenix$handleEndpointChannelsUpdate = F4(
+	function (router, endpoint, definedChannels, stateChannels) {
+		var rightStep = F3(
+			function (topic, state, getNewChannels) {
+				return A2(
+					_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+					A3(_saschatimme$elm_phoenix$Phoenix$sendLeaveChannel, router, endpoint, state),
+					getNewChannels);
+			});
+		var bothStep = F4(
+			function (topic, defined, state, getNewChannels) {
+				var channel = A2(
+					_saschatimme$elm_phoenix$Phoenix_Internal_Channel$updateOn,
+					defined.channel.on,
+					A2(_saschatimme$elm_phoenix$Phoenix_Internal_Channel$updatePayload, defined.channel.payload, state));
+				return A2(
+					_elm_lang$core$Task$map,
+					A2(_elm_lang$core$Dict$insert, topic, channel),
+					getNewChannels);
+			});
+		var leftStep = F3(
+			function (topic, defined, getNewChannels) {
+				return A2(
+					_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+					A3(_saschatimme$elm_phoenix$Phoenix$sendJoinChannel, router, endpoint, defined),
+					A2(
+						_elm_lang$core$Task$map,
+						A2(_elm_lang$core$Dict$insert, topic, defined),
+						getNewChannels));
+			});
+		return A6(
+			_elm_lang$core$Dict$merge,
+			leftStep,
+			bothStep,
+			rightStep,
+			definedChannels,
+			stateChannels,
+			_elm_lang$core$Task$succeed(_elm_lang$core$Dict$empty));
+	});
+var _saschatimme$elm_phoenix$Phoenix$handleChannelsUpdate = F3(
+	function (router, nextChannels, previousChannels) {
+		var removedChannelsStep = F3(
+			function (endpoint, stateEndpointChannels, taskChain) {
+				var sendLeave = A3(
+					_elm_lang$core$List$foldl,
+					F2(
+						function (channel, task) {
+							return A2(
+								_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+								task,
+								A3(_saschatimme$elm_phoenix$Phoenix$sendLeaveChannel, router, endpoint, channel));
+						}),
+					_elm_lang$core$Task$succeed(
+						{ctor: '_Tuple0'}),
+					_elm_lang$core$Dict$values(stateEndpointChannels));
+				return A2(_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'], sendLeave, taskChain);
+			});
+		var retainedChannelsStep = F4(
+			function (endpoint, definedEndpointChannels, stateEndpointChannels, taskChain) {
+				var getEndpointChannels = A4(_saschatimme$elm_phoenix$Phoenix$handleEndpointChannelsUpdate, router, endpoint, definedEndpointChannels, stateEndpointChannels);
+				return A3(
+					_elm_lang$core$Task$map2,
+					F2(
+						function (endpointChannels, newChannels) {
+							return A3(_elm_lang$core$Dict$insert, endpoint, endpointChannels, newChannels);
+						}),
+					getEndpointChannels,
+					taskChain);
+			});
+		var addedChannelsStep = F3(
+			function (endpoint, definedEndpointChannels, taskChain) {
+				var insert = function (newChannels) {
+					return _elm_lang$core$Task$succeed(
+						A3(_elm_lang$core$Dict$insert, endpoint, definedEndpointChannels, newChannels));
+				};
+				var sendJoin = A3(
+					_elm_lang$core$List$foldl,
+					F2(
+						function (channel, task) {
+							return A2(
+								_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+								task,
+								A3(_saschatimme$elm_phoenix$Phoenix$sendJoinChannel, router, endpoint, channel));
+						}),
+					_elm_lang$core$Task$succeed(
+						{ctor: '_Tuple0'}),
+					_elm_lang$core$Dict$values(definedEndpointChannels));
+				return A2(
+					_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['<&>'],
+					A2(_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'], sendJoin, taskChain),
+					insert);
+			});
+		return A6(
+			_elm_lang$core$Dict$merge,
+			addedChannelsStep,
+			retainedChannelsStep,
+			removedChannelsStep,
+			nextChannels,
+			previousChannels,
+			_elm_lang$core$Task$succeed(_elm_lang$core$Dict$empty));
+	});
+var _saschatimme$elm_phoenix$Phoenix$Register = {ctor: 'Register'};
+var _saschatimme$elm_phoenix$Phoenix$BadOpen = F2(
+	function (a, b) {
+		return {ctor: 'BadOpen', _0: a, _1: b};
+	});
+var _saschatimme$elm_phoenix$Phoenix$GoodOpen = F2(
+	function (a, b) {
+		return {ctor: 'GoodOpen', _0: a, _1: b};
+	});
+var _saschatimme$elm_phoenix$Phoenix$Die = F2(
+	function (a, b) {
+		return {ctor: 'Die', _0: a, _1: b};
+	});
+var _saschatimme$elm_phoenix$Phoenix$Receive = F2(
+	function (a, b) {
+		return {ctor: 'Receive', _0: a, _1: b};
+	});
+var _saschatimme$elm_phoenix$Phoenix$open = F2(
+	function (socket, router) {
+		var onMessage = F2(
+			function (_p65, msg) {
+				var _p66 = _saschatimme$elm_phoenix$Phoenix_Internal_Message$decode(msg);
+				if (_p66.ctor === 'Ok') {
+					return A2(
+						_elm_lang$core$Platform$sendToSelf,
+						router,
+						A2(
+							_saschatimme$elm_phoenix$Phoenix$Receive,
+							socket.socket.endpoint,
+							A2(_saschatimme$elm_phoenix$Phoenix_Internal_Socket$debugLogMessage, socket, _p66._0)));
+				} else {
+					return _elm_lang$core$Task$succeed(
+						{ctor: '_Tuple0'});
+				}
+			});
+		return A2(
+			_saschatimme$elm_phoenix$Phoenix_Internal_Socket$open,
+			socket,
+			{
+				onMessage: onMessage,
+				onClose: function (details) {
+					return A2(
+						_elm_lang$core$Platform$sendToSelf,
+						router,
+						A2(_saschatimme$elm_phoenix$Phoenix$Die, socket.socket.endpoint, details));
+				}
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix$attemptOpen = F3(
+	function (router, backoff, _p67) {
+		var _p68 = _p67;
+		var _p69 = _p68.socket;
+		var badOpen = function (details) {
+			return A2(
+				_elm_lang$core$Platform$sendToSelf,
+				router,
+				A2(_saschatimme$elm_phoenix$Phoenix$BadOpen, _p69.endpoint, details));
+		};
+		var goodOpen = function (ws) {
+			return A2(
+				_elm_lang$core$Platform$sendToSelf,
+				router,
+				A2(_saschatimme$elm_phoenix$Phoenix$GoodOpen, _p69.endpoint, ws));
+		};
+		var actuallyAttemptOpen = A2(
+			_elm_lang$core$Task$onError,
+			badOpen,
+			A2(
+				_elm_lang$core$Task$andThen,
+				goodOpen,
+				A2(_saschatimme$elm_phoenix$Phoenix$open, _p68, router)));
+		return _elm_lang$core$Process$spawn(
+			A2(
+				_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+				_saschatimme$elm_phoenix$Phoenix$after(backoff),
+				actuallyAttemptOpen));
+	});
+var _saschatimme$elm_phoenix$Phoenix$handleSocketsUpdate = F3(
+	function (router, definedSockets, stateSockets) {
+		var removedSocketsStep = F3(
+			function (endpoint, stateSocket, taskChain) {
+				return A2(
+					_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+					_saschatimme$elm_phoenix$Phoenix_Internal_Socket$close(stateSocket),
+					taskChain);
+			});
+		var retainedSocketsStep = F4(
+			function (endpoint, definedSocket, stateSocket, taskChain) {
+				return A2(
+					_elm_lang$core$Task$map,
+					A2(
+						_elm_lang$core$Dict$insert,
+						endpoint,
+						A2(_saschatimme$elm_phoenix$Phoenix_Internal_Socket$update, definedSocket, stateSocket)),
+					taskChain);
+			});
+		var addedSocketsStep = F3(
+			function (endpoint, definedSocket, taskChain) {
+				var socket = _saschatimme$elm_phoenix$Phoenix_Internal_Socket$internalSocket(definedSocket);
+				return A2(
+					_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['<&>'],
+					taskChain,
+					function (addedSockets) {
+						return A2(
+							_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['<&>'],
+							A3(_saschatimme$elm_phoenix$Phoenix$attemptOpen, router, 0, socket),
+							function (pid) {
+								return _elm_lang$core$Task$succeed(
+									A3(
+										_elm_lang$core$Dict$insert,
+										endpoint,
+										A3(_saschatimme$elm_phoenix$Phoenix_Internal_Socket$opening, 0, pid, socket),
+										addedSockets));
+							});
+					});
+			});
+		return A6(
+			_elm_lang$core$Dict$merge,
+			addedSocketsStep,
+			retainedSocketsStep,
+			removedSocketsStep,
+			definedSockets,
+			stateSockets,
+			_elm_lang$core$Task$succeed(_elm_lang$core$Dict$empty));
+	});
+var _saschatimme$elm_phoenix$Phoenix$onEffects = F4(
+	function (router, cmds, subs, state) {
+		var definedChannels = A2(_saschatimme$elm_phoenix$Phoenix$buildChannelsDict, subs, _elm_lang$core$Dict$empty);
+		var definedSockets = _saschatimme$elm_phoenix$Phoenix$buildSocketsDict(subs);
+		var updateState = function (newState) {
+			var getNewSockets = A3(_saschatimme$elm_phoenix$Phoenix$handleSocketsUpdate, router, definedSockets, newState.sockets);
+			var getNewChannels = A3(_saschatimme$elm_phoenix$Phoenix$handleChannelsUpdate, router, definedChannels, newState.channels);
+			return A3(
+				_elm_lang$core$Task$map2,
+				F2(
+					function (newSockets, newChannels) {
+						return _elm_lang$core$Native_Utils.update(
+							newState,
+							{sockets: newSockets, channels: newChannels});
+					}),
+				getNewSockets,
+				getNewChannels);
+		};
+		return A2(
+			_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['<&>'],
+			A2(_saschatimme$elm_phoenix$Phoenix$sendPushsHelp, cmds, state),
+			function (newState) {
+				return updateState(newState);
+			});
+	});
+var _saschatimme$elm_phoenix$Phoenix$onSelfMsg = F3(
+	function (router, selfMsg, state) {
+		var _p70 = selfMsg;
+		switch (_p70.ctor) {
+			case 'GoodOpen':
+				var _p74 = _p70._0;
+				var _p71 = A2(_saschatimme$elm_phoenix$Phoenix_Internal_Socket$get, _p74, state.sockets);
+				if (_p71.ctor === 'Just') {
+					var _p73 = _p71._0;
+					var state_ = A3(
+						_saschatimme$elm_phoenix$Phoenix$insertSocket,
+						_p74,
+						A2(_saschatimme$elm_phoenix$Phoenix_Internal_Socket$connected, _p70._1, _p73),
+						state);
+					var notifyOnOpen = A2(_saschatimme$elm_phoenix$Phoenix$maybeNotifyApp, router, _p73.socket.onOpen);
+					var _p72 = _p73.socket.debug ? A2(_elm_lang$core$Debug$log, 'WebSocket connected with ', _p74) : _p74;
+					return A2(
+						_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['<&>'],
+						A2(
+							_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+							notifyOnOpen,
+							A3(_saschatimme$elm_phoenix$Phoenix$heartbeat, router, _p74, state_)),
+						_saschatimme$elm_phoenix$Phoenix$rejoinAllChannels(_p74));
+				} else {
+					return _elm_lang$core$Task$succeed(state);
+				}
+			case 'BadOpen':
+				var _p80 = _p70._0;
+				var _p79 = _p70._1;
+				var _p75 = A2(_elm_lang$core$Dict$get, _p80, state.sockets);
+				if (_p75.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(state);
+				} else {
+					var _p78 = _p75._0;
+					var backoffIteration = function () {
+						var _p76 = _p78.connection;
+						if (_p76.ctor === 'Opening') {
+							return _p76._0 + 1;
+						} else {
+							return 0;
+						}
+					}();
+					var backoff = _p78.socket.reconnectTimer(backoffIteration);
+					var newState = function (pid) {
+						return A3(
+							_saschatimme$elm_phoenix$Phoenix$updateSocket,
+							_p80,
+							A3(_saschatimme$elm_phoenix$Phoenix_Internal_Socket$opening, backoffIteration, pid, _p78),
+							state);
+					};
+					var _p77 = _p78.socket.debug ? A2(
+						_elm_lang$core$Debug$log,
+						A2(_elm_lang$core$Basics_ops['++'], 'WebSocket couldn_t connect with ', _p80),
+						_p79) : _p79;
+					return A2(
+						_elm_lang$core$Task$map,
+						newState,
+						A3(_saschatimme$elm_phoenix$Phoenix$attemptOpen, router, backoff, _p78));
+				}
+			case 'Die':
+				var _p86 = _p70._0;
+				var _p85 = _p70._1;
+				var _p81 = A2(_elm_lang$core$Dict$get, _p86, state.sockets);
+				if (_p81.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(state);
+				} else {
+					var _p84 = _p81._0.socket;
+					var _p83 = _p81._0;
+					var notifyOnNormalClose = _elm_lang$core$Native_Utils.eq(_p85.code, 1000) ? A2(_saschatimme$elm_phoenix$Phoenix$maybeNotifyApp, router, _p84.onNormalClose) : _elm_lang$core$Task$succeed(
+						{ctor: '_Tuple0'});
+					var notifyOnClose = A2(
+						_saschatimme$elm_phoenix$Phoenix$maybeNotifyApp,
+						router,
+						A2(
+							_saschatimme$elm_phoenix$Phoenix$maybeAndMap,
+							_elm_lang$core$Maybe$Just(_p85),
+							_p84.onClose));
+					var getNewState = A3(_saschatimme$elm_phoenix$Phoenix$handleChannelDisconnect, router, _p86, state);
+					var backoffIteration = function () {
+						var _p82 = _p81._0.connection;
+						if (_p82.ctor === 'Opening') {
+							return _p82._0 + 1;
+						} else {
+							return 0;
+						}
+					}();
+					var backoff = _p84.reconnectTimer(backoffIteration);
+					var finalNewState = function (pid) {
+						return A2(
+							_elm_lang$core$Task$map,
+							A2(
+								_saschatimme$elm_phoenix$Phoenix$updateSocket,
+								_p86,
+								A3(_saschatimme$elm_phoenix$Phoenix_Internal_Socket$opening, backoffIteration, pid, _p83)),
+							getNewState);
+					};
+					var notifyOnAbnormalClose = _elm_lang$core$Native_Utils.eq(_p85.code, 1006) ? A2(
+						_saschatimme$elm_phoenix$Phoenix$maybeNotifyApp,
+						router,
+						A2(
+							_saschatimme$elm_phoenix$Phoenix$maybeAndMap,
+							_elm_lang$core$Maybe$Just(
+								{reconnectAttempt: backoffIteration, reconnectWait: backoff}),
+							_p84.onAbnormalClose)) : _elm_lang$core$Task$succeed(
+						{ctor: '_Tuple0'});
+					return A2(
+						_elm_lang$core$Task$andThen,
+						finalNewState,
+						A2(
+							_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+							A2(
+								_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+								A2(_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'], notifyOnClose, notifyOnNormalClose),
+								notifyOnAbnormalClose),
+							A3(_saschatimme$elm_phoenix$Phoenix$attemptOpen, router, backoff, _p83)));
+				}
+			case 'Receive':
+				var _p88 = _p70._1;
+				var _p87 = _p70._0;
+				return A2(
+					_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['<&>'],
+					A2(
+						_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+						A4(_saschatimme$elm_phoenix$Phoenix$dispatchMessage, router, _p87, _p88, state.channels),
+						A2(
+							_elm_lang$core$Task$map,
+							function (selfCbs) {
+								return A2(_saschatimme$elm_phoenix$Phoenix$updateSelfCallbacks, selfCbs, state);
+							},
+							A4(_saschatimme$elm_phoenix$Phoenix$handleSelfcallback, router, _p87, _p88, state.selfCallbacks))),
+					A3(_saschatimme$elm_phoenix$Phoenix$handlePhoenixMessage, router, _p87, _p88));
+			case 'ChannelJoinReply':
+				return A2(
+					_elm_lang$core$Task$map,
+					function (newChannels) {
+						return A2(_saschatimme$elm_phoenix$Phoenix$updateChannels, newChannels, state);
+					},
+					A6(_saschatimme$elm_phoenix$Phoenix$handleChannelJoinReply, router, _p70._0, _p70._1, _p70._3, _p70._2, state.channels));
+			case 'JoinChannel':
+				var _p92 = _p70._1;
+				var _p91 = _p70._0;
+				var _p89 = A2(_elm_lang$core$Dict$get, _p91, state.sockets);
+				if (_p89.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(state);
+				} else {
+					var _p90 = _p89._0.connection;
+					if (_p90.ctor === 'Connected') {
+						return A4(
+							_saschatimme$elm_phoenix$Phoenix$pushSocket_,
+							_p91,
+							_saschatimme$elm_phoenix$Phoenix_Internal_Channel$joinMessage(_p92),
+							_elm_lang$core$Maybe$Just(
+								A3(_saschatimme$elm_phoenix$Phoenix$ChannelJoinReply, _p91, _p92.channel.topic, _p92.state)),
+							state);
+					} else {
+						return _elm_lang$core$Task$succeed(state);
+					}
+				}
+			case 'LeaveChannel':
+				var _p96 = _p70._1;
+				var _p95 = _p70._0;
+				var _p93 = A2(_elm_lang$core$Dict$get, _p95, state.sockets);
+				if (_p93.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(state);
+				} else {
+					var _p94 = _p96.state;
+					if (_p94.ctor === 'Joined') {
+						return A4(
+							_saschatimme$elm_phoenix$Phoenix$pushSocket_,
+							_p95,
+							_saschatimme$elm_phoenix$Phoenix_Internal_Channel$leaveMessage(_p96),
+							_elm_lang$core$Maybe$Just(
+								A2(_saschatimme$elm_phoenix$Phoenix$ChannelLeaveReply, _p95, _p96)),
+							state);
+					} else {
+						return _elm_lang$core$Task$succeed(state);
+					}
+				}
+			case 'ChannelLeaveReply':
+				var _p101 = _p70._1.channel;
+				var _p97 = _saschatimme$elm_phoenix$Phoenix_Internal_Helpers$decodeReplyPayload(_p70._2.payload);
+				if (_p97.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(state);
+				} else {
+					var _p98 = _p97._0;
+					if (_p98.ctor === 'Err') {
+						var _p99 = _p101.onLeaveError;
+						if (_p99.ctor === 'Nothing') {
+							return _elm_lang$core$Task$succeed(state);
+						} else {
+							return A2(
+								_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+								A2(
+									_elm_lang$core$Platform$sendToApp,
+									router,
+									_p99._0(_p98._0)),
+								_elm_lang$core$Task$succeed(state));
+						}
+					} else {
+						var _p100 = _p101.onLeave;
+						if (_p100.ctor === 'Nothing') {
+							return _elm_lang$core$Task$succeed(state);
+						} else {
+							return A2(
+								_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+								A2(
+									_elm_lang$core$Platform$sendToApp,
+									router,
+									_p100._0(_p98._0)),
+								_elm_lang$core$Task$succeed(state));
+						}
+					}
+				}
+			case 'SendHeartbeat':
+				return A3(_saschatimme$elm_phoenix$Phoenix$heartbeat, router, _p70._0, state);
+			case 'GoodJoin':
+				var _p104 = _p70._1;
+				var _p103 = _p70._0;
+				var _p102 = A3(_saschatimme$elm_phoenix$Phoenix_Internal_Helpers$getIn, _p103, _p104, state.channelQueues);
+				if (_p102.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(state);
+				} else {
+					return A2(
+						_elm_lang$core$Task$map,
+						A2(_saschatimme$elm_phoenix$Phoenix$removeChannelQueue, _p103, _p104),
+						A3(_saschatimme$elm_phoenix$Phoenix$processQueue, _p103, _p102._0, state));
+				}
+			case 'PushResponse':
+				var _p109 = _p70._0;
+				var _p105 = _saschatimme$elm_phoenix$Phoenix_Internal_Helpers$decodeReplyPayload(_p70._1.payload);
+				if (_p105.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(state);
+				} else {
+					var _p106 = _p105._0;
+					if (_p106.ctor === 'Err') {
+						var _p107 = _p109.onError;
+						if (_p107.ctor === 'Nothing') {
+							return _elm_lang$core$Task$succeed(state);
+						} else {
+							return A2(
+								_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+								A2(
+									_elm_lang$core$Platform$sendToApp,
+									router,
+									_p107._0(_p106._0)),
+								_elm_lang$core$Task$succeed(state));
+						}
+					} else {
+						var _p108 = _p109.onOk;
+						if (_p108.ctor === 'Nothing') {
+							return _elm_lang$core$Task$succeed(state);
+						} else {
+							return A2(
+								_saschatimme$elm_phoenix$Phoenix_Internal_Helpers_ops['&>'],
+								A2(
+									_elm_lang$core$Platform$sendToApp,
+									router,
+									_p108._0(_p106._0)),
+								_elm_lang$core$Task$succeed(state));
+						}
+					}
+				}
+			default:
+				return _elm_lang$core$Task$succeed(state);
+		}
+	});
+_elm_lang$core$Native_Platform.effectManagers['Phoenix'] = {pkg: 'saschatimme/elm-phoenix', init: _saschatimme$elm_phoenix$Phoenix$init, onEffects: _saschatimme$elm_phoenix$Phoenix$onEffects, onSelfMsg: _saschatimme$elm_phoenix$Phoenix$onSelfMsg, tag: 'fx', cmdMap: _saschatimme$elm_phoenix$Phoenix$cmdMap, subMap: _saschatimme$elm_phoenix$Phoenix$subMap};
+
 var _user$project$Overdrive$printMomentum = function (m) {
 	return (!_elm_lang$core$Native_Utils.eq(m.element, '')) ? ((!_elm_lang$core$Native_Utils.eq(m.strength, 0)) ? A2(
 		_elm_lang$core$Basics_ops['++'],
@@ -19756,56 +22234,187 @@ var _user$project$Overdrive$printMomentum = function (m) {
 			' +',
 			_elm_lang$core$Basics$toString(m.strength))) : m.element) : '';
 };
-var _user$project$Overdrive$Momentum = F3(
-	function (a, b, c) {
-		return {element: a, strength: b, id: c};
+var _user$project$Overdrive$lobbySocket = 'ws://gaius.ddns.net:4000/socket/websocket';
+var _user$project$Overdrive$roundDownToSecond = function (ms) {
+	return _elm_lang$core$Basics$toFloat(
+		A2(
+			F2(
+				function (x, y) {
+					return x * y;
+				}),
+			1000,
+			_elm_lang$core$Basics$truncate(ms / 1000)));
+};
+var _user$project$Overdrive$Momentum = F2(
+	function (a, b) {
+		return {element: a, strength: b};
 	});
-var _user$project$Overdrive$model = {
+var _user$project$Overdrive$momentumDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (element, strength) {
+			return A4(_elm_lang$core$Debug$log, 'momentum decoded: ', _user$project$Overdrive$Momentum, element, strength);
+		}),
+	A2(_elm_lang$core$Json_Decode$field, 'element', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'strength', _elm_lang$core$Json_Decode$float));
+var _user$project$Overdrive$momentaDecoder = A2(
+	_elm_lang$core$Json_Decode$at,
+	{
+		ctor: '::',
+		_0: 'momenta',
+		_1: {ctor: '[]'}
+	},
+	_elm_lang$core$Json_Decode$list(_user$project$Overdrive$momentumDecoder));
+var _user$project$Overdrive$Model = F5(
+	function (a, b, c, d, e) {
+		return {momenta: a, selectedMomentum: b, connectionStatus: c, currentTime: d, mdl: e};
+	});
+var _user$project$Overdrive$ScheduledReconnect = function (a) {
+	return {ctor: 'ScheduledReconnect', _0: a};
+};
+var _user$project$Overdrive$Disconnected = {ctor: 'Disconnected'};
+var _user$project$Overdrive$init = {
 	momenta: {ctor: '[]'},
-	selectedMomentum: A3(_user$project$Overdrive$Momentum, '', 0, 0),
-	momentumIndex: 1,
+	selectedMomentum: A2(_user$project$Overdrive$Momentum, '', 0),
+	connectionStatus: _user$project$Overdrive$Disconnected,
+	currentTime: 0,
 	mdl: _debois$elm_mdl$Material$model
 };
-var _user$project$Overdrive$Model = F4(
-	function (a, b, c, d) {
-		return {momenta: a, selectedMomentum: b, momentumIndex: c, mdl: d};
-	});
+var _user$project$Overdrive$Connected = {ctor: 'Connected'};
+var _user$project$Overdrive$ConnectionStatusChanged = function (a) {
+	return {ctor: 'ConnectionStatusChanged', _0: a};
+};
+var _user$project$Overdrive$SocketClosedAbnormally = function (a) {
+	return {ctor: 'SocketClosedAbnormally', _0: a};
+};
+var _user$project$Overdrive$socket = A2(
+	_saschatimme$elm_phoenix$Phoenix_Socket$reconnectTimer,
+	function (backoffIteration) {
+		return _elm_lang$core$Basics$toFloat((backoffIteration + 1) * 5000);
+	},
+	A2(
+		_saschatimme$elm_phoenix$Phoenix_Socket$onAbnormalClose,
+		_user$project$Overdrive$SocketClosedAbnormally,
+		A2(
+			_saschatimme$elm_phoenix$Phoenix_Socket$onClose,
+			function (_p0) {
+				return _user$project$Overdrive$ConnectionStatusChanged(_user$project$Overdrive$Disconnected);
+			},
+			A2(
+				_saschatimme$elm_phoenix$Phoenix_Socket$onOpen,
+				_user$project$Overdrive$ConnectionStatusChanged(_user$project$Overdrive$Connected),
+				_saschatimme$elm_phoenix$Phoenix_Socket$init(_user$project$Overdrive$lobbySocket)))));
+var _user$project$Overdrive$MomentumUpdate = function (a) {
+	return {ctor: 'MomentumUpdate', _0: a};
+};
+var _user$project$Overdrive$lobby = function (userName) {
+	return _saschatimme$elm_phoenix$Phoenix_Channel$withDebug(
+		A3(
+			_saschatimme$elm_phoenix$Phoenix_Channel$on,
+			'momentum_update',
+			function (msg) {
+				return _user$project$Overdrive$MomentumUpdate(msg);
+			},
+			A2(
+				_saschatimme$elm_phoenix$Phoenix_Channel$withPayload,
+				_elm_lang$core$Json_Encode$object(
+					{
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'user_name',
+							_1: _elm_lang$core$Json_Encode$string('foobie')
+						},
+						_1: {ctor: '[]'}
+					}),
+				_saschatimme$elm_phoenix$Phoenix_Channel$init('room:lobby'))));
+};
+var _user$project$Overdrive$phoenixSubscription = function (model) {
+	return A2(
+		_saschatimme$elm_phoenix$Phoenix$connect,
+		_user$project$Overdrive$socket,
+		{
+			ctor: '::',
+			_0: _user$project$Overdrive$lobby('foobie'),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Overdrive$Tick = function (a) {
+	return {ctor: 'Tick', _0: a};
+};
+var _user$project$Overdrive$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$batch(
+		{
+			ctor: '::',
+			_0: _user$project$Overdrive$phoenixSubscription(model),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second, _user$project$Overdrive$Tick),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$Overdrive$Mdl = function (a) {
 	return {ctor: 'Mdl', _0: a};
 };
 var _user$project$Overdrive$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
-			case 'Add':
-				return _elm_lang$core$Native_Utils.eq(model.selectedMomentum.element, '') ? {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none} : {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+		var _p1 = msg;
+		switch (_p1.ctor) {
+			case 'AddMomentum':
+				var push = A2(
+					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
+					_elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'element',
+								_1: _elm_lang$core$Json_Encode$string(model.selectedMomentum.element)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'strength',
+									_1: _elm_lang$core$Json_Encode$float(model.selectedMomentum.strength)
+								},
+								_1: {ctor: '[]'}
+							}
+						}),
+					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'new_momentum'));
+				return _elm_lang$core$Native_Utils.eq(model.selectedMomentum.element, '') ? {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none} : A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							momenta: {ctor: '::', _0: model.selectedMomentum, _1: model.momenta},
-							selectedMomentum: A3(_user$project$Overdrive$Momentum, '', 0, model.momentumIndex),
-							momentumIndex: model.momentumIndex + 1
+							selectedMomentum: A2(_user$project$Overdrive$Momentum, '', 0)
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'Clear':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							momenta: {ctor: '[]'}
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+					{
+						ctor: '::',
+						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
+						_1: {ctor: '[]'}
+					});
+			case 'ClearMomentum':
+				var push = A2(
+					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
+					_elm_lang$core$Json_Encode$null,
+					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'clear_momentum'));
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{
+						ctor: '::',
+						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
+						_1: {ctor: '[]'}
+					});
 			case 'SetMomentumType':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedMomentum: A3(_user$project$Overdrive$Momentum, _p0._0, model.selectedMomentum.strength, model.momentumIndex)
+							selectedMomentum: A2(_user$project$Overdrive$Momentum, _p1._0, model.selectedMomentum.strength)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -19815,27 +22424,87 @@ var _user$project$Overdrive$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedMomentum: A3(_user$project$Overdrive$Momentum, model.selectedMomentum.element, _p0._0, model.momentumIndex)
+							selectedMomentum: A2(_user$project$Overdrive$Momentum, model.selectedMomentum.element, _p1._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'Remove':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+			case 'RemoveMomentum':
+				var _p2 = _p1._0;
+				var push = A2(
+					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
+					_elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'element',
+								_1: _elm_lang$core$Json_Encode$string(_p2.element)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'strength',
+									_1: _elm_lang$core$Json_Encode$float(_p2.strength)
+								},
+								_1: {ctor: '[]'}
+							}
+						}),
+					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'remove_momentum'));
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{
+						ctor: '::',
+						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
+						_1: {ctor: '[]'}
+					});
+			case 'Mdl':
+				return A3(_debois$elm_mdl$Material$update, _user$project$Overdrive$Mdl, _p1._0, model);
+			case 'MomentumUpdate':
+				var _p3 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$momentaDecoder, _p1._0);
+				if (_p3.ctor === 'Ok') {
+					var _p5 = _p3._0;
+					var _p4 = A2(_elm_lang$core$Debug$log, 'ok', _p5);
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{momenta: _p5}),
+						{ctor: '[]'});
+				} else {
+					var _p6 = A2(_elm_lang$core$Debug$log, 'err', _p3._0);
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						{ctor: '[]'});
+				}
+			case 'SocketClosedAbnormally':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							momenta: A2(
-								_elm_lang$core$List$filter,
-								function (m) {
-									return !_elm_lang$core$Native_Utils.eq(m.id, _p0._0);
-								},
-								model.momenta)
+							connectionStatus: _user$project$Overdrive$ScheduledReconnect(
+								{
+									time: _user$project$Overdrive$roundDownToSecond(model.currentTime + _p1._0.reconnectWait)
+								})
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+					{ctor: '[]'});
+			case 'ConnectionStatusChanged':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{connectionStatus: _p1._0}),
+					{ctor: '[]'});
 			default:
-				return A3(_debois$elm_mdl$Material$update, _user$project$Overdrive$Mdl, _p0._0, model);
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{currentTime: _p1._0}),
+					{ctor: '[]'});
 		}
 	});
 var _user$project$Overdrive$SetMomentumStrength = function (a) {
@@ -19979,9 +22648,9 @@ var _user$project$Overdrive$addMomentumInput = function (model) {
 			}
 		});
 };
-var _user$project$Overdrive$Clear = {ctor: 'Clear'};
-var _user$project$Overdrive$Remove = function (a) {
-	return {ctor: 'Remove', _0: a};
+var _user$project$Overdrive$ClearMomentum = {ctor: 'ClearMomentum'};
+var _user$project$Overdrive$RemoveMomentum = function (a) {
+	return {ctor: 'RemoveMomentum', _0: a};
 };
 var _user$project$Overdrive$toChip = function (momentum) {
 	return A2(
@@ -19995,7 +22664,7 @@ var _user$project$Overdrive$toChip = function (momentum) {
 				_1: {
 					ctor: '::',
 					_0: _debois$elm_mdl$Material_Chip$deleteClick(
-						_user$project$Overdrive$Remove(momentum.id)),
+						_user$project$Overdrive$RemoveMomentum(momentum)),
 					_1: {ctor: '[]'}
 				}
 			}
@@ -20031,7 +22700,7 @@ var _user$project$Overdrive$renderMomenta = function (momenta) {
 			}
 		});
 };
-var _user$project$Overdrive$Add = {ctor: 'Add'};
+var _user$project$Overdrive$AddMomentum = {ctor: 'AddMomentum'};
 var _user$project$Overdrive$view = function (model) {
 	return _debois$elm_mdl$Material_Scheme$top(
 		A2(
@@ -20061,7 +22730,7 @@ var _user$project$Overdrive$view = function (model) {
 									model.mdl,
 									{
 										ctor: '::',
-										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$Add),
+										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$AddMomentum),
 										_1: {ctor: '[]'}
 									},
 									{
@@ -20094,7 +22763,7 @@ var _user$project$Overdrive$view = function (model) {
 									model.mdl,
 									{
 										ctor: '::',
-										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$Clear),
+										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$ClearMomentum),
 										_1: {ctor: '[]'}
 									},
 									{
@@ -20111,16 +22780,16 @@ var _user$project$Overdrive$view = function (model) {
 };
 var _user$project$Overdrive$main = _elm_lang$html$Html$program(
 	{
-		init: {ctor: '_Tuple2', _0: _user$project$Overdrive$model, _1: _elm_lang$core$Platform_Cmd$none},
+		init: {ctor: '_Tuple2', _0: _user$project$Overdrive$init, _1: _elm_lang$core$Platform_Cmd$none},
 		view: _user$project$Overdrive$view,
-		subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
+		subscriptions: _user$project$Overdrive$subscriptions,
 		update: _user$project$Overdrive$update
 	})();
 
 var Elm = {};
 Elm['Overdrive'] = Elm['Overdrive'] || {};
 if (typeof _user$project$Overdrive$main !== 'undefined') {
-    _user$project$Overdrive$main(Elm['Overdrive'], 'Overdrive', {"types":{"message":"Overdrive.Msg","aliases":{"Material.Msg":{"type":"Material.Component.Msg Material.Button.Msg Material.Textfield.Msg (Material.Menu.Msg m) Material.Layout.Msg Material.Toggles.Msg Material.Tooltip.Msg Material.Tabs.Msg (List m)","args":["m"]},"Material.Menu.Geometry.Element":{"type":"{ offsetTop : Float , offsetLeft : Float , offsetHeight : Float , bounds : DOM.Rectangle }","args":[]},"Material.Menu.Geometry.Geometry":{"type":"{ button : Material.Menu.Geometry.Element , menu : Material.Menu.Geometry.Element , container : Material.Menu.Geometry.Element , offsetTops : List Float , offsetHeights : List Float }","args":[]},"DOM.Rectangle":{"type":"{ top : Float, left : Float, width : Float, height : Float }","args":[]},"Material.Layout.TabScrollState":{"type":"{ canScrollLeft : Bool , canScrollRight : Bool , width : Maybe.Maybe Int }","args":[]},"Material.Button.Msg":{"type":"Material.Ripple.Msg","args":[]},"Material.Menu.ItemConfig":{"type":"{ enabled : Bool, divider : Bool, onSelect : Maybe.Maybe m }","args":["m"]},"Html.Attribute":{"type":"VirtualDom.Property msg","args":["msg"]},"Material.Tooltip.DOMState":{"type":"{ rect : DOM.Rectangle, offsetWidth : Float, offsetHeight : Float }","args":[]},"Material.Component.Index":{"type":"List Int","args":[]},"Html.Events.Options":{"type":"{ stopPropagation : Bool, preventDefault : Bool }","args":[]},"Material.Ripple.DOMState":{"type":"{ rect : DOM.Rectangle , clientX : Maybe.Maybe Float , clientY : Maybe.Maybe Float , touchX : Maybe.Maybe Float , touchY : Maybe.Maybe Float , type_ : String }","args":[]},"Material.Options.Internal.Summary":{"type":"{ classes : List String , css : List ( String, String ) , attrs : List (Html.Attribute m) , internal : List (Html.Attribute m) , dispatch : Material.Dispatch.Config m , config : c }","args":["c","m"]},"Mouse.Position":{"type":"{ x : Int, y : Int }","args":[]}},"unions":{"Material.Tooltip.Msg":{"tags":{"Leave":[],"Enter":["Material.Tooltip.DOMState"]},"args":[]},"Json.Decode.Decoder":{"tags":{"Decoder":[]},"args":["a"]},"Material.Textfield.Msg":{"tags":{"Focus":[],"Input":["String"],"Blur":[]},"args":[]},"Material.Layout.Msg":{"tags":{"ScrollPane":["Bool","Float"],"ScrollTab":["Material.Layout.TabScrollState"],"Ripple":["Int","Material.Ripple.Msg"],"TransitionHeader":["{ toCompact : Bool, fixedHeader : Bool }"],"NOP":[],"Resize":["Int"],"ToggleDrawer":[],"TransitionEnd":[]},"args":[]},"Material.Toggles.Msg":{"tags":{"Ripple":["Material.Ripple.Msg"],"SetFocus":["Bool"]},"args":[]},"Material.Tabs.Msg":{"tags":{"Ripple":["Int","Material.Ripple.Msg"]},"args":[]},"VirtualDom.Property":{"tags":{"Property":[]},"args":["msg"]},"Material.Dispatch.Config":{"tags":{"Config":["{ decoders : List ( String , ( Json.Decode.Decoder msg, Maybe.Maybe Html.Events.Options ) ) , lift : Maybe.Maybe (Json.Decode.Decoder (List msg) -> Json.Decode.Decoder msg) }"]},"args":["msg"]},"Material.Menu.Msg":{"tags":{"Open":["Material.Menu.Geometry.Geometry"],"Key":["List (Material.Options.Internal.Summary (Material.Menu.ItemConfig m) m)","Int"],"Ripple":["Int","Material.Ripple.Msg"],"Select":["Int","Maybe.Maybe m"],"Click":["Mouse.Position"],"Tick":[],"Close":[]},"args":["m"]},"Material.Component.Msg":{"tags":{"ButtonMsg":["Material.Component.Index","button"],"MenuMsg":["Material.Component.Index","menu"],"TabsMsg":["Material.Component.Index","tabs"],"Dispatch":["dispatch"],"TextfieldMsg":["Material.Component.Index","textfield"],"TooltipMsg":["Material.Component.Index","tooltip"],"TogglesMsg":["Material.Component.Index","toggles"],"LayoutMsg":["layout"]},"args":["button","textfield","menu","layout","toggles","tooltip","tabs","dispatch"]},"Overdrive.Msg":{"tags":{"SetMomentumType":["String"],"Mdl":["Material.Msg Overdrive.Msg"],"SetMomentumStrength":["Float"],"Remove":["Int"],"Add":[],"Clear":[]},"args":[]},"Material.Ripple.Msg":{"tags":{"Down":["Material.Ripple.DOMState"],"Tick":[],"Up":[]},"args":[]},"Maybe.Maybe":{"tags":{"Nothing":[],"Just":["a"]},"args":["a"]}}},"versions":{"elm":"0.18.0"}});
+    _user$project$Overdrive$main(Elm['Overdrive'], 'Overdrive', {"types":{"message":"Overdrive.Msg","aliases":{"Material.Msg":{"type":"Material.Component.Msg Material.Button.Msg Material.Textfield.Msg (Material.Menu.Msg m) Material.Layout.Msg Material.Toggles.Msg Material.Tooltip.Msg Material.Tabs.Msg (List m)","args":["m"]},"Json.Decode.Value":{"type":"Json.Encode.Value","args":[]},"Material.Menu.Geometry.Element":{"type":"{ offsetTop : Float , offsetLeft : Float , offsetHeight : Float , bounds : DOM.Rectangle }","args":[]},"Time.Time":{"type":"Float","args":[]},"Material.Menu.Geometry.Geometry":{"type":"{ button : Material.Menu.Geometry.Element , menu : Material.Menu.Geometry.Element , container : Material.Menu.Geometry.Element , offsetTops : List Float , offsetHeights : List Float }","args":[]},"Phoenix.Socket.AbnormalClose":{"type":"{ reconnectAttempt : Int, reconnectWait : Time.Time }","args":[]},"DOM.Rectangle":{"type":"{ top : Float, left : Float, width : Float, height : Float }","args":[]},"Material.Layout.TabScrollState":{"type":"{ canScrollLeft : Bool , canScrollRight : Bool , width : Maybe.Maybe Int }","args":[]},"Material.Button.Msg":{"type":"Material.Ripple.Msg","args":[]},"Overdrive.Momentum":{"type":"{ element : String, strength : Float }","args":[]},"Material.Menu.ItemConfig":{"type":"{ enabled : Bool, divider : Bool, onSelect : Maybe.Maybe m }","args":["m"]},"Html.Attribute":{"type":"VirtualDom.Property msg","args":["msg"]},"Material.Tooltip.DOMState":{"type":"{ rect : DOM.Rectangle, offsetWidth : Float, offsetHeight : Float }","args":[]},"Material.Component.Index":{"type":"List Int","args":[]},"Html.Events.Options":{"type":"{ stopPropagation : Bool, preventDefault : Bool }","args":[]},"Material.Ripple.DOMState":{"type":"{ rect : DOM.Rectangle , clientX : Maybe.Maybe Float , clientY : Maybe.Maybe Float , touchX : Maybe.Maybe Float , touchY : Maybe.Maybe Float , type_ : String }","args":[]},"Material.Options.Internal.Summary":{"type":"{ classes : List String , css : List ( String, String ) , attrs : List (Html.Attribute m) , internal : List (Html.Attribute m) , dispatch : Material.Dispatch.Config m , config : c }","args":["c","m"]},"Mouse.Position":{"type":"{ x : Int, y : Int }","args":[]}},"unions":{"Material.Tooltip.Msg":{"tags":{"Leave":[],"Enter":["Material.Tooltip.DOMState"]},"args":[]},"Json.Decode.Decoder":{"tags":{"Decoder":[]},"args":["a"]},"Material.Textfield.Msg":{"tags":{"Focus":[],"Input":["String"],"Blur":[]},"args":[]},"Material.Layout.Msg":{"tags":{"ScrollPane":["Bool","Float"],"ScrollTab":["Material.Layout.TabScrollState"],"Ripple":["Int","Material.Ripple.Msg"],"TransitionHeader":["{ toCompact : Bool, fixedHeader : Bool }"],"NOP":[],"Resize":["Int"],"ToggleDrawer":[],"TransitionEnd":[]},"args":[]},"Material.Toggles.Msg":{"tags":{"Ripple":["Material.Ripple.Msg"],"SetFocus":["Bool"]},"args":[]},"Material.Tabs.Msg":{"tags":{"Ripple":["Int","Material.Ripple.Msg"]},"args":[]},"VirtualDom.Property":{"tags":{"Property":[]},"args":["msg"]},"Material.Dispatch.Config":{"tags":{"Config":["{ decoders : List ( String , ( Json.Decode.Decoder msg, Maybe.Maybe Html.Events.Options ) ) , lift : Maybe.Maybe (Json.Decode.Decoder (List msg) -> Json.Decode.Decoder msg) }"]},"args":["msg"]},"Material.Menu.Msg":{"tags":{"Open":["Material.Menu.Geometry.Geometry"],"Key":["List (Material.Options.Internal.Summary (Material.Menu.ItemConfig m) m)","Int"],"Ripple":["Int","Material.Ripple.Msg"],"Select":["Int","Maybe.Maybe m"],"Click":["Mouse.Position"],"Tick":[],"Close":[]},"args":["m"]},"Json.Encode.Value":{"tags":{"Value":[]},"args":[]},"Material.Component.Msg":{"tags":{"ButtonMsg":["Material.Component.Index","button"],"MenuMsg":["Material.Component.Index","menu"],"TabsMsg":["Material.Component.Index","tabs"],"Dispatch":["dispatch"],"TextfieldMsg":["Material.Component.Index","textfield"],"TooltipMsg":["Material.Component.Index","tooltip"],"TogglesMsg":["Material.Component.Index","toggles"],"LayoutMsg":["layout"]},"args":["button","textfield","menu","layout","toggles","tooltip","tabs","dispatch"]},"Overdrive.Msg":{"tags":{"SetMomentumType":["String"],"SocketClosedAbnormally":["Phoenix.Socket.AbnormalClose"],"Mdl":["Material.Msg Overdrive.Msg"],"ConnectionStatusChanged":["Overdrive.ConnectionStatus"],"MomentumUpdate":["Json.Decode.Value"],"SetMomentumStrength":["Float"],"Tick":["Time.Time"],"RemoveMomentum":["Overdrive.Momentum"],"AddMomentum":[],"ClearMomentum":[]},"args":[]},"Material.Ripple.Msg":{"tags":{"Down":["Material.Ripple.DOMState"],"Tick":[],"Up":[]},"args":[]},"Overdrive.ConnectionStatus":{"tags":{"ScheduledReconnect":["{ time : Time.Time }"],"Connected":[],"Disconnected":[]},"args":[]},"Maybe.Maybe":{"tags":{"Nothing":[],"Just":["a"]},"args":["a"]}}},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])
