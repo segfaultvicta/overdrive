@@ -7,6 +7,22 @@ var _user$project$Overdrive$printMomentum = function (m) {
 			' +',
 			_elm_lang$core$Basics$toString(m.strength))) : m.element) : '';
 };
+var _user$project$Overdrive$renderStatus = function (actor) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('No Statuses'),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Overdrive$statDiv = F2(
+	function (c, m) {
+		return _elm_lang$core$Basics$toString(
+			_elm_lang$core$Basics$round(
+				(_elm_lang$core$Basics$toFloat(c) / _elm_lang$core$Basics$toFloat(m)) * 100));
+	});
 var _user$project$Overdrive$lobbySocket = 'ws://gaius.ddns.net:4000/socket/websocket';
 var _user$project$Overdrive$roundDownToSecond = function (ms) {
 	return _elm_lang$core$Basics$toFloat(
@@ -22,14 +38,22 @@ var _user$project$Overdrive$Momentum = F2(
 	function (a, b) {
 		return {element: a, strength: b};
 	});
-var _user$project$Overdrive$momentumDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	F2(
-		function (element, strength) {
-			return A4(_elm_lang$core$Debug$log, 'momentum decoded: ', _user$project$Overdrive$Momentum, element, strength);
+var _user$project$Overdrive$MomentumWithActor = F2(
+	function (a, b) {
+		return {momentum: a, actor: b};
+	});
+var _user$project$Overdrive$momentumDecoder = A4(
+	_elm_lang$core$Json_Decode$map3,
+	F3(
+		function (element, strength, actor) {
+			return A2(
+				_user$project$Overdrive$MomentumWithActor,
+				A2(_user$project$Overdrive$Momentum, element, strength),
+				actor);
 		}),
 	A2(_elm_lang$core$Json_Decode$field, 'element', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'strength', _elm_lang$core$Json_Decode$float));
+	A2(_elm_lang$core$Json_Decode$field, 'strength', _elm_lang$core$Json_Decode$float),
+	A2(_elm_lang$core$Json_Decode$field, 'actor', _elm_lang$core$Json_Decode$string));
 var _user$project$Overdrive$momentaDecoder = A2(
 	_elm_lang$core$Json_Decode$at,
 	{
@@ -38,22 +62,196 @@ var _user$project$Overdrive$momentaDecoder = A2(
 		_1: {ctor: '[]'}
 	},
 	_elm_lang$core$Json_Decode$list(_user$project$Overdrive$momentumDecoder));
-var _user$project$Overdrive$Model = F5(
-	function (a, b, c, d, e) {
-		return {momenta: a, selectedMomentum: b, connectionStatus: c, currentTime: d, mdl: e};
+var _user$project$Overdrive$Actor = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return function (l) {
+												return {name: a, currentHP: b, maxHP: c, currentMP: d, maxMP: e, currentLP: f, maxLP: g, currentDrive: h, maxDrive: i, initBase: j, row: k, status: l};
+											};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _user$project$Overdrive$Status = F4(
+	function (a, b, c, d) {
+		return {status: a, duration: b, level: c, meta: d};
 	});
+var _user$project$Overdrive$statusDecoder = A5(
+	_elm_lang$core$Json_Decode$map4,
+	F4(
+		function (status, duration, level, meta) {
+			return A4(_user$project$Overdrive$Status, status, duration, level, meta);
+		}),
+	A2(_elm_lang$core$Json_Decode$field, 'status', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'duration', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'level', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'meta', _elm_lang$core$Json_Decode$string));
+var _user$project$Overdrive$Model = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return function (l) {
+												return {momenta: a, enemyMomenta: b, selectedMomentum: c, selectedEnemyMomentum: d, enemies: e, players: f, selectedActorIdx: g, selectedActor: h, connectionStatus: i, currentTime: j, mdl: k, raised: l};
+											};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _user$project$Overdrive$ActorsListContainer = F2(
+	function (a, b) {
+		return {players: a, enemies: b};
+	});
+var _user$project$Overdrive$Back = {ctor: 'Back'};
+var _user$project$Overdrive$Front = {ctor: 'Front'};
+var _user$project$Overdrive$rowDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	function (row) {
+		return _elm_lang$core$Native_Utils.eq(row, 'Front') ? _user$project$Overdrive$Front : _user$project$Overdrive$Back;
+	},
+	_elm_lang$core$Json_Decode$string);
+var _user$project$Overdrive$actorDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'statuses',
+	_elm_lang$core$Json_Decode$list(_user$project$Overdrive$statusDecoder),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'row',
+		_user$project$Overdrive$rowDecoder,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'initBase',
+			_elm_lang$core$Json_Decode$int,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'maxDrive',
+				_elm_lang$core$Json_Decode$int,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'currDrive',
+					_elm_lang$core$Json_Decode$int,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'maxLP',
+						_elm_lang$core$Json_Decode$int,
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'currLP',
+							_elm_lang$core$Json_Decode$int,
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'maxMP',
+								_elm_lang$core$Json_Decode$int,
+								A3(
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+									'currMP',
+									_elm_lang$core$Json_Decode$int,
+									A3(
+										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+										'maxHP',
+										_elm_lang$core$Json_Decode$int,
+										A3(
+											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+											'currHP',
+											_elm_lang$core$Json_Decode$int,
+											A3(
+												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+												'name',
+												_elm_lang$core$Json_Decode$string,
+												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Overdrive$Actor)))))))))))));
+var _user$project$Overdrive$actorListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Overdrive$actorDecoder);
+var _user$project$Overdrive$actorsDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (players, enemies) {
+			return A2(_user$project$Overdrive$ActorsListContainer, players, enemies);
+		}),
+	A2(_elm_lang$core$Json_Decode$field, 'players', _user$project$Overdrive$actorListDecoder),
+	A2(_elm_lang$core$Json_Decode$field, 'enemies', _user$project$Overdrive$actorListDecoder));
 var _user$project$Overdrive$ScheduledReconnect = function (a) {
 	return {ctor: 'ScheduledReconnect', _0: a};
 };
 var _user$project$Overdrive$Disconnected = {ctor: 'Disconnected'};
 var _user$project$Overdrive$init = {
 	momenta: {ctor: '[]'},
+	enemyMomenta: {ctor: '[]'},
 	selectedMomentum: A2(_user$project$Overdrive$Momentum, '', 0),
+	selectedEnemyMomentum: A2(_user$project$Overdrive$Momentum, '', 0),
+	players: {ctor: '[]'},
+	enemies: {ctor: '[]'},
+	selectedActorIdx: -1,
+	selectedActor: _user$project$Overdrive$Actor('Error')(0)(0)(0)(0)(0)(0)(0)(0)(0)(_user$project$Overdrive$Back)(
+		{ctor: '[]'}),
 	connectionStatus: _user$project$Overdrive$Disconnected,
 	currentTime: 0,
-	mdl: _debois$elm_mdl$Material$model
+	mdl: _debois$elm_mdl$Material$model,
+	raised: -1
 };
 var _user$project$Overdrive$Connected = {ctor: 'Connected'};
+var _user$project$Overdrive$Enemy = {ctor: 'Enemy'};
+var _user$project$Overdrive$Player = {ctor: 'Player'};
+var _user$project$Overdrive$renderStat = F5(
+	function (model, label, currentStat, maxStat, actortype) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? _elm_lang$html$Html$text(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						label,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'   ',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(currentStat),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'/',
+									_elm_lang$core$Basics$toString(maxStat)))))) : _elm_lang$html$Html$text(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						label,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'   ',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								A2(_user$project$Overdrive$statDiv, currentStat, maxStat),
+								'%')))),
+				_1: {ctor: '[]'}
+			});
+	});
 var _user$project$Overdrive$ConnectionStatusChanged = function (a) {
 	return {ctor: 'ConnectionStatusChanged', _0: a};
 };
@@ -77,6 +275,9 @@ var _user$project$Overdrive$socket = A2(
 				_saschatimme$elm_phoenix$Phoenix_Socket$onOpen,
 				_user$project$Overdrive$ConnectionStatusChanged(_user$project$Overdrive$Connected),
 				_saschatimme$elm_phoenix$Phoenix_Socket$init(_user$project$Overdrive$lobbySocket)))));
+var _user$project$Overdrive$ActorsUpdate = function (a) {
+	return {ctor: 'ActorsUpdate', _0: a};
+};
 var _user$project$Overdrive$MomentumUpdate = function (a) {
 	return {ctor: 'MomentumUpdate', _0: a};
 };
@@ -84,23 +285,29 @@ var _user$project$Overdrive$lobby = function (userName) {
 	return _saschatimme$elm_phoenix$Phoenix_Channel$withDebug(
 		A3(
 			_saschatimme$elm_phoenix$Phoenix_Channel$on,
-			'momentum_update',
+			'status_update',
 			function (msg) {
-				return _user$project$Overdrive$MomentumUpdate(msg);
+				return _user$project$Overdrive$ActorsUpdate(msg);
 			},
-			A2(
-				_saschatimme$elm_phoenix$Phoenix_Channel$withPayload,
-				_elm_lang$core$Json_Encode$object(
-					{
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'user_name',
-							_1: _elm_lang$core$Json_Encode$string('foobie')
-						},
-						_1: {ctor: '[]'}
-					}),
-				_saschatimme$elm_phoenix$Phoenix_Channel$init('room:lobby'))));
+			A3(
+				_saschatimme$elm_phoenix$Phoenix_Channel$on,
+				'momentum_update',
+				function (msg) {
+					return _user$project$Overdrive$MomentumUpdate(msg);
+				},
+				A2(
+					_saschatimme$elm_phoenix$Phoenix_Channel$withPayload,
+					_elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'user_name',
+								_1: _elm_lang$core$Json_Encode$string('foobie')
+							},
+							_1: {ctor: '[]'}
+						}),
+					_saschatimme$elm_phoenix$Phoenix_Channel$init('room:lobby')))));
 };
 var _user$project$Overdrive$phoenixSubscription = function (model) {
 	return A2(
@@ -127,6 +334,36 @@ var _user$project$Overdrive$subscriptions = function (model) {
 			}
 		});
 };
+var _user$project$Overdrive$Raise = function (a) {
+	return {ctor: 'Raise', _0: a};
+};
+var _user$project$Overdrive$dynamic = F3(
+	function (k, action, model) {
+		return _debois$elm_mdl$Material_Options$many(
+			{
+				ctor: '::',
+				_0: _elm_lang$core$Native_Utils.eq(model.raised, k) ? _debois$elm_mdl$Material_Elevation$e8 : _debois$elm_mdl$Material_Elevation$e2,
+				_1: {
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Elevation$transition(250),
+					_1: {
+						ctor: '::',
+						_0: _debois$elm_mdl$Material_Options$onMouseEnter(
+							_user$project$Overdrive$Raise(k)),
+						_1: {
+							ctor: '::',
+							_0: _debois$elm_mdl$Material_Options$onMouseLeave(
+								_user$project$Overdrive$Raise(-1)),
+							_1: {
+								ctor: '::',
+								_0: _debois$elm_mdl$Material_Options$onClick(action),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			});
+	});
 var _user$project$Overdrive$Mdl = function (a) {
 	return {ctor: 'Mdl', _0: a};
 };
@@ -152,7 +389,15 @@ var _user$project$Overdrive$update = F2(
 									_0: 'strength',
 									_1: _elm_lang$core$Json_Encode$float(model.selectedMomentum.strength)
 								},
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'actor',
+										_1: _elm_lang$core$Json_Encode$string('player')
+									},
+									_1: {ctor: '[]'}
+								}
 							}
 						}),
 					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'new_momentum'));
@@ -163,6 +408,126 @@ var _user$project$Overdrive$update = F2(
 						{
 							selectedMomentum: A2(_user$project$Overdrive$Momentum, '', 0)
 						}),
+					{
+						ctor: '::',
+						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
+						_1: {ctor: '[]'}
+					});
+			case 'AddEnemyMomentum':
+				var push = A2(
+					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
+					_elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'element',
+								_1: _elm_lang$core$Json_Encode$string(model.selectedEnemyMomentum.element)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'strength',
+									_1: _elm_lang$core$Json_Encode$float(model.selectedEnemyMomentum.strength)
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'actor',
+										_1: _elm_lang$core$Json_Encode$string('enemy')
+									},
+									_1: {ctor: '[]'}
+								}
+							}
+						}),
+					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'new_momentum'));
+				return _elm_lang$core$Native_Utils.eq(model.selectedEnemyMomentum.element, '') ? {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none} : A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							selectedEnemyMomentum: A2(_user$project$Overdrive$Momentum, '', 0)
+						}),
+					{
+						ctor: '::',
+						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
+						_1: {ctor: '[]'}
+					});
+			case 'RemoveMomentum':
+				var _p2 = _p1._0;
+				var push = A2(
+					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
+					_elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'element',
+								_1: _elm_lang$core$Json_Encode$string(_p2.element)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'strength',
+									_1: _elm_lang$core$Json_Encode$float(_p2.strength)
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'actor',
+										_1: _elm_lang$core$Json_Encode$string('player')
+									},
+									_1: {ctor: '[]'}
+								}
+							}
+						}),
+					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'remove_momentum'));
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{
+						ctor: '::',
+						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
+						_1: {ctor: '[]'}
+					});
+			case 'RemoveEnemyMomentum':
+				var _p3 = _p1._0;
+				var push = A2(
+					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
+					_elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'element',
+								_1: _elm_lang$core$Json_Encode$string(_p3.element)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'strength',
+									_1: _elm_lang$core$Json_Encode$float(_p3.strength)
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'actor',
+										_1: _elm_lang$core$Json_Encode$string('enemy')
+									},
+									_1: {ctor: '[]'}
+								}
+							}
+						}),
+					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'remove_momentum'));
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
 					{
 						ctor: '::',
 						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
@@ -201,52 +566,136 @@ var _user$project$Overdrive$update = F2(
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'RemoveMomentum':
-				var _p2 = _p1._0;
-				var push = A2(
-					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
-					_elm_lang$core$Json_Encode$object(
+			case 'SetEnemyMomentumType':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
 						{
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'element',
-								_1: _elm_lang$core$Json_Encode$string(_p2.element)
-							},
-							_1: {
-								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: 'strength',
-									_1: _elm_lang$core$Json_Encode$float(_p2.strength)
-								},
-								_1: {ctor: '[]'}
-							}
+							selectedEnemyMomentum: A2(_user$project$Overdrive$Momentum, _p1._0, model.selectedEnemyMomentum.strength)
 						}),
-					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'remove_momentum'));
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					{
-						ctor: '::',
-						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
-						_1: {ctor: '[]'}
-					});
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SetEnemyMomentumStrength':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							selectedEnemyMomentum: A2(_user$project$Overdrive$Momentum, model.selectedEnemyMomentum.element, _p1._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'AddActor':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'ChangeSelectedActorName':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'SelectActor':
+				var _p5 = _p1._0;
+				var selectedActorActualIndex = (_elm_lang$core$Native_Utils.cmp(_p5, 100) < 0) ? _p5 : (_p5 - 100);
+				var selectedActorArray = (_elm_lang$core$Native_Utils.cmp(_p5, 100) < 0) ? _elm_lang$core$Array$fromList(model.players) : _elm_lang$core$Array$fromList(model.enemies);
+				var maybeActor = A2(_elm_lang$core$Array$get, selectedActorActualIndex, selectedActorArray);
+				var _p4 = maybeActor;
+				if (_p4.ctor === 'Just') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{selectedActorIdx: _p5, selectedActor: _p4._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								selectedActorIdx: -1,
+								selectedActor: _user$project$Overdrive$Actor('Error')(0)(0)(0)(0)(0)(0)(0)(0)(0)(_user$project$Overdrive$Back)(
+									{ctor: '[]'})
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
+			case 'UnselectActor':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							selectedActorIdx: -1,
+							selectedActor: _user$project$Overdrive$Actor('Error')(0)(0)(0)(0)(0)(0)(0)(0)(0)(_user$project$Overdrive$Back)(
+								{ctor: '[]'})
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			case 'Mdl':
 				return A3(_debois$elm_mdl$Material$update, _user$project$Overdrive$Mdl, _p1._0, model);
+			case 'Raise':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{raised: _p1._0}),
+					{ctor: '[]'});
 			case 'MomentumUpdate':
-				var _p3 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$momentaDecoder, _p1._0);
-				if (_p3.ctor === 'Ok') {
-					var _p5 = _p3._0;
-					var _p4 = A2(_elm_lang$core$Debug$log, 'ok', _p5);
+				var _p6 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$momentaDecoder, _p1._0);
+				if (_p6.ctor === 'Ok') {
+					var _p8 = _p6._0;
+					var playerMomenta = A2(
+						_elm_lang$core$List$map,
+						function (mwa) {
+							return mwa.momentum;
+						},
+						A2(
+							_elm_lang$core$List$filter,
+							function (mwa) {
+								return _elm_lang$core$Native_Utils.eq(mwa.actor, 'player');
+							},
+							_p8));
+					var enemyMomenta = A2(
+						_elm_lang$core$List$map,
+						function (mwa) {
+							return mwa.momentum;
+						},
+						A2(
+							_elm_lang$core$List$filter,
+							function (mwa) {
+								return _elm_lang$core$Native_Utils.eq(mwa.actor, 'enemy');
+							},
+							_p8));
+					var _p7 = A2(_elm_lang$core$Debug$log, 'ok', _p8);
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{momenta: _p5}),
+							{momenta: playerMomenta, enemyMomenta: enemyMomenta}),
 						{ctor: '[]'});
 				} else {
-					var _p6 = A2(_elm_lang$core$Debug$log, 'err', _p3._0);
+					var _p9 = A2(_elm_lang$core$Debug$log, 'err', _p6._0);
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						{ctor: '[]'});
+				}
+			case 'ActorsUpdate':
+				var _p15 = _p1._0;
+				var _p10 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$actorsDecoder, _p15);
+				if (_p10.ctor === 'Ok') {
+					var _p13 = _p10._0;
+					var _p11 = A2(_elm_lang$core$Debug$log, 'enemies: ', _p13.enemies);
+					var _p12 = A2(_elm_lang$core$Debug$log, 'ok! players: ', _p13.players);
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{players: _p13.players, enemies: _p13.enemies}),
+						{ctor: '[]'});
+				} else {
+					var _p14 = A2(
+						_elm_lang$core$Debug$log,
+						'actorsUpdate err',
+						{ctor: '_Tuple2', _0: _p10._0, _1: _p15});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
@@ -280,14 +729,55 @@ var _user$project$Overdrive$update = F2(
 					{ctor: '[]'});
 		}
 	});
-var _user$project$Overdrive$SetMomentumStrength = function (a) {
-	return {ctor: 'SetMomentumStrength', _0: a};
-};
-var _user$project$Overdrive$SetMomentumType = function (a) {
-	return {ctor: 'SetMomentumType', _0: a};
-};
-var _user$project$Overdrive$makeMomentumRadio = F3(
-	function (model, instance, momentum) {
+var _user$project$Overdrive$statTextField = F3(
+	function (model, fieldId, value) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A5(
+					_debois$elm_mdl$Material_Textfield$render,
+					_user$project$Overdrive$Mdl,
+					{
+						ctor: '::',
+						_0: model.selectedActorIdx + fieldId,
+						_1: {ctor: '[]'}
+					},
+					model.mdl,
+					{
+						ctor: '::',
+						_0: _debois$elm_mdl$Material_Textfield$value(
+							_elm_lang$core$Basics$toString(value)),
+						_1: {
+							ctor: '::',
+							_0: _debois$elm_mdl$Material_Textfield$maxlength(3),
+							_1: {
+								ctor: '::',
+								_0: A2(_debois$elm_mdl$Material_Options$css, 'width', '30px'),
+								_1: {
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Options$input(
+										{
+											ctor: '::',
+											_0: A2(_debois$elm_mdl$Material_Options$css, 'text-align', 'right'),
+											_1: {
+												ctor: '::',
+												_0: A2(_debois$elm_mdl$Material_Options$css, 'width', '30px'),
+												_1: {ctor: '[]'}
+											}
+										}),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$Overdrive$makeMomentumRadio = F6(
+	function (model, instance, momentumLabel, momentum, setMomentumElementFunction, mRadioGroup) {
 		return A5(
 			_debois$elm_mdl$Material_Toggles$radio,
 			_user$project$Overdrive$Mdl,
@@ -300,17 +790,17 @@ var _user$project$Overdrive$makeMomentumRadio = F3(
 			{
 				ctor: '::',
 				_0: _debois$elm_mdl$Material_Toggles$value(
-					_elm_lang$core$Native_Utils.eq(momentum, model.selectedMomentum.element)),
+					_elm_lang$core$Native_Utils.eq(momentumLabel, momentum.element)),
 				_1: {
 					ctor: '::',
-					_0: _debois$elm_mdl$Material_Toggles$group('momentumtype'),
+					_0: _debois$elm_mdl$Material_Toggles$group(mRadioGroup),
 					_1: {
 						ctor: '::',
 						_0: _debois$elm_mdl$Material_Toggles$ripple,
 						_1: {
 							ctor: '::',
 							_0: _debois$elm_mdl$Material_Options$onToggle(
-								_user$project$Overdrive$SetMomentumType(momentum)),
+								setMomentumElementFunction(momentumLabel)),
 							_1: {
 								ctor: '::',
 								_0: A2(_debois$elm_mdl$Material_Options$css, 'margin', '3px 3px'),
@@ -322,51 +812,34 @@ var _user$project$Overdrive$makeMomentumRadio = F3(
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text(momentum),
+				_0: _elm_lang$html$Html$text(momentumLabel),
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$Overdrive$addMomentumInput = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 2, 'Fire'),
-					_1: {
-						ctor: '::',
-						_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 3, 'Water'),
-						_1: {
-							ctor: '::',
-							_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 4, 'Earth'),
-							_1: {
-								ctor: '::',
-								_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 5, 'Air'),
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				}),
-			_1: {
+var _user$project$Overdrive$addMomentumInput = F6(
+	function (model, momentum, setMomentumStrengthFunction, setMomentumElementFunction, mRadioGroup, idBase) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 6, 'Launch'),
+						_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 2, 'Fire', momentum, setMomentumElementFunction, mRadioGroup),
 						_1: {
 							ctor: '::',
-							_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 7, 'Pin'),
+							_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 3, 'Water', momentum, setMomentumElementFunction, mRadioGroup),
 							_1: {
 								ctor: '::',
-								_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 8, 'Rush'),
-								_1: {ctor: '[]'}
+								_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 4, 'Earth', momentum, setMomentumElementFunction, mRadioGroup),
+								_1: {
+									ctor: '::',
+									_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 5, 'Air', momentum, setMomentumElementFunction, mRadioGroup),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}),
@@ -377,11 +850,15 @@ var _user$project$Overdrive$addMomentumInput = function (model) {
 						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 9, 'Recovery'),
+							_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 6, 'Launch', momentum, setMomentumElementFunction, mRadioGroup),
 							_1: {
 								ctor: '::',
-								_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 10, 'Supreme'),
-								_1: {ctor: '[]'}
+								_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 7, 'Pin', momentum, setMomentumElementFunction, mRadioGroup),
+								_1: {
+									ctor: '::',
+									_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 8, 'Rush', momentum, setMomentumElementFunction, mRadioGroup),
+									_1: {ctor: '[]'}
+								}
 							}
 						}),
 					_1: {
@@ -391,37 +868,534 @@ var _user$project$Overdrive$addMomentumInput = function (model) {
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _debois$elm_mdl$Material_Slider$view(
-									{
-										ctor: '::',
-										_0: _debois$elm_mdl$Material_Slider$onChange(_user$project$Overdrive$SetMomentumStrength),
-										_1: {
+								_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 9, 'Recovery', momentum, setMomentumElementFunction, mRadioGroup),
+								_1: {
+									ctor: '::',
+									_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 10, 'Supreme', momentum, setMomentumElementFunction, mRadioGroup),
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Slider$view(
+										{
 											ctor: '::',
-											_0: _debois$elm_mdl$Material_Slider$value(model.selectedMomentum.strength),
+											_0: _debois$elm_mdl$Material_Slider$onChange(setMomentumStrengthFunction),
 											_1: {
 												ctor: '::',
-												_0: _debois$elm_mdl$Material_Slider$max(10),
+												_0: _debois$elm_mdl$Material_Slider$value(momentum.strength),
 												_1: {
 													ctor: '::',
-													_0: _debois$elm_mdl$Material_Slider$min(0),
+													_0: _debois$elm_mdl$Material_Slider$max(10),
 													_1: {
 														ctor: '::',
-														_0: _debois$elm_mdl$Material_Slider$step(1),
-														_1: {ctor: '[]'}
+														_0: _debois$elm_mdl$Material_Slider$min(0),
+														_1: {
+															ctor: '::',
+															_0: _debois$elm_mdl$Material_Slider$step(1),
+															_1: {ctor: '[]'}
+														}
 													}
 												}
 											}
-										}
-									}),
+										}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			});
+	});
+var _user$project$Overdrive$UnselectActor = {ctor: 'UnselectActor'};
+var _user$project$Overdrive$SelectActor = function (a) {
+	return {ctor: 'SelectActor', _0: a};
+};
+var _user$project$Overdrive$statusCard = F3(
+	function (model, actortype, _p16) {
+		var _p17 = _p16;
+		var _p18 = _p17._1;
+		var dyn_id = _p17._0 + (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? 0 : 100);
+		return A2(
+			_debois$elm_mdl$Material_Card$view,
+			{
+				ctor: '::',
+				_0: A3(
+					_user$project$Overdrive$dynamic,
+					dyn_id,
+					_user$project$Overdrive$SelectActor(dyn_id),
+					model),
+				_1: {
+					ctor: '::',
+					_0: A2(_debois$elm_mdl$Material_Options$css, 'width', '240px'),
+					_1: {
+						ctor: '::',
+						_0: A2(_debois$elm_mdl$Material_Options$css, 'margin', '4px 8px 4px 0px'),
+						_1: {
+							ctor: '::',
+							_0: _debois$elm_mdl$Material_Color$background(
+								A2(_debois$elm_mdl$Material_Color$color, _debois$elm_mdl$Material_Color$Blue, _debois$elm_mdl$Material_Color$S500)),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_debois$elm_mdl$Material_Card$title,
+					{
+						ctor: '::',
+						_0: A2(_debois$elm_mdl$Material_Options$css, 'padding', '5px 8px 0px 8px'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_debois$elm_mdl$Material_Card$head,
+							{
+								ctor: '::',
+								_0: _debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$white),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(_p18.name),
 								_1: {ctor: '[]'}
 							}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_debois$elm_mdl$Material_Card$text,
+						{
+							ctor: '::',
+							_0: _debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$white),
+							_1: {
+								ctor: '::',
+								_0: A2(_debois$elm_mdl$Material_Options$css, 'padding', '0px 8px 8px 8px'),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: A5(_user$project$Overdrive$renderStat, model, 'HP', _p18.currentHP, _p18.maxHP, actortype),
+									_1: {
+										ctor: '::',
+										_0: A5(_user$project$Overdrive$renderStat, model, 'MP', _p18.currentMP, _p18.maxMP, actortype),
+										_1: {
+											ctor: '::',
+											_0: A5(_user$project$Overdrive$renderStat, model, 'LP', _p18.currentLP, _p18.maxLP, actortype),
+											_1: {
+												ctor: '::',
+												_0: A5(_user$project$Overdrive$renderStat, model, 'DR', _p18.currentDrive, _p18.maxDrive, actortype),
+												_1: {
+													ctor: '::',
+													_0: _user$project$Overdrive$renderStatus(_p18),
+													_1: {ctor: '[]'}
+												}
+											}
+										}
+									}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Overdrive$ChangeSelectedActorName = function (a) {
+	return {ctor: 'ChangeSelectedActorName', _0: a};
+};
+var _user$project$Overdrive$editActor = F2(
+	function (model, actortype) {
+		var data = {
+			ctor: '::',
+			_0: {ctor: '_Tuple4', _0: 1, _1: 'HP', _2: model.selectedActor.currentHP, _3: model.selectedActor.maxHP},
+			_1: {
+				ctor: '::',
+				_0: {ctor: '_Tuple4', _0: 2, _1: 'MP', _2: model.selectedActor.currentMP, _3: model.selectedActor.maxMP},
+				_1: {
+					ctor: '::',
+					_0: {ctor: '_Tuple4', _0: 3, _1: 'LP', _2: model.selectedActor.currentLP, _3: model.selectedActor.maxLP},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple4', _0: 4, _1: 'DR', _2: model.selectedActor.currentDrive, _3: model.selectedActor.maxDrive},
 						_1: {ctor: '[]'}
 					}
 				}
 			}
-		});
+		};
+		var playerSelected = _elm_lang$core$Native_Utils.cmp(model.selectedActorIdx, 100) < 0;
+		var shouldDisplay = ((playerSelected && _elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player)) || ((!playerSelected) && _elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Enemy))) && (!_elm_lang$core$Native_Utils.eq(model.selectedActorIdx, -1));
+		return shouldDisplay ? {
+			ctor: '::',
+			_0: A5(
+				_debois$elm_mdl$Material_Button$render,
+				_user$project$Overdrive$Mdl,
+				{
+					ctor: '::',
+					_0: 999,
+					_1: {ctor: '[]'}
+				},
+				model.mdl,
+				{
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Button$raised,
+					_1: {
+						ctor: '::',
+						_0: _debois$elm_mdl$Material_Button$colored,
+						_1: {
+							ctor: '::',
+							_0: _debois$elm_mdl$Material_Button$ripple,
+							_1: {
+								ctor: '::',
+								_0: A2(_debois$elm_mdl$Material_Options$css, 'margin-left', '87px'),
+								_1: {
+									ctor: '::',
+									_0: A2(_debois$elm_mdl$Material_Options$css, 'margin-top', '10px'),
+									_1: {
+										ctor: '::',
+										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$UnselectActor),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
+					}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('SAVE'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: A5(
+							_debois$elm_mdl$Material_Textfield$render,
+							_user$project$Overdrive$Mdl,
+							{
+								ctor: '::',
+								_0: 800,
+								_1: {ctor: '[]'}
+							},
+							model.mdl,
+							{
+								ctor: '::',
+								_0: _debois$elm_mdl$Material_Textfield$value(model.selectedActor.name),
+								_1: {
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Options$onInput(_user$project$Overdrive$ChangeSelectedActorName),
+									_1: {
+										ctor: '::',
+										_0: _debois$elm_mdl$Material_Options$input(
+											{
+												ctor: '::',
+												_0: A2(_debois$elm_mdl$Material_Options$css, 'text-align', 'center'),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_debois$elm_mdl$Material_Table$table,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A2(
+								_debois$elm_mdl$Material_Table$thead,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: A2(
+										_debois$elm_mdl$Material_Table$tr,
+										{ctor: '[]'},
+										{
+											ctor: '::',
+											_0: A2(
+												_debois$elm_mdl$Material_Table$th,
+												{ctor: '[]'},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text(''),
+													_1: {ctor: '[]'}
+												}),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_debois$elm_mdl$Material_Table$th,
+													{ctor: '[]'},
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html$text('CURR'),
+														_1: {ctor: '[]'}
+													}),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_debois$elm_mdl$Material_Table$th,
+														{ctor: '[]'},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('MAX'),
+															_1: {ctor: '[]'}
+														}),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_debois$elm_mdl$Material_Table$th,
+															{ctor: '[]'},
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html$text('±'),
+																_1: {ctor: '[]'}
+															}),
+														_1: {ctor: '[]'}
+													}
+												}
+											}
+										}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_debois$elm_mdl$Material_Table$tbody,
+									{ctor: '[]'},
+									A2(
+										_elm_lang$core$List$map,
+										function (_p19) {
+											var _p20 = _p19;
+											var _p21 = _p20._0;
+											return A2(
+												_debois$elm_mdl$Material_Table$tr,
+												{ctor: '[]'},
+												{
+													ctor: '::',
+													_0: A2(
+														_debois$elm_mdl$Material_Table$td,
+														{ctor: '[]'},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text(_p20._1),
+															_1: {ctor: '[]'}
+														}),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_debois$elm_mdl$Material_Table$td,
+															{ctor: '[]'},
+															{
+																ctor: '::',
+																_0: A3(_user$project$Overdrive$statTextField, model, _p21 * 10, _p20._2),
+																_1: {ctor: '[]'}
+															}),
+														_1: {
+															ctor: '::',
+															_0: A2(
+																_debois$elm_mdl$Material_Table$td,
+																{ctor: '[]'},
+																{
+																	ctor: '::',
+																	_0: A3(_user$project$Overdrive$statTextField, model, _p21 * 100, _p20._3),
+																	_1: {ctor: '[]'}
+																}),
+															_1: {
+																ctor: '::',
+																_0: A2(
+																	_debois$elm_mdl$Material_Table$td,
+																	{ctor: '[]'},
+																	{
+																		ctor: '::',
+																		_0: _elm_lang$html$Html$text('+'),
+																		_1: {
+																			ctor: '::',
+																			_0: _elm_lang$html$Html$text('-'),
+																			_1: {ctor: '[]'}
+																		}
+																	}),
+																_1: {ctor: '[]'}
+															}
+														}
+													}
+												});
+										},
+										data)),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		} : {
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(''),
+			_1: {ctor: '[]'}
+		};
+	});
+var _user$project$Overdrive$AddActor = function (a) {
+	return {ctor: 'AddActor', _0: a};
+};
+var _user$project$Overdrive$renderStatusList = F2(
+	function (model, actortype) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					A2(
+						_elm_lang$core$List$map,
+						A2(_user$project$Overdrive$statusCard, model, actortype),
+						_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? A2(
+							_elm_lang$core$List$indexedMap,
+							F2(
+								function (v0, v1) {
+									return {ctor: '_Tuple2', _0: v0, _1: v1};
+								}),
+							model.players) : A2(
+							_elm_lang$core$List$indexedMap,
+							F2(
+								function (v0, v1) {
+									return {ctor: '_Tuple2', _0: v0, _1: v1};
+								}),
+							model.enemies))),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A5(
+								_debois$elm_mdl$Material_Button$render,
+								_user$project$Overdrive$Mdl,
+								{
+									ctor: '::',
+									_0: 998,
+									_1: {ctor: '[]'}
+								},
+								model.mdl,
+								{
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Button$fab,
+									_1: {
+										ctor: '::',
+										_0: _debois$elm_mdl$Material_Button$colored,
+										_1: {
+											ctor: '::',
+											_0: A2(_debois$elm_mdl$Material_Options$css, 'margin-left', '92px'),
+											_1: {
+												ctor: '::',
+												_0: _debois$elm_mdl$Material_Options$onClick(
+													_user$project$Overdrive$AddActor(actortype)),
+												_1: {ctor: '[]'}
+											}
+										}
+									}
+								},
+								{
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Icon$i('add'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							A2(_user$project$Overdrive$editActor, model, actortype)),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+var _user$project$Overdrive$SetEnemyMomentumStrength = function (a) {
+	return {ctor: 'SetEnemyMomentumStrength', _0: a};
+};
+var _user$project$Overdrive$SetEnemyMomentumType = function (a) {
+	return {ctor: 'SetEnemyMomentumType', _0: a};
+};
+var _user$project$Overdrive$SetMomentumStrength = function (a) {
+	return {ctor: 'SetMomentumStrength', _0: a};
+};
+var _user$project$Overdrive$SetMomentumType = function (a) {
+	return {ctor: 'SetMomentumType', _0: a};
 };
 var _user$project$Overdrive$ClearMomentum = {ctor: 'ClearMomentum'};
+var _user$project$Overdrive$RemoveEnemyMomentum = function (a) {
+	return {ctor: 'RemoveEnemyMomentum', _0: a};
+};
+var _user$project$Overdrive$toEnemyChip = function (momentum) {
+	return A2(
+		_debois$elm_mdl$Material_Chip$span,
+		{
+			ctor: '::',
+			_0: A2(_debois$elm_mdl$Material_Options$css, 'margin', '5px 5px'),
+			_1: {
+				ctor: '::',
+				_0: _debois$elm_mdl$Material_Chip$deleteIcon('cancel'),
+				_1: {
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Chip$deleteClick(
+						_user$project$Overdrive$RemoveEnemyMomentum(momentum)),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_debois$elm_mdl$Material_Chip$content,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(
+						_user$project$Overdrive$printMomentum(momentum)),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Overdrive$renderEnemyMomenta = function (momenta) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				A2(_elm_lang$core$List$map, _user$project$Overdrive$toEnemyChip, momenta)),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Overdrive$RemoveMomentum = function (a) {
 	return {ctor: 'RemoveMomentum', _0: a};
 };
@@ -462,26 +1436,57 @@ var _user$project$Overdrive$renderMomenta = function (momenta) {
 		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html$text('Current momenta: '),
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				A2(_elm_lang$core$List$map, _user$project$Overdrive$toChip, momenta)),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Overdrive$AddEnemyMomentum = {ctor: 'AddEnemyMomentum'};
+var _user$project$Overdrive$renderEnemyMomentum = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _user$project$Overdrive$renderEnemyMomenta(model.enemyMomenta),
 			_1: {
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
 					{ctor: '[]'},
-					A2(_elm_lang$core$List$map, _user$project$Overdrive$toChip, momenta)),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Overdrive$AddMomentum = {ctor: 'AddMomentum'};
-var _user$project$Overdrive$view = function (model) {
-	return _debois$elm_mdl$Material_Scheme$top(
-		A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: _user$project$Overdrive$renderMomenta(model.momenta),
+					{
+						ctor: '::',
+						_0: A6(_user$project$Overdrive$addMomentumInput, model, model.selectedEnemyMomentum, _user$project$Overdrive$SetEnemyMomentumStrength, _user$project$Overdrive$SetEnemyMomentumType, 'enemy', 100),
+						_1: {
+							ctor: '::',
+							_0: A5(
+								_debois$elm_mdl$Material_Button$render,
+								_user$project$Overdrive$Mdl,
+								{
+									ctor: '::',
+									_0: 1,
+									_1: {ctor: '[]'}
+								},
+								model.mdl,
+								{
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$AddEnemyMomentum),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											'Add ',
+											_user$project$Overdrive$printMomentum(model.selectedEnemyMomentum))),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}),
 				_1: {
 					ctor: '::',
 					_0: A2(
@@ -489,65 +1494,244 @@ var _user$project$Overdrive$view = function (model) {
 						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: _user$project$Overdrive$addMomentumInput(model),
+							_0: A5(
+								_debois$elm_mdl$Material_Button$render,
+								_user$project$Overdrive$Mdl,
+								{
+									ctor: '::',
+									_0: 0,
+									_1: {ctor: '[]'}
+								},
+								model.mdl,
+								{
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$ClearMomentum),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Clear Momentum'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$Overdrive$AddMomentum = {ctor: 'AddMomentum'};
+var _user$project$Overdrive$renderPlayerMomentum = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _user$project$Overdrive$renderMomenta(model.momenta),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: A6(_user$project$Overdrive$addMomentumInput, model, model.selectedMomentum, _user$project$Overdrive$SetMomentumStrength, _user$project$Overdrive$SetMomentumType, 'player', 0),
+						_1: {
+							ctor: '::',
+							_0: A5(
+								_debois$elm_mdl$Material_Button$render,
+								_user$project$Overdrive$Mdl,
+								{
+									ctor: '::',
+									_0: 1,
+									_1: {ctor: '[]'}
+								},
+								model.mdl,
+								{
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$AddMomentum),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											'Add ',
+											_user$project$Overdrive$printMomentum(model.selectedMomentum))),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A5(
+								_debois$elm_mdl$Material_Button$render,
+								_user$project$Overdrive$Mdl,
+								{
+									ctor: '::',
+									_0: 0,
+									_1: {ctor: '[]'}
+								},
+								model.mdl,
+								{
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$ClearMomentum),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Clear Momentum'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$Overdrive$view = function (model) {
+	return A3(
+		_debois$elm_mdl$Material_Scheme$topWithScheme,
+		_debois$elm_mdl$Material_Color$Blue,
+		_debois$elm_mdl$Material_Color$Indigo,
+		A4(
+			_debois$elm_mdl$Material_Layout$render,
+			_user$project$Overdrive$Mdl,
+			model.mdl,
+			{
+				ctor: '::',
+				_0: _debois$elm_mdl$Material_Layout$fixedHeader,
+				_1: {
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Layout$fixedDrawer,
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				header: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$h1,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$style(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'padding', _1: '1rem'},
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('S33D OVERDRIVE'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				},
+				drawer: {ctor: '[]'},
+				tabs: {
+					ctor: '_Tuple2',
+					_0: {ctor: '[]'},
+					_1: {ctor: '[]'}
+				},
+				main: {
+					ctor: '::',
+					_0: A2(
+						_debois$elm_mdl$Material_Grid$grid,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A2(
+								_debois$elm_mdl$Material_Grid$cell,
+								{
+									ctor: '::',
+									_0: A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, 3),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(_user$project$Overdrive$renderStatusList, model, _user$project$Overdrive$Player),
+									_1: {ctor: '[]'}
+								}),
 							_1: {
 								ctor: '::',
-								_0: A5(
-									_debois$elm_mdl$Material_Button$render,
-									_user$project$Overdrive$Mdl,
+								_0: A2(
+									_debois$elm_mdl$Material_Grid$cell,
 									{
 										ctor: '::',
-										_0: 1,
-										_1: {ctor: '[]'}
-									},
-									model.mdl,
-									{
-										ctor: '::',
-										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$AddMomentum),
+										_0: A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, 2),
 										_1: {ctor: '[]'}
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												'Add ',
-												_user$project$Overdrive$printMomentum(model.selectedMomentum))),
+										_0: _user$project$Overdrive$renderPlayerMomentum(model),
 										_1: {ctor: '[]'}
 									}),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_debois$elm_mdl$Material_Grid$cell,
+										{
+											ctor: '::',
+											_0: A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, 2),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$h4,
+												{ctor: '[]'},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('Init List'),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_debois$elm_mdl$Material_Grid$cell,
+											{
+												ctor: '::',
+												_0: A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, 2),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _user$project$Overdrive$renderEnemyMomentum(model),
+												_1: {ctor: '[]'}
+											}),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_debois$elm_mdl$Material_Grid$cell,
+												{
+													ctor: '::',
+													_0: A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, 3),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: A2(_user$project$Overdrive$renderStatusList, model, _user$project$Overdrive$Enemy),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
 							}
 						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: A5(
-									_debois$elm_mdl$Material_Button$render,
-									_user$project$Overdrive$Mdl,
-									{
-										ctor: '::',
-										_0: 0,
-										_1: {ctor: '[]'}
-									},
-									model.mdl,
-									{
-										ctor: '::',
-										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$ClearMomentum),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text('Clear Momentum'),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}
+					_1: {ctor: '[]'}
 				}
 			}));
 };

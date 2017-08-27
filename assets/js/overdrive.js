@@ -18922,6 +18922,156 @@ var _debois$elm_mdl$Material$Model = F8(
 		return {button: a, textfield: b, menu: c, snackbar: d, layout: e, toggles: f, tooltip: g, tabs: h};
 	});
 
+var _debois$elm_mdl$Material_Card$stopClick = _debois$elm_mdl$Material_Options_Internal$attribute(
+	A2(_elm_lang$html$Html_Attributes$attribute, 'onclick', 'var event = arguments[0] || window.event; event.stopPropagation();'));
+var _debois$elm_mdl$Material_Card$block = function (block) {
+	var _p0 = block;
+	switch (_p0.ctor) {
+		case 'Title':
+			return A2(
+				_debois$elm_mdl$Material_Options$div,
+				{
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Options$cs('mdl-card__title'),
+					_1: _p0._0
+				},
+				_p0._1);
+		case 'Media':
+			return A2(
+				_debois$elm_mdl$Material_Options$div,
+				{
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Options$cs('mdl-card__media'),
+					_1: _p0._0
+				},
+				_p0._1);
+		case 'SupportingText':
+			return A2(
+				_debois$elm_mdl$Material_Options$div,
+				{
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Options$cs('mdl-card__supporting-text'),
+					_1: _p0._0
+				},
+				_p0._1);
+		case 'Actions':
+			return A2(
+				_debois$elm_mdl$Material_Options$div,
+				{
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Options$cs('mdl-card__actions'),
+					_1: {ctor: '::', _0: _debois$elm_mdl$Material_Card$stopClick, _1: _p0._0}
+				},
+				_p0._1);
+		default:
+			return A2(
+				_debois$elm_mdl$Material_Options$div,
+				{
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Options$cs('mdl-card__menu'),
+					_1: {ctor: '::', _0: _debois$elm_mdl$Material_Card$stopClick, _1: _p0._0}
+				},
+				_p0._1);
+	}
+};
+var _debois$elm_mdl$Material_Card$view = F2(
+	function (styling, views) {
+		return A2(
+			_debois$elm_mdl$Material_Options$div,
+			{
+				ctor: '::',
+				_0: _debois$elm_mdl$Material_Options$many(styling),
+				_1: {
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Options$cs('mdl-card'),
+					_1: {
+						ctor: '::',
+						_0: A2(_debois$elm_mdl$Material_Options$css, 'min-height', '0px'),
+						_1: {ctor: '[]'}
+					}
+				}
+			},
+			A2(_elm_lang$core$List$map, _debois$elm_mdl$Material_Card$block, views));
+	});
+var _debois$elm_mdl$Material_Card$subhead = function (styling) {
+	return _debois$elm_mdl$Material_Options$span(
+		{
+			ctor: '::',
+			_0: _debois$elm_mdl$Material_Options$cs('mdl-card__subtitle-text'),
+			_1: {
+				ctor: '::',
+				_0: A2(_debois$elm_mdl$Material_Options$css, 'padding-top', '8px'),
+				_1: styling
+			}
+		});
+};
+var _debois$elm_mdl$Material_Card$head = function (styling) {
+	return A2(
+		_debois$elm_mdl$Material_Options$styled,
+		_elm_lang$html$Html$h1,
+		{
+			ctor: '::',
+			_0: _debois$elm_mdl$Material_Options$cs('mdl-card__title-text'),
+			_1: {
+				ctor: '::',
+				_0: A2(_debois$elm_mdl$Material_Options$css, 'align-self', 'flex-start'),
+				_1: styling
+			}
+		});
+};
+var _debois$elm_mdl$Material_Card$expand = _debois$elm_mdl$Material_Options$cs('mdl-card--expand');
+var _debois$elm_mdl$Material_Card$border = _debois$elm_mdl$Material_Options$cs('mdl-card--border');
+var _debois$elm_mdl$Material_Card$Actions = F2(
+	function (a, b) {
+		return {ctor: 'Actions', _0: a, _1: b};
+	});
+var _debois$elm_mdl$Material_Card$actions = _debois$elm_mdl$Material_Card$Actions;
+var _debois$elm_mdl$Material_Card$SupportingText = F2(
+	function (a, b) {
+		return {ctor: 'SupportingText', _0: a, _1: b};
+	});
+var _debois$elm_mdl$Material_Card$text = _debois$elm_mdl$Material_Card$SupportingText;
+var _debois$elm_mdl$Material_Card$Media = F2(
+	function (a, b) {
+		return {ctor: 'Media', _0: a, _1: b};
+	});
+var _debois$elm_mdl$Material_Card$media = _debois$elm_mdl$Material_Card$Media;
+var _debois$elm_mdl$Material_Card$Menu = F2(
+	function (a, b) {
+		return {ctor: 'Menu', _0: a, _1: b};
+	});
+var _debois$elm_mdl$Material_Card$menu = F2(
+	function (styling, block) {
+		return A2(_debois$elm_mdl$Material_Card$Menu, styling, block);
+	});
+var _debois$elm_mdl$Material_Card$Title = F2(
+	function (a, b) {
+		return {ctor: 'Title', _0: a, _1: b};
+	});
+var _debois$elm_mdl$Material_Card$title = F2(
+	function (styling, block) {
+		return A2(
+			_debois$elm_mdl$Material_Card$Title,
+			{
+				ctor: '::',
+				_0: _debois$elm_mdl$Material_Options$many(styling),
+				_1: {
+					ctor: '::',
+					_0: A2(_debois$elm_mdl$Material_Options$css, 'justify-content', 'flex-end'),
+					_1: {
+						ctor: '::',
+						_0: A2(_debois$elm_mdl$Material_Options$css, 'flex-direction', 'column'),
+						_1: {
+							ctor: '::',
+							_0: A2(_debois$elm_mdl$Material_Options$css, 'align-items', 'flex-start'),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			},
+			block);
+	});
+
 var _debois$elm_mdl$Material_Chip$hasValue = function (m) {
 	var _p0 = m;
 	if (_p0.ctor === 'Just') {
@@ -19550,6 +19700,227 @@ var _debois$elm_mdl$Material_Color$primaryContrast = _debois$elm_mdl$Material_Co
 var _debois$elm_mdl$Material_Color$accent = _debois$elm_mdl$Material_Color$C('accent');
 var _debois$elm_mdl$Material_Color$accentContrast = _debois$elm_mdl$Material_Color$C('accent-contrast');
 
+var _debois$elm_mdl$Material_Elevation$transition = function (duration) {
+	return A2(
+		_debois$elm_mdl$Material_Options$css,
+		'transition',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'box-shadow ',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(duration),
+				'ms ease-in-out 0s')));
+};
+var _debois$elm_mdl$Material_Elevation$e0 = _debois$elm_mdl$Material_Options$nop;
+var _debois$elm_mdl$Material_Elevation$shadow = function (z) {
+	return _debois$elm_mdl$Material_Options$cs(
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'mdl-shadow--',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(z),
+				'dp')));
+};
+var _debois$elm_mdl$Material_Elevation$e2 = _debois$elm_mdl$Material_Elevation$shadow(2);
+var _debois$elm_mdl$Material_Elevation$e3 = _debois$elm_mdl$Material_Elevation$shadow(3);
+var _debois$elm_mdl$Material_Elevation$e4 = _debois$elm_mdl$Material_Elevation$shadow(4);
+var _debois$elm_mdl$Material_Elevation$e6 = _debois$elm_mdl$Material_Elevation$shadow(6);
+var _debois$elm_mdl$Material_Elevation$e8 = _debois$elm_mdl$Material_Elevation$shadow(8);
+var _debois$elm_mdl$Material_Elevation$e16 = _debois$elm_mdl$Material_Elevation$shadow(16);
+var _debois$elm_mdl$Material_Elevation$e24 = _debois$elm_mdl$Material_Elevation$shadow(24);
+var _debois$elm_mdl$Material_Elevation$elevations = _elm_lang$core$Array$fromList(
+	{
+		ctor: '::',
+		_0: {ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e0, _1: 0},
+		_1: {
+			ctor: '::',
+			_0: {ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e2, _1: 2},
+			_1: {
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e3, _1: 3},
+				_1: {
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e4, _1: 4},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e6, _1: 6},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e8, _1: 8},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e16, _1: 16},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e24, _1: 24},
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	});
+
+var _debois$elm_mdl$Material_Grid$clip = F3(
+	function (lower, upper, k) {
+		return A2(
+			_elm_lang$core$Basics$max,
+			lower,
+			A2(_elm_lang$core$Basics$min, k, upper));
+	});
+var _debois$elm_mdl$Material_Grid$stretch = _debois$elm_mdl$Material_Options$cs('mdl-cell--stretch');
+var _debois$elm_mdl$Material_Grid$align = function (a) {
+	var _p0 = a;
+	switch (_p0.ctor) {
+		case 'Top':
+			return _debois$elm_mdl$Material_Options$cs('mdl-cell--top');
+		case 'Middle':
+			return _debois$elm_mdl$Material_Options$cs('mdl-cell--middle');
+		default:
+			return _debois$elm_mdl$Material_Options$cs('mdl-cell--bottom');
+	}
+};
+var _debois$elm_mdl$Material_Grid$suffix = function (device) {
+	var _p1 = device;
+	switch (_p1.ctor) {
+		case 'All':
+			return '';
+		case 'Desktop':
+			return '-desktop';
+		case 'Tablet':
+			return '-tablet';
+		default:
+			return '-phone';
+	}
+};
+var _debois$elm_mdl$Material_Grid$size = F2(
+	function (device, k) {
+		var c = function () {
+			var _p2 = device;
+			switch (_p2.ctor) {
+				case 'All':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 12, k);
+				case 'Desktop':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 12, k);
+				case 'Tablet':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 8, k);
+				default:
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 4, k);
+			}
+		}();
+		return _debois$elm_mdl$Material_Options$cs(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'mdl-cell--',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(c),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'-col',
+						_debois$elm_mdl$Material_Grid$suffix(device)))));
+	});
+var _debois$elm_mdl$Material_Grid$offset = F2(
+	function (device, k) {
+		var c = function () {
+			var _p3 = device;
+			switch (_p3.ctor) {
+				case 'All':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 0, 11, k);
+				case 'Desktop':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 0, 11, k);
+				case 'Tablet':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 0, 7, k);
+				default:
+					return A3(_debois$elm_mdl$Material_Grid$clip, 0, 3, k);
+			}
+		}();
+		return _debois$elm_mdl$Material_Options$cs(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'mdl-cell--',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(c),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'-offset',
+						_debois$elm_mdl$Material_Grid$suffix(device)))));
+	});
+var _debois$elm_mdl$Material_Grid$hide = function (device) {
+	return _debois$elm_mdl$Material_Options$cs(
+		function () {
+			var _p4 = device;
+			if (_p4.ctor === 'All') {
+				return '';
+			} else {
+				return A2(
+					_elm_lang$core$Basics_ops['++'],
+					'mdl-cell--hide-',
+					_debois$elm_mdl$Material_Grid$suffix(device));
+			}
+		}());
+};
+var _debois$elm_mdl$Material_Grid$order = F2(
+	function (device, n) {
+		return _debois$elm_mdl$Material_Options$cs(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'mdl-cell--order-',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(
+						A3(_debois$elm_mdl$Material_Grid$clip, 1, 12, n)),
+					_debois$elm_mdl$Material_Grid$suffix(device))));
+	});
+var _debois$elm_mdl$Material_Grid$grid = F2(
+	function (styling, cells) {
+		return A2(
+			_debois$elm_mdl$Material_Options$div,
+			{
+				ctor: '::',
+				_0: _debois$elm_mdl$Material_Options$cs('mdl-grid'),
+				_1: styling
+			},
+			A2(
+				_elm_lang$core$List$map,
+				function (_p5) {
+					var _p6 = _p5;
+					return _p6._0;
+				},
+				cells));
+	});
+var _debois$elm_mdl$Material_Grid$maxWidth = function (w) {
+	return A2(_debois$elm_mdl$Material_Options$css, 'max-width', w);
+};
+var _debois$elm_mdl$Material_Grid$noSpacing = _debois$elm_mdl$Material_Options$cs('mdl-grid--no-spacing');
+var _debois$elm_mdl$Material_Grid$Phone = {ctor: 'Phone'};
+var _debois$elm_mdl$Material_Grid$Tablet = {ctor: 'Tablet'};
+var _debois$elm_mdl$Material_Grid$Desktop = {ctor: 'Desktop'};
+var _debois$elm_mdl$Material_Grid$All = {ctor: 'All'};
+var _debois$elm_mdl$Material_Grid$Cell = function (a) {
+	return {ctor: 'Cell', _0: a};
+};
+var _debois$elm_mdl$Material_Grid$cell = F2(
+	function (styling, elms) {
+		return _debois$elm_mdl$Material_Grid$Cell(
+			A2(
+				_debois$elm_mdl$Material_Options$div,
+				{
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Options$cs('mdl-cell'),
+					_1: styling
+				},
+				elms));
+	});
+var _debois$elm_mdl$Material_Grid$Bottom = {ctor: 'Bottom'};
+var _debois$elm_mdl$Material_Grid$Middle = {ctor: 'Middle'};
+var _debois$elm_mdl$Material_Grid$Top = {ctor: 'Top'};
+
 var _debois$elm_mdl$Material_Scheme$scheme = F2(
 	function (primary, accent) {
 		return A2(
@@ -19826,6 +20197,183 @@ var _debois$elm_mdl$Material_Slider$Config = F6(
 	function (a, b, c, d, e, f) {
 		return {value: a, min: b, max: c, step: d, input: e, container: f};
 	});
+
+var _debois$elm_mdl$Material_Table$defaultCell = {numeric: false};
+var _debois$elm_mdl$Material_Table$td = F2(
+	function (options, html) {
+		var _p0 = A2(_debois$elm_mdl$Material_Options_Internal$collect, _debois$elm_mdl$Material_Table$defaultCell, options);
+		var summary = _p0;
+		var config = _p0.config;
+		return A5(
+			_debois$elm_mdl$Material_Options_Internal$apply,
+			summary,
+			_elm_lang$html$Html$td,
+			{
+				ctor: '::',
+				_0: A2(
+					_debois$elm_mdl$Material_Options$when,
+					config.numeric,
+					_debois$elm_mdl$Material_Options$cs('mdl-data-table__cell--non-numeric')),
+				_1: {ctor: '[]'}
+			},
+			{ctor: '[]'},
+			html);
+	});
+var _debois$elm_mdl$Material_Table$sorted = function (order) {
+	return _debois$elm_mdl$Material_Options_Internal$option(
+		function (self) {
+			return _elm_lang$core$Native_Utils.update(
+				self,
+				{
+					sorted: _elm_lang$core$Maybe$Just(order)
+				});
+		});
+};
+var _debois$elm_mdl$Material_Table$numeric = _debois$elm_mdl$Material_Options_Internal$option(
+	function (self) {
+		return _elm_lang$core$Native_Utils.update(
+			self,
+			{numeric: true});
+	});
+var _debois$elm_mdl$Material_Table$defaultHeader = {numeric: false, sorted: _elm_lang$core$Maybe$Nothing};
+var _debois$elm_mdl$Material_Table$th = F2(
+	function (options, html) {
+		var _p1 = A2(_debois$elm_mdl$Material_Options_Internal$collect, _debois$elm_mdl$Material_Table$defaultHeader, options);
+		var summary = _p1;
+		var config = _p1.config;
+		return A5(
+			_debois$elm_mdl$Material_Options_Internal$apply,
+			summary,
+			_elm_lang$html$Html$th,
+			{
+				ctor: '::',
+				_0: A2(
+					_debois$elm_mdl$Material_Options$when,
+					config.numeric,
+					_debois$elm_mdl$Material_Options$cs('mdl-data-table__cell--non-numeric')),
+				_1: {
+					ctor: '::',
+					_0: function () {
+						var _p2 = config.sorted;
+						if (_p2.ctor === 'Just') {
+							if (_p2._0.ctor === 'Ascending') {
+								return _debois$elm_mdl$Material_Options$cs('mdl-data-table__header--sorted-ascending');
+							} else {
+								return _debois$elm_mdl$Material_Options$cs('mdl-data-table__header--sorted-descending');
+							}
+						} else {
+							return _debois$elm_mdl$Material_Options$nop;
+						}
+					}(),
+					_1: {ctor: '[]'}
+				}
+			},
+			{ctor: '[]'},
+			html);
+	});
+var _debois$elm_mdl$Material_Table$selected = _debois$elm_mdl$Material_Options_Internal$option(
+	function (self) {
+		return _elm_lang$core$Native_Utils.update(
+			self,
+			{selected: true});
+	});
+var _debois$elm_mdl$Material_Table$defaultRow = {selected: false};
+var _debois$elm_mdl$Material_Table$tr = F2(
+	function (options, html) {
+		var _p3 = A2(_debois$elm_mdl$Material_Options_Internal$collect, _debois$elm_mdl$Material_Table$defaultRow, options);
+		var summary = _p3;
+		var config = _p3.config;
+		return A5(
+			_debois$elm_mdl$Material_Options_Internal$apply,
+			summary,
+			_elm_lang$html$Html$tr,
+			{
+				ctor: '::',
+				_0: A2(
+					_debois$elm_mdl$Material_Options$when,
+					config.selected,
+					_debois$elm_mdl$Material_Options$cs('is-selected')),
+				_1: {ctor: '[]'}
+			},
+			{ctor: '[]'},
+			html);
+	});
+var _debois$elm_mdl$Material_Table$tfoot = F2(
+	function (options, html) {
+		var summary = A2(
+			_debois$elm_mdl$Material_Options_Internal$collect,
+			{},
+			options);
+		return A5(
+			_debois$elm_mdl$Material_Options_Internal$apply,
+			summary,
+			_elm_lang$html$Html$tfoot,
+			{ctor: '[]'},
+			{ctor: '[]'},
+			html);
+	});
+var _debois$elm_mdl$Material_Table$tbody = F2(
+	function (options, html) {
+		var summary = A2(
+			_debois$elm_mdl$Material_Options_Internal$collect,
+			{},
+			options);
+		return A5(
+			_debois$elm_mdl$Material_Options_Internal$apply,
+			summary,
+			_elm_lang$html$Html$tbody,
+			{ctor: '[]'},
+			{ctor: '[]'},
+			html);
+	});
+var _debois$elm_mdl$Material_Table$thead = F2(
+	function (options, html) {
+		var summary = A2(
+			_debois$elm_mdl$Material_Options_Internal$collect,
+			{},
+			options);
+		return A5(
+			_debois$elm_mdl$Material_Options_Internal$apply,
+			summary,
+			_elm_lang$html$Html$thead,
+			{ctor: '[]'},
+			{ctor: '[]'},
+			html);
+	});
+var _debois$elm_mdl$Material_Table$table = F2(
+	function (options, nodes) {
+		return A3(
+			_debois$elm_mdl$Material_Options$styled,
+			_elm_lang$html$Html$table,
+			{
+				ctor: '::',
+				_0: _debois$elm_mdl$Material_Options$cs('mdl-data-table'),
+				_1: {
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Options$cs('mdl-js-data-table'),
+					_1: {
+						ctor: '::',
+						_0: _debois$elm_mdl$Material_Options$cs('is-upgraded'),
+						_1: options
+					}
+				}
+			},
+			nodes);
+	});
+var _debois$elm_mdl$Material_Table$Row = function (a) {
+	return {selected: a};
+};
+var _debois$elm_mdl$Material_Table$Header = F2(
+	function (a, b) {
+		return {numeric: a, sorted: b};
+	});
+var _debois$elm_mdl$Material_Table$Cell = function (a) {
+	return {numeric: a};
+};
+var _debois$elm_mdl$Material_Table$Descending = {ctor: 'Descending'};
+var _debois$elm_mdl$Material_Table$descending = _debois$elm_mdl$Material_Table$sorted(_debois$elm_mdl$Material_Table$Descending);
+var _debois$elm_mdl$Material_Table$Ascending = {ctor: 'Ascending'};
+var _debois$elm_mdl$Material_Table$ascending = _debois$elm_mdl$Material_Table$sorted(_debois$elm_mdl$Material_Table$Ascending);
 
 var _elm_lang$websocket$Native_WebSocket = function() {
 
@@ -22234,6 +22782,22 @@ var _user$project$Overdrive$printMomentum = function (m) {
 			' +',
 			_elm_lang$core$Basics$toString(m.strength))) : m.element) : '';
 };
+var _user$project$Overdrive$renderStatus = function (actor) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('No Statuses'),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Overdrive$statDiv = F2(
+	function (c, m) {
+		return _elm_lang$core$Basics$toString(
+			_elm_lang$core$Basics$round(
+				(_elm_lang$core$Basics$toFloat(c) / _elm_lang$core$Basics$toFloat(m)) * 100));
+	});
 var _user$project$Overdrive$lobbySocket = 'ws://gaius.ddns.net:4000/socket/websocket';
 var _user$project$Overdrive$roundDownToSecond = function (ms) {
 	return _elm_lang$core$Basics$toFloat(
@@ -22249,14 +22813,22 @@ var _user$project$Overdrive$Momentum = F2(
 	function (a, b) {
 		return {element: a, strength: b};
 	});
-var _user$project$Overdrive$momentumDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	F2(
-		function (element, strength) {
-			return A4(_elm_lang$core$Debug$log, 'momentum decoded: ', _user$project$Overdrive$Momentum, element, strength);
+var _user$project$Overdrive$MomentumWithActor = F2(
+	function (a, b) {
+		return {momentum: a, actor: b};
+	});
+var _user$project$Overdrive$momentumDecoder = A4(
+	_elm_lang$core$Json_Decode$map3,
+	F3(
+		function (element, strength, actor) {
+			return A2(
+				_user$project$Overdrive$MomentumWithActor,
+				A2(_user$project$Overdrive$Momentum, element, strength),
+				actor);
 		}),
 	A2(_elm_lang$core$Json_Decode$field, 'element', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'strength', _elm_lang$core$Json_Decode$float));
+	A2(_elm_lang$core$Json_Decode$field, 'strength', _elm_lang$core$Json_Decode$float),
+	A2(_elm_lang$core$Json_Decode$field, 'actor', _elm_lang$core$Json_Decode$string));
 var _user$project$Overdrive$momentaDecoder = A2(
 	_elm_lang$core$Json_Decode$at,
 	{
@@ -22265,22 +22837,196 @@ var _user$project$Overdrive$momentaDecoder = A2(
 		_1: {ctor: '[]'}
 	},
 	_elm_lang$core$Json_Decode$list(_user$project$Overdrive$momentumDecoder));
-var _user$project$Overdrive$Model = F5(
-	function (a, b, c, d, e) {
-		return {momenta: a, selectedMomentum: b, connectionStatus: c, currentTime: d, mdl: e};
+var _user$project$Overdrive$Actor = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return function (l) {
+												return {name: a, currentHP: b, maxHP: c, currentMP: d, maxMP: e, currentLP: f, maxLP: g, currentDrive: h, maxDrive: i, initBase: j, row: k, status: l};
+											};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _user$project$Overdrive$Status = F4(
+	function (a, b, c, d) {
+		return {status: a, duration: b, level: c, meta: d};
 	});
+var _user$project$Overdrive$statusDecoder = A5(
+	_elm_lang$core$Json_Decode$map4,
+	F4(
+		function (status, duration, level, meta) {
+			return A4(_user$project$Overdrive$Status, status, duration, level, meta);
+		}),
+	A2(_elm_lang$core$Json_Decode$field, 'status', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'duration', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'level', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'meta', _elm_lang$core$Json_Decode$string));
+var _user$project$Overdrive$Model = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return function (l) {
+												return {momenta: a, enemyMomenta: b, selectedMomentum: c, selectedEnemyMomentum: d, enemies: e, players: f, selectedActorIdx: g, selectedActor: h, connectionStatus: i, currentTime: j, mdl: k, raised: l};
+											};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _user$project$Overdrive$ActorsListContainer = F2(
+	function (a, b) {
+		return {players: a, enemies: b};
+	});
+var _user$project$Overdrive$Back = {ctor: 'Back'};
+var _user$project$Overdrive$Front = {ctor: 'Front'};
+var _user$project$Overdrive$rowDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	function (row) {
+		return _elm_lang$core$Native_Utils.eq(row, 'Front') ? _user$project$Overdrive$Front : _user$project$Overdrive$Back;
+	},
+	_elm_lang$core$Json_Decode$string);
+var _user$project$Overdrive$actorDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'statuses',
+	_elm_lang$core$Json_Decode$list(_user$project$Overdrive$statusDecoder),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'row',
+		_user$project$Overdrive$rowDecoder,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'initBase',
+			_elm_lang$core$Json_Decode$int,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'maxDrive',
+				_elm_lang$core$Json_Decode$int,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'currDrive',
+					_elm_lang$core$Json_Decode$int,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'maxLP',
+						_elm_lang$core$Json_Decode$int,
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'currLP',
+							_elm_lang$core$Json_Decode$int,
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'maxMP',
+								_elm_lang$core$Json_Decode$int,
+								A3(
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+									'currMP',
+									_elm_lang$core$Json_Decode$int,
+									A3(
+										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+										'maxHP',
+										_elm_lang$core$Json_Decode$int,
+										A3(
+											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+											'currHP',
+											_elm_lang$core$Json_Decode$int,
+											A3(
+												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+												'name',
+												_elm_lang$core$Json_Decode$string,
+												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Overdrive$Actor)))))))))))));
+var _user$project$Overdrive$actorListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Overdrive$actorDecoder);
+var _user$project$Overdrive$actorsDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (players, enemies) {
+			return A2(_user$project$Overdrive$ActorsListContainer, players, enemies);
+		}),
+	A2(_elm_lang$core$Json_Decode$field, 'players', _user$project$Overdrive$actorListDecoder),
+	A2(_elm_lang$core$Json_Decode$field, 'enemies', _user$project$Overdrive$actorListDecoder));
 var _user$project$Overdrive$ScheduledReconnect = function (a) {
 	return {ctor: 'ScheduledReconnect', _0: a};
 };
 var _user$project$Overdrive$Disconnected = {ctor: 'Disconnected'};
 var _user$project$Overdrive$init = {
 	momenta: {ctor: '[]'},
+	enemyMomenta: {ctor: '[]'},
 	selectedMomentum: A2(_user$project$Overdrive$Momentum, '', 0),
+	selectedEnemyMomentum: A2(_user$project$Overdrive$Momentum, '', 0),
+	players: {ctor: '[]'},
+	enemies: {ctor: '[]'},
+	selectedActorIdx: -1,
+	selectedActor: _user$project$Overdrive$Actor('Error')(0)(0)(0)(0)(0)(0)(0)(0)(0)(_user$project$Overdrive$Back)(
+		{ctor: '[]'}),
 	connectionStatus: _user$project$Overdrive$Disconnected,
 	currentTime: 0,
-	mdl: _debois$elm_mdl$Material$model
+	mdl: _debois$elm_mdl$Material$model,
+	raised: -1
 };
 var _user$project$Overdrive$Connected = {ctor: 'Connected'};
+var _user$project$Overdrive$Enemy = {ctor: 'Enemy'};
+var _user$project$Overdrive$Player = {ctor: 'Player'};
+var _user$project$Overdrive$renderStat = F5(
+	function (model, label, currentStat, maxStat, actortype) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? _elm_lang$html$Html$text(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						label,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'   ',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(currentStat),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'/',
+									_elm_lang$core$Basics$toString(maxStat)))))) : _elm_lang$html$Html$text(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						label,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'   ',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								A2(_user$project$Overdrive$statDiv, currentStat, maxStat),
+								'%')))),
+				_1: {ctor: '[]'}
+			});
+	});
 var _user$project$Overdrive$ConnectionStatusChanged = function (a) {
 	return {ctor: 'ConnectionStatusChanged', _0: a};
 };
@@ -22304,6 +23050,9 @@ var _user$project$Overdrive$socket = A2(
 				_saschatimme$elm_phoenix$Phoenix_Socket$onOpen,
 				_user$project$Overdrive$ConnectionStatusChanged(_user$project$Overdrive$Connected),
 				_saschatimme$elm_phoenix$Phoenix_Socket$init(_user$project$Overdrive$lobbySocket)))));
+var _user$project$Overdrive$ActorsUpdate = function (a) {
+	return {ctor: 'ActorsUpdate', _0: a};
+};
 var _user$project$Overdrive$MomentumUpdate = function (a) {
 	return {ctor: 'MomentumUpdate', _0: a};
 };
@@ -22311,23 +23060,29 @@ var _user$project$Overdrive$lobby = function (userName) {
 	return _saschatimme$elm_phoenix$Phoenix_Channel$withDebug(
 		A3(
 			_saschatimme$elm_phoenix$Phoenix_Channel$on,
-			'momentum_update',
+			'status_update',
 			function (msg) {
-				return _user$project$Overdrive$MomentumUpdate(msg);
+				return _user$project$Overdrive$ActorsUpdate(msg);
 			},
-			A2(
-				_saschatimme$elm_phoenix$Phoenix_Channel$withPayload,
-				_elm_lang$core$Json_Encode$object(
-					{
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'user_name',
-							_1: _elm_lang$core$Json_Encode$string('foobie')
-						},
-						_1: {ctor: '[]'}
-					}),
-				_saschatimme$elm_phoenix$Phoenix_Channel$init('room:lobby'))));
+			A3(
+				_saschatimme$elm_phoenix$Phoenix_Channel$on,
+				'momentum_update',
+				function (msg) {
+					return _user$project$Overdrive$MomentumUpdate(msg);
+				},
+				A2(
+					_saschatimme$elm_phoenix$Phoenix_Channel$withPayload,
+					_elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'user_name',
+								_1: _elm_lang$core$Json_Encode$string('foobie')
+							},
+							_1: {ctor: '[]'}
+						}),
+					_saschatimme$elm_phoenix$Phoenix_Channel$init('room:lobby')))));
 };
 var _user$project$Overdrive$phoenixSubscription = function (model) {
 	return A2(
@@ -22354,6 +23109,36 @@ var _user$project$Overdrive$subscriptions = function (model) {
 			}
 		});
 };
+var _user$project$Overdrive$Raise = function (a) {
+	return {ctor: 'Raise', _0: a};
+};
+var _user$project$Overdrive$dynamic = F3(
+	function (k, action, model) {
+		return _debois$elm_mdl$Material_Options$many(
+			{
+				ctor: '::',
+				_0: _elm_lang$core$Native_Utils.eq(model.raised, k) ? _debois$elm_mdl$Material_Elevation$e8 : _debois$elm_mdl$Material_Elevation$e2,
+				_1: {
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Elevation$transition(250),
+					_1: {
+						ctor: '::',
+						_0: _debois$elm_mdl$Material_Options$onMouseEnter(
+							_user$project$Overdrive$Raise(k)),
+						_1: {
+							ctor: '::',
+							_0: _debois$elm_mdl$Material_Options$onMouseLeave(
+								_user$project$Overdrive$Raise(-1)),
+							_1: {
+								ctor: '::',
+								_0: _debois$elm_mdl$Material_Options$onClick(action),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			});
+	});
 var _user$project$Overdrive$Mdl = function (a) {
 	return {ctor: 'Mdl', _0: a};
 };
@@ -22379,7 +23164,15 @@ var _user$project$Overdrive$update = F2(
 									_0: 'strength',
 									_1: _elm_lang$core$Json_Encode$float(model.selectedMomentum.strength)
 								},
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'actor',
+										_1: _elm_lang$core$Json_Encode$string('player')
+									},
+									_1: {ctor: '[]'}
+								}
 							}
 						}),
 					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'new_momentum'));
@@ -22390,6 +23183,126 @@ var _user$project$Overdrive$update = F2(
 						{
 							selectedMomentum: A2(_user$project$Overdrive$Momentum, '', 0)
 						}),
+					{
+						ctor: '::',
+						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
+						_1: {ctor: '[]'}
+					});
+			case 'AddEnemyMomentum':
+				var push = A2(
+					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
+					_elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'element',
+								_1: _elm_lang$core$Json_Encode$string(model.selectedEnemyMomentum.element)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'strength',
+									_1: _elm_lang$core$Json_Encode$float(model.selectedEnemyMomentum.strength)
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'actor',
+										_1: _elm_lang$core$Json_Encode$string('enemy')
+									},
+									_1: {ctor: '[]'}
+								}
+							}
+						}),
+					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'new_momentum'));
+				return _elm_lang$core$Native_Utils.eq(model.selectedEnemyMomentum.element, '') ? {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none} : A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							selectedEnemyMomentum: A2(_user$project$Overdrive$Momentum, '', 0)
+						}),
+					{
+						ctor: '::',
+						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
+						_1: {ctor: '[]'}
+					});
+			case 'RemoveMomentum':
+				var _p2 = _p1._0;
+				var push = A2(
+					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
+					_elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'element',
+								_1: _elm_lang$core$Json_Encode$string(_p2.element)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'strength',
+									_1: _elm_lang$core$Json_Encode$float(_p2.strength)
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'actor',
+										_1: _elm_lang$core$Json_Encode$string('player')
+									},
+									_1: {ctor: '[]'}
+								}
+							}
+						}),
+					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'remove_momentum'));
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{
+						ctor: '::',
+						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
+						_1: {ctor: '[]'}
+					});
+			case 'RemoveEnemyMomentum':
+				var _p3 = _p1._0;
+				var push = A2(
+					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
+					_elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'element',
+								_1: _elm_lang$core$Json_Encode$string(_p3.element)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'strength',
+									_1: _elm_lang$core$Json_Encode$float(_p3.strength)
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'actor',
+										_1: _elm_lang$core$Json_Encode$string('enemy')
+									},
+									_1: {ctor: '[]'}
+								}
+							}
+						}),
+					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'remove_momentum'));
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
 					{
 						ctor: '::',
 						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
@@ -22428,52 +23341,136 @@ var _user$project$Overdrive$update = F2(
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'RemoveMomentum':
-				var _p2 = _p1._0;
-				var push = A2(
-					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
-					_elm_lang$core$Json_Encode$object(
+			case 'SetEnemyMomentumType':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
 						{
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'element',
-								_1: _elm_lang$core$Json_Encode$string(_p2.element)
-							},
-							_1: {
-								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: 'strength',
-									_1: _elm_lang$core$Json_Encode$float(_p2.strength)
-								},
-								_1: {ctor: '[]'}
-							}
+							selectedEnemyMomentum: A2(_user$project$Overdrive$Momentum, _p1._0, model.selectedEnemyMomentum.strength)
 						}),
-					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'remove_momentum'));
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					{
-						ctor: '::',
-						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
-						_1: {ctor: '[]'}
-					});
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SetEnemyMomentumStrength':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							selectedEnemyMomentum: A2(_user$project$Overdrive$Momentum, model.selectedEnemyMomentum.element, _p1._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'AddActor':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'ChangeSelectedActorName':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'SelectActor':
+				var _p5 = _p1._0;
+				var selectedActorActualIndex = (_elm_lang$core$Native_Utils.cmp(_p5, 100) < 0) ? _p5 : (_p5 - 100);
+				var selectedActorArray = (_elm_lang$core$Native_Utils.cmp(_p5, 100) < 0) ? _elm_lang$core$Array$fromList(model.players) : _elm_lang$core$Array$fromList(model.enemies);
+				var maybeActor = A2(_elm_lang$core$Array$get, selectedActorActualIndex, selectedActorArray);
+				var _p4 = maybeActor;
+				if (_p4.ctor === 'Just') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{selectedActorIdx: _p5, selectedActor: _p4._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								selectedActorIdx: -1,
+								selectedActor: _user$project$Overdrive$Actor('Error')(0)(0)(0)(0)(0)(0)(0)(0)(0)(_user$project$Overdrive$Back)(
+									{ctor: '[]'})
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
+			case 'UnselectActor':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							selectedActorIdx: -1,
+							selectedActor: _user$project$Overdrive$Actor('Error')(0)(0)(0)(0)(0)(0)(0)(0)(0)(_user$project$Overdrive$Back)(
+								{ctor: '[]'})
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			case 'Mdl':
 				return A3(_debois$elm_mdl$Material$update, _user$project$Overdrive$Mdl, _p1._0, model);
+			case 'Raise':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{raised: _p1._0}),
+					{ctor: '[]'});
 			case 'MomentumUpdate':
-				var _p3 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$momentaDecoder, _p1._0);
-				if (_p3.ctor === 'Ok') {
-					var _p5 = _p3._0;
-					var _p4 = A2(_elm_lang$core$Debug$log, 'ok', _p5);
+				var _p6 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$momentaDecoder, _p1._0);
+				if (_p6.ctor === 'Ok') {
+					var _p8 = _p6._0;
+					var playerMomenta = A2(
+						_elm_lang$core$List$map,
+						function (mwa) {
+							return mwa.momentum;
+						},
+						A2(
+							_elm_lang$core$List$filter,
+							function (mwa) {
+								return _elm_lang$core$Native_Utils.eq(mwa.actor, 'player');
+							},
+							_p8));
+					var enemyMomenta = A2(
+						_elm_lang$core$List$map,
+						function (mwa) {
+							return mwa.momentum;
+						},
+						A2(
+							_elm_lang$core$List$filter,
+							function (mwa) {
+								return _elm_lang$core$Native_Utils.eq(mwa.actor, 'enemy');
+							},
+							_p8));
+					var _p7 = A2(_elm_lang$core$Debug$log, 'ok', _p8);
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{momenta: _p5}),
+							{momenta: playerMomenta, enemyMomenta: enemyMomenta}),
 						{ctor: '[]'});
 				} else {
-					var _p6 = A2(_elm_lang$core$Debug$log, 'err', _p3._0);
+					var _p9 = A2(_elm_lang$core$Debug$log, 'err', _p6._0);
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						{ctor: '[]'});
+				}
+			case 'ActorsUpdate':
+				var _p15 = _p1._0;
+				var _p10 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$actorsDecoder, _p15);
+				if (_p10.ctor === 'Ok') {
+					var _p13 = _p10._0;
+					var _p11 = A2(_elm_lang$core$Debug$log, 'enemies: ', _p13.enemies);
+					var _p12 = A2(_elm_lang$core$Debug$log, 'ok! players: ', _p13.players);
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{players: _p13.players, enemies: _p13.enemies}),
+						{ctor: '[]'});
+				} else {
+					var _p14 = A2(
+						_elm_lang$core$Debug$log,
+						'actorsUpdate err',
+						{ctor: '_Tuple2', _0: _p10._0, _1: _p15});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
@@ -22507,14 +23504,55 @@ var _user$project$Overdrive$update = F2(
 					{ctor: '[]'});
 		}
 	});
-var _user$project$Overdrive$SetMomentumStrength = function (a) {
-	return {ctor: 'SetMomentumStrength', _0: a};
-};
-var _user$project$Overdrive$SetMomentumType = function (a) {
-	return {ctor: 'SetMomentumType', _0: a};
-};
-var _user$project$Overdrive$makeMomentumRadio = F3(
-	function (model, instance, momentum) {
+var _user$project$Overdrive$statTextField = F3(
+	function (model, fieldId, value) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A5(
+					_debois$elm_mdl$Material_Textfield$render,
+					_user$project$Overdrive$Mdl,
+					{
+						ctor: '::',
+						_0: model.selectedActorIdx + fieldId,
+						_1: {ctor: '[]'}
+					},
+					model.mdl,
+					{
+						ctor: '::',
+						_0: _debois$elm_mdl$Material_Textfield$value(
+							_elm_lang$core$Basics$toString(value)),
+						_1: {
+							ctor: '::',
+							_0: _debois$elm_mdl$Material_Textfield$maxlength(3),
+							_1: {
+								ctor: '::',
+								_0: A2(_debois$elm_mdl$Material_Options$css, 'width', '30px'),
+								_1: {
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Options$input(
+										{
+											ctor: '::',
+											_0: A2(_debois$elm_mdl$Material_Options$css, 'text-align', 'right'),
+											_1: {
+												ctor: '::',
+												_0: A2(_debois$elm_mdl$Material_Options$css, 'width', '30px'),
+												_1: {ctor: '[]'}
+											}
+										}),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$Overdrive$makeMomentumRadio = F6(
+	function (model, instance, momentumLabel, momentum, setMomentumElementFunction, mRadioGroup) {
 		return A5(
 			_debois$elm_mdl$Material_Toggles$radio,
 			_user$project$Overdrive$Mdl,
@@ -22527,17 +23565,17 @@ var _user$project$Overdrive$makeMomentumRadio = F3(
 			{
 				ctor: '::',
 				_0: _debois$elm_mdl$Material_Toggles$value(
-					_elm_lang$core$Native_Utils.eq(momentum, model.selectedMomentum.element)),
+					_elm_lang$core$Native_Utils.eq(momentumLabel, momentum.element)),
 				_1: {
 					ctor: '::',
-					_0: _debois$elm_mdl$Material_Toggles$group('momentumtype'),
+					_0: _debois$elm_mdl$Material_Toggles$group(mRadioGroup),
 					_1: {
 						ctor: '::',
 						_0: _debois$elm_mdl$Material_Toggles$ripple,
 						_1: {
 							ctor: '::',
 							_0: _debois$elm_mdl$Material_Options$onToggle(
-								_user$project$Overdrive$SetMomentumType(momentum)),
+								setMomentumElementFunction(momentumLabel)),
 							_1: {
 								ctor: '::',
 								_0: A2(_debois$elm_mdl$Material_Options$css, 'margin', '3px 3px'),
@@ -22549,51 +23587,34 @@ var _user$project$Overdrive$makeMomentumRadio = F3(
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text(momentum),
+				_0: _elm_lang$html$Html$text(momentumLabel),
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$Overdrive$addMomentumInput = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 2, 'Fire'),
-					_1: {
-						ctor: '::',
-						_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 3, 'Water'),
-						_1: {
-							ctor: '::',
-							_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 4, 'Earth'),
-							_1: {
-								ctor: '::',
-								_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 5, 'Air'),
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				}),
-			_1: {
+var _user$project$Overdrive$addMomentumInput = F6(
+	function (model, momentum, setMomentumStrengthFunction, setMomentumElementFunction, mRadioGroup, idBase) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 6, 'Launch'),
+						_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 2, 'Fire', momentum, setMomentumElementFunction, mRadioGroup),
 						_1: {
 							ctor: '::',
-							_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 7, 'Pin'),
+							_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 3, 'Water', momentum, setMomentumElementFunction, mRadioGroup),
 							_1: {
 								ctor: '::',
-								_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 8, 'Rush'),
-								_1: {ctor: '[]'}
+								_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 4, 'Earth', momentum, setMomentumElementFunction, mRadioGroup),
+								_1: {
+									ctor: '::',
+									_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 5, 'Air', momentum, setMomentumElementFunction, mRadioGroup),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}),
@@ -22604,11 +23625,15 @@ var _user$project$Overdrive$addMomentumInput = function (model) {
 						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 9, 'Recovery'),
+							_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 6, 'Launch', momentum, setMomentumElementFunction, mRadioGroup),
 							_1: {
 								ctor: '::',
-								_0: A3(_user$project$Overdrive$makeMomentumRadio, model, 10, 'Supreme'),
-								_1: {ctor: '[]'}
+								_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 7, 'Pin', momentum, setMomentumElementFunction, mRadioGroup),
+								_1: {
+									ctor: '::',
+									_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 8, 'Rush', momentum, setMomentumElementFunction, mRadioGroup),
+									_1: {ctor: '[]'}
+								}
 							}
 						}),
 					_1: {
@@ -22618,37 +23643,534 @@ var _user$project$Overdrive$addMomentumInput = function (model) {
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _debois$elm_mdl$Material_Slider$view(
-									{
-										ctor: '::',
-										_0: _debois$elm_mdl$Material_Slider$onChange(_user$project$Overdrive$SetMomentumStrength),
-										_1: {
+								_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 9, 'Recovery', momentum, setMomentumElementFunction, mRadioGroup),
+								_1: {
+									ctor: '::',
+									_0: A6(_user$project$Overdrive$makeMomentumRadio, model, idBase + 10, 'Supreme', momentum, setMomentumElementFunction, mRadioGroup),
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Slider$view(
+										{
 											ctor: '::',
-											_0: _debois$elm_mdl$Material_Slider$value(model.selectedMomentum.strength),
+											_0: _debois$elm_mdl$Material_Slider$onChange(setMomentumStrengthFunction),
 											_1: {
 												ctor: '::',
-												_0: _debois$elm_mdl$Material_Slider$max(10),
+												_0: _debois$elm_mdl$Material_Slider$value(momentum.strength),
 												_1: {
 													ctor: '::',
-													_0: _debois$elm_mdl$Material_Slider$min(0),
+													_0: _debois$elm_mdl$Material_Slider$max(10),
 													_1: {
 														ctor: '::',
-														_0: _debois$elm_mdl$Material_Slider$step(1),
-														_1: {ctor: '[]'}
+														_0: _debois$elm_mdl$Material_Slider$min(0),
+														_1: {
+															ctor: '::',
+															_0: _debois$elm_mdl$Material_Slider$step(1),
+															_1: {ctor: '[]'}
+														}
 													}
 												}
 											}
-										}
-									}),
+										}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			});
+	});
+var _user$project$Overdrive$UnselectActor = {ctor: 'UnselectActor'};
+var _user$project$Overdrive$SelectActor = function (a) {
+	return {ctor: 'SelectActor', _0: a};
+};
+var _user$project$Overdrive$statusCard = F3(
+	function (model, actortype, _p16) {
+		var _p17 = _p16;
+		var _p18 = _p17._1;
+		var dyn_id = _p17._0 + (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? 0 : 100);
+		return A2(
+			_debois$elm_mdl$Material_Card$view,
+			{
+				ctor: '::',
+				_0: A3(
+					_user$project$Overdrive$dynamic,
+					dyn_id,
+					_user$project$Overdrive$SelectActor(dyn_id),
+					model),
+				_1: {
+					ctor: '::',
+					_0: A2(_debois$elm_mdl$Material_Options$css, 'width', '240px'),
+					_1: {
+						ctor: '::',
+						_0: A2(_debois$elm_mdl$Material_Options$css, 'margin', '4px 8px 4px 0px'),
+						_1: {
+							ctor: '::',
+							_0: _debois$elm_mdl$Material_Color$background(
+								A2(_debois$elm_mdl$Material_Color$color, _debois$elm_mdl$Material_Color$Blue, _debois$elm_mdl$Material_Color$S500)),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_debois$elm_mdl$Material_Card$title,
+					{
+						ctor: '::',
+						_0: A2(_debois$elm_mdl$Material_Options$css, 'padding', '5px 8px 0px 8px'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_debois$elm_mdl$Material_Card$head,
+							{
+								ctor: '::',
+								_0: _debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$white),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(_p18.name),
 								_1: {ctor: '[]'}
 							}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_debois$elm_mdl$Material_Card$text,
+						{
+							ctor: '::',
+							_0: _debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$white),
+							_1: {
+								ctor: '::',
+								_0: A2(_debois$elm_mdl$Material_Options$css, 'padding', '0px 8px 8px 8px'),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: A5(_user$project$Overdrive$renderStat, model, 'HP', _p18.currentHP, _p18.maxHP, actortype),
+									_1: {
+										ctor: '::',
+										_0: A5(_user$project$Overdrive$renderStat, model, 'MP', _p18.currentMP, _p18.maxMP, actortype),
+										_1: {
+											ctor: '::',
+											_0: A5(_user$project$Overdrive$renderStat, model, 'LP', _p18.currentLP, _p18.maxLP, actortype),
+											_1: {
+												ctor: '::',
+												_0: A5(_user$project$Overdrive$renderStat, model, 'DR', _p18.currentDrive, _p18.maxDrive, actortype),
+												_1: {
+													ctor: '::',
+													_0: _user$project$Overdrive$renderStatus(_p18),
+													_1: {ctor: '[]'}
+												}
+											}
+										}
+									}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Overdrive$ChangeSelectedActorName = function (a) {
+	return {ctor: 'ChangeSelectedActorName', _0: a};
+};
+var _user$project$Overdrive$editActor = F2(
+	function (model, actortype) {
+		var data = {
+			ctor: '::',
+			_0: {ctor: '_Tuple4', _0: 1, _1: 'HP', _2: model.selectedActor.currentHP, _3: model.selectedActor.maxHP},
+			_1: {
+				ctor: '::',
+				_0: {ctor: '_Tuple4', _0: 2, _1: 'MP', _2: model.selectedActor.currentMP, _3: model.selectedActor.maxMP},
+				_1: {
+					ctor: '::',
+					_0: {ctor: '_Tuple4', _0: 3, _1: 'LP', _2: model.selectedActor.currentLP, _3: model.selectedActor.maxLP},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple4', _0: 4, _1: 'DR', _2: model.selectedActor.currentDrive, _3: model.selectedActor.maxDrive},
 						_1: {ctor: '[]'}
 					}
 				}
 			}
-		});
+		};
+		var playerSelected = _elm_lang$core$Native_Utils.cmp(model.selectedActorIdx, 100) < 0;
+		var shouldDisplay = ((playerSelected && _elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player)) || ((!playerSelected) && _elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Enemy))) && (!_elm_lang$core$Native_Utils.eq(model.selectedActorIdx, -1));
+		return shouldDisplay ? {
+			ctor: '::',
+			_0: A5(
+				_debois$elm_mdl$Material_Button$render,
+				_user$project$Overdrive$Mdl,
+				{
+					ctor: '::',
+					_0: 999,
+					_1: {ctor: '[]'}
+				},
+				model.mdl,
+				{
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Button$raised,
+					_1: {
+						ctor: '::',
+						_0: _debois$elm_mdl$Material_Button$colored,
+						_1: {
+							ctor: '::',
+							_0: _debois$elm_mdl$Material_Button$ripple,
+							_1: {
+								ctor: '::',
+								_0: A2(_debois$elm_mdl$Material_Options$css, 'margin-left', '87px'),
+								_1: {
+									ctor: '::',
+									_0: A2(_debois$elm_mdl$Material_Options$css, 'margin-top', '10px'),
+									_1: {
+										ctor: '::',
+										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$UnselectActor),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
+					}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('SAVE'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: A5(
+							_debois$elm_mdl$Material_Textfield$render,
+							_user$project$Overdrive$Mdl,
+							{
+								ctor: '::',
+								_0: 800,
+								_1: {ctor: '[]'}
+							},
+							model.mdl,
+							{
+								ctor: '::',
+								_0: _debois$elm_mdl$Material_Textfield$value(model.selectedActor.name),
+								_1: {
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Options$onInput(_user$project$Overdrive$ChangeSelectedActorName),
+									_1: {
+										ctor: '::',
+										_0: _debois$elm_mdl$Material_Options$input(
+											{
+												ctor: '::',
+												_0: A2(_debois$elm_mdl$Material_Options$css, 'text-align', 'center'),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_debois$elm_mdl$Material_Table$table,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A2(
+								_debois$elm_mdl$Material_Table$thead,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: A2(
+										_debois$elm_mdl$Material_Table$tr,
+										{ctor: '[]'},
+										{
+											ctor: '::',
+											_0: A2(
+												_debois$elm_mdl$Material_Table$th,
+												{ctor: '[]'},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text(''),
+													_1: {ctor: '[]'}
+												}),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_debois$elm_mdl$Material_Table$th,
+													{ctor: '[]'},
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html$text('CURR'),
+														_1: {ctor: '[]'}
+													}),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_debois$elm_mdl$Material_Table$th,
+														{ctor: '[]'},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('MAX'),
+															_1: {ctor: '[]'}
+														}),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_debois$elm_mdl$Material_Table$th,
+															{ctor: '[]'},
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html$text('±'),
+																_1: {ctor: '[]'}
+															}),
+														_1: {ctor: '[]'}
+													}
+												}
+											}
+										}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_debois$elm_mdl$Material_Table$tbody,
+									{ctor: '[]'},
+									A2(
+										_elm_lang$core$List$map,
+										function (_p19) {
+											var _p20 = _p19;
+											var _p21 = _p20._0;
+											return A2(
+												_debois$elm_mdl$Material_Table$tr,
+												{ctor: '[]'},
+												{
+													ctor: '::',
+													_0: A2(
+														_debois$elm_mdl$Material_Table$td,
+														{ctor: '[]'},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text(_p20._1),
+															_1: {ctor: '[]'}
+														}),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_debois$elm_mdl$Material_Table$td,
+															{ctor: '[]'},
+															{
+																ctor: '::',
+																_0: A3(_user$project$Overdrive$statTextField, model, _p21 * 10, _p20._2),
+																_1: {ctor: '[]'}
+															}),
+														_1: {
+															ctor: '::',
+															_0: A2(
+																_debois$elm_mdl$Material_Table$td,
+																{ctor: '[]'},
+																{
+																	ctor: '::',
+																	_0: A3(_user$project$Overdrive$statTextField, model, _p21 * 100, _p20._3),
+																	_1: {ctor: '[]'}
+																}),
+															_1: {
+																ctor: '::',
+																_0: A2(
+																	_debois$elm_mdl$Material_Table$td,
+																	{ctor: '[]'},
+																	{
+																		ctor: '::',
+																		_0: _elm_lang$html$Html$text('+'),
+																		_1: {
+																			ctor: '::',
+																			_0: _elm_lang$html$Html$text('-'),
+																			_1: {ctor: '[]'}
+																		}
+																	}),
+																_1: {ctor: '[]'}
+															}
+														}
+													}
+												});
+										},
+										data)),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		} : {
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(''),
+			_1: {ctor: '[]'}
+		};
+	});
+var _user$project$Overdrive$AddActor = function (a) {
+	return {ctor: 'AddActor', _0: a};
+};
+var _user$project$Overdrive$renderStatusList = F2(
+	function (model, actortype) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					A2(
+						_elm_lang$core$List$map,
+						A2(_user$project$Overdrive$statusCard, model, actortype),
+						_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? A2(
+							_elm_lang$core$List$indexedMap,
+							F2(
+								function (v0, v1) {
+									return {ctor: '_Tuple2', _0: v0, _1: v1};
+								}),
+							model.players) : A2(
+							_elm_lang$core$List$indexedMap,
+							F2(
+								function (v0, v1) {
+									return {ctor: '_Tuple2', _0: v0, _1: v1};
+								}),
+							model.enemies))),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A5(
+								_debois$elm_mdl$Material_Button$render,
+								_user$project$Overdrive$Mdl,
+								{
+									ctor: '::',
+									_0: 998,
+									_1: {ctor: '[]'}
+								},
+								model.mdl,
+								{
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Button$fab,
+									_1: {
+										ctor: '::',
+										_0: _debois$elm_mdl$Material_Button$colored,
+										_1: {
+											ctor: '::',
+											_0: A2(_debois$elm_mdl$Material_Options$css, 'margin-left', '92px'),
+											_1: {
+												ctor: '::',
+												_0: _debois$elm_mdl$Material_Options$onClick(
+													_user$project$Overdrive$AddActor(actortype)),
+												_1: {ctor: '[]'}
+											}
+										}
+									}
+								},
+								{
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Icon$i('add'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							A2(_user$project$Overdrive$editActor, model, actortype)),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+var _user$project$Overdrive$SetEnemyMomentumStrength = function (a) {
+	return {ctor: 'SetEnemyMomentumStrength', _0: a};
+};
+var _user$project$Overdrive$SetEnemyMomentumType = function (a) {
+	return {ctor: 'SetEnemyMomentumType', _0: a};
+};
+var _user$project$Overdrive$SetMomentumStrength = function (a) {
+	return {ctor: 'SetMomentumStrength', _0: a};
+};
+var _user$project$Overdrive$SetMomentumType = function (a) {
+	return {ctor: 'SetMomentumType', _0: a};
 };
 var _user$project$Overdrive$ClearMomentum = {ctor: 'ClearMomentum'};
+var _user$project$Overdrive$RemoveEnemyMomentum = function (a) {
+	return {ctor: 'RemoveEnemyMomentum', _0: a};
+};
+var _user$project$Overdrive$toEnemyChip = function (momentum) {
+	return A2(
+		_debois$elm_mdl$Material_Chip$span,
+		{
+			ctor: '::',
+			_0: A2(_debois$elm_mdl$Material_Options$css, 'margin', '5px 5px'),
+			_1: {
+				ctor: '::',
+				_0: _debois$elm_mdl$Material_Chip$deleteIcon('cancel'),
+				_1: {
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Chip$deleteClick(
+						_user$project$Overdrive$RemoveEnemyMomentum(momentum)),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_debois$elm_mdl$Material_Chip$content,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(
+						_user$project$Overdrive$printMomentum(momentum)),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Overdrive$renderEnemyMomenta = function (momenta) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				A2(_elm_lang$core$List$map, _user$project$Overdrive$toEnemyChip, momenta)),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Overdrive$RemoveMomentum = function (a) {
 	return {ctor: 'RemoveMomentum', _0: a};
 };
@@ -22689,26 +24211,57 @@ var _user$project$Overdrive$renderMomenta = function (momenta) {
 		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html$text('Current momenta: '),
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				A2(_elm_lang$core$List$map, _user$project$Overdrive$toChip, momenta)),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Overdrive$AddEnemyMomentum = {ctor: 'AddEnemyMomentum'};
+var _user$project$Overdrive$renderEnemyMomentum = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _user$project$Overdrive$renderEnemyMomenta(model.enemyMomenta),
 			_1: {
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
 					{ctor: '[]'},
-					A2(_elm_lang$core$List$map, _user$project$Overdrive$toChip, momenta)),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Overdrive$AddMomentum = {ctor: 'AddMomentum'};
-var _user$project$Overdrive$view = function (model) {
-	return _debois$elm_mdl$Material_Scheme$top(
-		A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: _user$project$Overdrive$renderMomenta(model.momenta),
+					{
+						ctor: '::',
+						_0: A6(_user$project$Overdrive$addMomentumInput, model, model.selectedEnemyMomentum, _user$project$Overdrive$SetEnemyMomentumStrength, _user$project$Overdrive$SetEnemyMomentumType, 'enemy', 100),
+						_1: {
+							ctor: '::',
+							_0: A5(
+								_debois$elm_mdl$Material_Button$render,
+								_user$project$Overdrive$Mdl,
+								{
+									ctor: '::',
+									_0: 1,
+									_1: {ctor: '[]'}
+								},
+								model.mdl,
+								{
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$AddEnemyMomentum),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											'Add ',
+											_user$project$Overdrive$printMomentum(model.selectedEnemyMomentum))),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}),
 				_1: {
 					ctor: '::',
 					_0: A2(
@@ -22716,65 +24269,244 @@ var _user$project$Overdrive$view = function (model) {
 						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: _user$project$Overdrive$addMomentumInput(model),
+							_0: A5(
+								_debois$elm_mdl$Material_Button$render,
+								_user$project$Overdrive$Mdl,
+								{
+									ctor: '::',
+									_0: 0,
+									_1: {ctor: '[]'}
+								},
+								model.mdl,
+								{
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$ClearMomentum),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Clear Momentum'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$Overdrive$AddMomentum = {ctor: 'AddMomentum'};
+var _user$project$Overdrive$renderPlayerMomentum = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _user$project$Overdrive$renderMomenta(model.momenta),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: A6(_user$project$Overdrive$addMomentumInput, model, model.selectedMomentum, _user$project$Overdrive$SetMomentumStrength, _user$project$Overdrive$SetMomentumType, 'player', 0),
+						_1: {
+							ctor: '::',
+							_0: A5(
+								_debois$elm_mdl$Material_Button$render,
+								_user$project$Overdrive$Mdl,
+								{
+									ctor: '::',
+									_0: 1,
+									_1: {ctor: '[]'}
+								},
+								model.mdl,
+								{
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$AddMomentum),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											'Add ',
+											_user$project$Overdrive$printMomentum(model.selectedMomentum))),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A5(
+								_debois$elm_mdl$Material_Button$render,
+								_user$project$Overdrive$Mdl,
+								{
+									ctor: '::',
+									_0: 0,
+									_1: {ctor: '[]'}
+								},
+								model.mdl,
+								{
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$ClearMomentum),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Clear Momentum'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$Overdrive$view = function (model) {
+	return A3(
+		_debois$elm_mdl$Material_Scheme$topWithScheme,
+		_debois$elm_mdl$Material_Color$Blue,
+		_debois$elm_mdl$Material_Color$Indigo,
+		A4(
+			_debois$elm_mdl$Material_Layout$render,
+			_user$project$Overdrive$Mdl,
+			model.mdl,
+			{
+				ctor: '::',
+				_0: _debois$elm_mdl$Material_Layout$fixedHeader,
+				_1: {
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Layout$fixedDrawer,
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				header: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$h1,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$style(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'padding', _1: '1rem'},
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('S33D OVERDRIVE'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				},
+				drawer: {ctor: '[]'},
+				tabs: {
+					ctor: '_Tuple2',
+					_0: {ctor: '[]'},
+					_1: {ctor: '[]'}
+				},
+				main: {
+					ctor: '::',
+					_0: A2(
+						_debois$elm_mdl$Material_Grid$grid,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A2(
+								_debois$elm_mdl$Material_Grid$cell,
+								{
+									ctor: '::',
+									_0: A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, 3),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(_user$project$Overdrive$renderStatusList, model, _user$project$Overdrive$Player),
+									_1: {ctor: '[]'}
+								}),
 							_1: {
 								ctor: '::',
-								_0: A5(
-									_debois$elm_mdl$Material_Button$render,
-									_user$project$Overdrive$Mdl,
+								_0: A2(
+									_debois$elm_mdl$Material_Grid$cell,
 									{
 										ctor: '::',
-										_0: 1,
-										_1: {ctor: '[]'}
-									},
-									model.mdl,
-									{
-										ctor: '::',
-										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$AddMomentum),
+										_0: A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, 2),
 										_1: {ctor: '[]'}
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												'Add ',
-												_user$project$Overdrive$printMomentum(model.selectedMomentum))),
+										_0: _user$project$Overdrive$renderPlayerMomentum(model),
 										_1: {ctor: '[]'}
 									}),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_debois$elm_mdl$Material_Grid$cell,
+										{
+											ctor: '::',
+											_0: A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, 2),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$h4,
+												{ctor: '[]'},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('Init List'),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_debois$elm_mdl$Material_Grid$cell,
+											{
+												ctor: '::',
+												_0: A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, 2),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _user$project$Overdrive$renderEnemyMomentum(model),
+												_1: {ctor: '[]'}
+											}),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_debois$elm_mdl$Material_Grid$cell,
+												{
+													ctor: '::',
+													_0: A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, 3),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: A2(_user$project$Overdrive$renderStatusList, model, _user$project$Overdrive$Enemy),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
 							}
 						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: A5(
-									_debois$elm_mdl$Material_Button$render,
-									_user$project$Overdrive$Mdl,
-									{
-										ctor: '::',
-										_0: 0,
-										_1: {ctor: '[]'}
-									},
-									model.mdl,
-									{
-										ctor: '::',
-										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$ClearMomentum),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text('Clear Momentum'),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}
+					_1: {ctor: '[]'}
 				}
 			}));
 };
@@ -22789,7 +24521,7 @@ var _user$project$Overdrive$main = _elm_lang$html$Html$program(
 var Elm = {};
 Elm['Overdrive'] = Elm['Overdrive'] || {};
 if (typeof _user$project$Overdrive$main !== 'undefined') {
-    _user$project$Overdrive$main(Elm['Overdrive'], 'Overdrive', {"types":{"message":"Overdrive.Msg","aliases":{"Material.Msg":{"type":"Material.Component.Msg Material.Button.Msg Material.Textfield.Msg (Material.Menu.Msg m) Material.Layout.Msg Material.Toggles.Msg Material.Tooltip.Msg Material.Tabs.Msg (List m)","args":["m"]},"Json.Decode.Value":{"type":"Json.Encode.Value","args":[]},"Material.Menu.Geometry.Element":{"type":"{ offsetTop : Float , offsetLeft : Float , offsetHeight : Float , bounds : DOM.Rectangle }","args":[]},"Time.Time":{"type":"Float","args":[]},"Material.Menu.Geometry.Geometry":{"type":"{ button : Material.Menu.Geometry.Element , menu : Material.Menu.Geometry.Element , container : Material.Menu.Geometry.Element , offsetTops : List Float , offsetHeights : List Float }","args":[]},"Phoenix.Socket.AbnormalClose":{"type":"{ reconnectAttempt : Int, reconnectWait : Time.Time }","args":[]},"DOM.Rectangle":{"type":"{ top : Float, left : Float, width : Float, height : Float }","args":[]},"Material.Layout.TabScrollState":{"type":"{ canScrollLeft : Bool , canScrollRight : Bool , width : Maybe.Maybe Int }","args":[]},"Material.Button.Msg":{"type":"Material.Ripple.Msg","args":[]},"Overdrive.Momentum":{"type":"{ element : String, strength : Float }","args":[]},"Material.Menu.ItemConfig":{"type":"{ enabled : Bool, divider : Bool, onSelect : Maybe.Maybe m }","args":["m"]},"Html.Attribute":{"type":"VirtualDom.Property msg","args":["msg"]},"Material.Tooltip.DOMState":{"type":"{ rect : DOM.Rectangle, offsetWidth : Float, offsetHeight : Float }","args":[]},"Material.Component.Index":{"type":"List Int","args":[]},"Html.Events.Options":{"type":"{ stopPropagation : Bool, preventDefault : Bool }","args":[]},"Material.Ripple.DOMState":{"type":"{ rect : DOM.Rectangle , clientX : Maybe.Maybe Float , clientY : Maybe.Maybe Float , touchX : Maybe.Maybe Float , touchY : Maybe.Maybe Float , type_ : String }","args":[]},"Material.Options.Internal.Summary":{"type":"{ classes : List String , css : List ( String, String ) , attrs : List (Html.Attribute m) , internal : List (Html.Attribute m) , dispatch : Material.Dispatch.Config m , config : c }","args":["c","m"]},"Mouse.Position":{"type":"{ x : Int, y : Int }","args":[]}},"unions":{"Material.Tooltip.Msg":{"tags":{"Leave":[],"Enter":["Material.Tooltip.DOMState"]},"args":[]},"Json.Decode.Decoder":{"tags":{"Decoder":[]},"args":["a"]},"Material.Textfield.Msg":{"tags":{"Focus":[],"Input":["String"],"Blur":[]},"args":[]},"Material.Layout.Msg":{"tags":{"ScrollPane":["Bool","Float"],"ScrollTab":["Material.Layout.TabScrollState"],"Ripple":["Int","Material.Ripple.Msg"],"TransitionHeader":["{ toCompact : Bool, fixedHeader : Bool }"],"NOP":[],"Resize":["Int"],"ToggleDrawer":[],"TransitionEnd":[]},"args":[]},"Material.Toggles.Msg":{"tags":{"Ripple":["Material.Ripple.Msg"],"SetFocus":["Bool"]},"args":[]},"Material.Tabs.Msg":{"tags":{"Ripple":["Int","Material.Ripple.Msg"]},"args":[]},"VirtualDom.Property":{"tags":{"Property":[]},"args":["msg"]},"Material.Dispatch.Config":{"tags":{"Config":["{ decoders : List ( String , ( Json.Decode.Decoder msg, Maybe.Maybe Html.Events.Options ) ) , lift : Maybe.Maybe (Json.Decode.Decoder (List msg) -> Json.Decode.Decoder msg) }"]},"args":["msg"]},"Material.Menu.Msg":{"tags":{"Open":["Material.Menu.Geometry.Geometry"],"Key":["List (Material.Options.Internal.Summary (Material.Menu.ItemConfig m) m)","Int"],"Ripple":["Int","Material.Ripple.Msg"],"Select":["Int","Maybe.Maybe m"],"Click":["Mouse.Position"],"Tick":[],"Close":[]},"args":["m"]},"Json.Encode.Value":{"tags":{"Value":[]},"args":[]},"Material.Component.Msg":{"tags":{"ButtonMsg":["Material.Component.Index","button"],"MenuMsg":["Material.Component.Index","menu"],"TabsMsg":["Material.Component.Index","tabs"],"Dispatch":["dispatch"],"TextfieldMsg":["Material.Component.Index","textfield"],"TooltipMsg":["Material.Component.Index","tooltip"],"TogglesMsg":["Material.Component.Index","toggles"],"LayoutMsg":["layout"]},"args":["button","textfield","menu","layout","toggles","tooltip","tabs","dispatch"]},"Overdrive.Msg":{"tags":{"SetMomentumType":["String"],"SocketClosedAbnormally":["Phoenix.Socket.AbnormalClose"],"Mdl":["Material.Msg Overdrive.Msg"],"ConnectionStatusChanged":["Overdrive.ConnectionStatus"],"MomentumUpdate":["Json.Decode.Value"],"SetMomentumStrength":["Float"],"Tick":["Time.Time"],"RemoveMomentum":["Overdrive.Momentum"],"AddMomentum":[],"ClearMomentum":[]},"args":[]},"Material.Ripple.Msg":{"tags":{"Down":["Material.Ripple.DOMState"],"Tick":[],"Up":[]},"args":[]},"Overdrive.ConnectionStatus":{"tags":{"ScheduledReconnect":["{ time : Time.Time }"],"Connected":[],"Disconnected":[]},"args":[]},"Maybe.Maybe":{"tags":{"Nothing":[],"Just":["a"]},"args":["a"]}}},"versions":{"elm":"0.18.0"}});
+    _user$project$Overdrive$main(Elm['Overdrive'], 'Overdrive', {"types":{"message":"Overdrive.Msg","aliases":{"Material.Msg":{"type":"Material.Component.Msg Material.Button.Msg Material.Textfield.Msg (Material.Menu.Msg m) Material.Layout.Msg Material.Toggles.Msg Material.Tooltip.Msg Material.Tabs.Msg (List m)","args":["m"]},"Json.Decode.Value":{"type":"Json.Encode.Value","args":[]},"Material.Menu.Geometry.Element":{"type":"{ offsetTop : Float , offsetLeft : Float , offsetHeight : Float , bounds : DOM.Rectangle }","args":[]},"Time.Time":{"type":"Float","args":[]},"Material.Menu.Geometry.Geometry":{"type":"{ button : Material.Menu.Geometry.Element , menu : Material.Menu.Geometry.Element , container : Material.Menu.Geometry.Element , offsetTops : List Float , offsetHeights : List Float }","args":[]},"Phoenix.Socket.AbnormalClose":{"type":"{ reconnectAttempt : Int, reconnectWait : Time.Time }","args":[]},"DOM.Rectangle":{"type":"{ top : Float, left : Float, width : Float, height : Float }","args":[]},"Material.Layout.TabScrollState":{"type":"{ canScrollLeft : Bool , canScrollRight : Bool , width : Maybe.Maybe Int }","args":[]},"Material.Button.Msg":{"type":"Material.Ripple.Msg","args":[]},"Overdrive.Momentum":{"type":"{ element : String, strength : Float }","args":[]},"Material.Menu.ItemConfig":{"type":"{ enabled : Bool, divider : Bool, onSelect : Maybe.Maybe m }","args":["m"]},"Html.Attribute":{"type":"VirtualDom.Property msg","args":["msg"]},"Material.Tooltip.DOMState":{"type":"{ rect : DOM.Rectangle, offsetWidth : Float, offsetHeight : Float }","args":[]},"Material.Component.Index":{"type":"List Int","args":[]},"Html.Events.Options":{"type":"{ stopPropagation : Bool, preventDefault : Bool }","args":[]},"Material.Ripple.DOMState":{"type":"{ rect : DOM.Rectangle , clientX : Maybe.Maybe Float , clientY : Maybe.Maybe Float , touchX : Maybe.Maybe Float , touchY : Maybe.Maybe Float , type_ : String }","args":[]},"Material.Options.Internal.Summary":{"type":"{ classes : List String , css : List ( String, String ) , attrs : List (Html.Attribute m) , internal : List (Html.Attribute m) , dispatch : Material.Dispatch.Config m , config : c }","args":["c","m"]},"Mouse.Position":{"type":"{ x : Int, y : Int }","args":[]}},"unions":{"Overdrive.ActorType":{"tags":{"Enemy":[],"Player":[]},"args":[]},"Material.Tooltip.Msg":{"tags":{"Leave":[],"Enter":["Material.Tooltip.DOMState"]},"args":[]},"Json.Decode.Decoder":{"tags":{"Decoder":[]},"args":["a"]},"Material.Textfield.Msg":{"tags":{"Focus":[],"Input":["String"],"Blur":[]},"args":[]},"Material.Layout.Msg":{"tags":{"ScrollPane":["Bool","Float"],"ScrollTab":["Material.Layout.TabScrollState"],"Ripple":["Int","Material.Ripple.Msg"],"TransitionHeader":["{ toCompact : Bool, fixedHeader : Bool }"],"NOP":[],"Resize":["Int"],"ToggleDrawer":[],"TransitionEnd":[]},"args":[]},"Material.Toggles.Msg":{"tags":{"Ripple":["Material.Ripple.Msg"],"SetFocus":["Bool"]},"args":[]},"Material.Tabs.Msg":{"tags":{"Ripple":["Int","Material.Ripple.Msg"]},"args":[]},"VirtualDom.Property":{"tags":{"Property":[]},"args":["msg"]},"Material.Dispatch.Config":{"tags":{"Config":["{ decoders : List ( String , ( Json.Decode.Decoder msg, Maybe.Maybe Html.Events.Options ) ) , lift : Maybe.Maybe (Json.Decode.Decoder (List msg) -> Json.Decode.Decoder msg) }"]},"args":["msg"]},"Material.Menu.Msg":{"tags":{"Open":["Material.Menu.Geometry.Geometry"],"Key":["List (Material.Options.Internal.Summary (Material.Menu.ItemConfig m) m)","Int"],"Ripple":["Int","Material.Ripple.Msg"],"Select":["Int","Maybe.Maybe m"],"Click":["Mouse.Position"],"Tick":[],"Close":[]},"args":["m"]},"Json.Encode.Value":{"tags":{"Value":[]},"args":[]},"Material.Component.Msg":{"tags":{"ButtonMsg":["Material.Component.Index","button"],"MenuMsg":["Material.Component.Index","menu"],"TabsMsg":["Material.Component.Index","tabs"],"Dispatch":["dispatch"],"TextfieldMsg":["Material.Component.Index","textfield"],"TooltipMsg":["Material.Component.Index","tooltip"],"TogglesMsg":["Material.Component.Index","toggles"],"LayoutMsg":["layout"]},"args":["button","textfield","menu","layout","toggles","tooltip","tabs","dispatch"]},"Overdrive.Msg":{"tags":{"AddActor":["Overdrive.ActorType"],"SetMomentumType":["String"],"SocketClosedAbnormally":["Phoenix.Socket.AbnormalClose"],"SetEnemyMomentumStrength":["Float"],"Mdl":["Material.Msg Overdrive.Msg"],"ConnectionStatusChanged":["Overdrive.ConnectionStatus"],"UnselectActor":[],"SelectActor":["Int"],"ChangeSelectedActorName":["String"],"MomentumUpdate":["Json.Decode.Value"],"ActorsUpdate":["Json.Decode.Value"],"Raise":["Int"],"RemoveEnemyMomentum":["Overdrive.Momentum"],"SetMomentumStrength":["Float"],"Tick":["Time.Time"],"SetEnemyMomentumType":["String"],"AddEnemyMomentum":[],"RemoveMomentum":["Overdrive.Momentum"],"AddMomentum":[],"ClearMomentum":[]},"args":[]},"Material.Ripple.Msg":{"tags":{"Down":["Material.Ripple.DOMState"],"Tick":[],"Up":[]},"args":[]},"Overdrive.ConnectionStatus":{"tags":{"ScheduledReconnect":["{ time : Time.Time }"],"Connected":[],"Disconnected":[]},"args":[]},"Maybe.Maybe":{"tags":{"Nothing":[],"Just":["a"]},"args":["a"]}}},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])

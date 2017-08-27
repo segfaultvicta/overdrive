@@ -15,6 +15,7 @@ defmodule Overdrive.Application do
       # Start your own worker by calling: Overdrive.Worker.start_link(arg1, arg2, arg3)
       # worker(Overdrive.Worker, [arg1, arg2, arg3]),
       worker(Overdrive.MomentumServer, []),
+      worker(Overdrive.ActorServer, []),
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
