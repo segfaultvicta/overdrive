@@ -56,7 +56,8 @@ type alias MomentumWithActor =
 
 
 type alias Actor =
-    { name : String
+    { uuid : String
+    , name : String
     , currentHP : Int
     , maxHP : Int
     , currentMP : Int
@@ -115,7 +116,7 @@ init =
     , players = []
     , enemies = []
     , selectedActorIdx = -1
-    , selectedActor = Actor "Error" 0 0 0 0 0 0 0 0 0 Back []
+    , selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back []
     , connectionStatus = Disconnected
     , currentTime = 0
     , mdl = Material.model
@@ -144,8 +145,18 @@ type Msg
     | SetEnemyMomentumStrength Float
     | AddActor ActorType
     | ChangeSelectedActorName String
+    | ChangeSelectedActorMaxHP Int
+    | ChangeSelectedActorCurrentHP Int
+    | ChangeSelectedActorMaxMP Int
+    | ChangeSelectedActorCurrentMP Int
+    | ChangeSelectedActorMaxLP Int
+    | ChangeSelectedActorCurrentLP Int
+    | ChangeSelectedActorMaxDrive Int
+    | ChangeSelectedActorCurrentDrive Int
+    | ChangeSelectedActorBaseInit Int
+    | ToggleSelectedActorRow
     | SelectActor Int
-    | UnselectActor
+    | SaveActorChanges
     | Mdl (Material.Msg Msg)
     | Raise Int
     | Tick Time
@@ -247,10 +258,157 @@ update msg model =
             ( { model | selectedEnemyMomentum = Momentum model.selectedEnemyMomentum.element x }, Cmd.none )
 
         AddActor actortype ->
-            ( model, Cmd.none )
+            let
+                push =
+                    Push.init "room:lobby" "add_actor"
+                        |> Push.withPayload
+                            (JE.object
+                                [ ( "team"
+                                  , JE.string
+                                        (if actortype == Player then
+                                            "player"
+                                         else
+                                            "enemy"
+                                        )
+                                  )
+                                ]
+                            )
+            in
+            model ! [ Phoenix.push lobbySocket push ]
 
-        ChangeSelectedActorName string ->
-            ( model, Cmd.none )
+        ChangeSelectedActorName name ->
+            let
+                oldSelectedActor =
+                    model.selectedActor
+
+                newSelectedActor =
+                    { oldSelectedActor | name = name }
+            in
+            ( { model | selectedActor = newSelectedActor }, Cmd.none )
+
+        ChangeSelectedActorMaxHP stat ->
+            let
+                oldSelectedActor =
+                    model.selectedActor
+
+                newSelectedActor =
+                    { oldSelectedActor | maxHP = stat }
+            in
+            ( { model | selectedActor = newSelectedActor }, Cmd.none )
+
+        ChangeSelectedActorCurrentHP stat ->
+            let
+                oldSelectedActor =
+                    model.selectedActor
+
+                newSelectedActor =
+                    { oldSelectedActor
+                        | currentHP =
+                            if stat <= model.selectedActor.maxHP then
+                                stat
+                            else
+                                model.selectedActor.maxHP
+                    }
+            in
+            ( { model | selectedActor = newSelectedActor }, Cmd.none )
+
+        ChangeSelectedActorMaxMP stat ->
+            let
+                oldSelectedActor =
+                    model.selectedActor
+
+                newSelectedActor =
+                    { oldSelectedActor | maxMP = stat }
+            in
+            ( { model | selectedActor = newSelectedActor }, Cmd.none )
+
+        ChangeSelectedActorCurrentMP stat ->
+            let
+                oldSelectedActor =
+                    model.selectedActor
+
+                newSelectedActor =
+                    { oldSelectedActor
+                        | currentMP =
+                            if stat <= model.selectedActor.maxMP then
+                                stat
+                            else
+                                model.selectedActor.maxMP
+                    }
+            in
+            ( { model | selectedActor = newSelectedActor }, Cmd.none )
+
+        ChangeSelectedActorMaxLP stat ->
+            let
+                oldSelectedActor =
+                    model.selectedActor
+
+                newSelectedActor =
+                    { oldSelectedActor | maxLP = stat }
+            in
+            ( { model | selectedActor = newSelectedActor }, Cmd.none )
+
+        ChangeSelectedActorCurrentLP stat ->
+            let
+                oldSelectedActor =
+                    model.selectedActor
+
+                newSelectedActor =
+                    { oldSelectedActor
+                        | currentLP =
+                            if stat <= model.selectedActor.maxLP then
+                                stat
+                            else
+                                model.selectedActor.maxLP
+                    }
+            in
+            ( { model | selectedActor = newSelectedActor }, Cmd.none )
+
+        ChangeSelectedActorMaxDrive stat ->
+            let
+                oldSelectedActor =
+                    model.selectedActor
+
+                newSelectedActor =
+                    { oldSelectedActor | maxDrive = stat }
+            in
+            ( { model | selectedActor = newSelectedActor }, Cmd.none )
+
+        ChangeSelectedActorCurrentDrive stat ->
+            let
+                oldSelectedActor =
+                    model.selectedActor
+
+                newSelectedActor =
+                    { oldSelectedActor | currentDrive = stat }
+            in
+            ( { model | selectedActor = newSelectedActor }, Cmd.none )
+
+        ChangeSelectedActorBaseInit stat ->
+            let
+                oldSelectedActor =
+                    model.selectedActor
+
+                newSelectedActor =
+                    { oldSelectedActor | initBase = stat }
+            in
+            ( { model | selectedActor = newSelectedActor }, Cmd.none )
+
+        ToggleSelectedActorRow ->
+            let
+                oldSelectedActor =
+                    model.selectedActor
+
+                newSelectedActor =
+                    { oldSelectedActor
+                        | row =
+                            if oldSelectedActor.row == Front then
+                                Back
+                            else
+                                Front
+                    }
+            in
+            ( { model | selectedActor = newSelectedActor }, Cmd.none )
 
         SelectActor actorIdx ->
             let
@@ -274,11 +432,43 @@ update msg model =
                     ( { model | selectedActorIdx = actorIdx, selectedActor = actor }, Cmd.none )
 
                 Nothing ->
-                    ( { model | selectedActorIdx = -1, selectedActor = Actor "Error" 0 0 0 0 0 0 0 0 0 Back [] }, Cmd.none )
+                    ( { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] }, Cmd.none )
 
         -- eventually this should also initiate a push of local changes to the server...
-        UnselectActor ->
-            ( { model | selectedActorIdx = -1, selectedActor = Actor "Error" 0 0 0 0 0 0 0 0 0 Back [] }, Cmd.none )
+        SaveActorChanges ->
+            let
+                push =
+                    Push.init "room:lobby" "save_actor"
+                        |> Push.withPayload
+                            (JE.object
+                                [ ( "uuid", JE.string model.selectedActor.uuid )
+                                , ( "name", JE.string model.selectedActor.name )
+                                , ( "team"
+                                  , if model.selectedActorIdx < 100 then
+                                        JE.string "player"
+                                    else
+                                        JE.string "enemy"
+                                  )
+                                , ( "currHP", JE.int model.selectedActor.currentHP )
+                                , ( "maxHP", JE.int model.selectedActor.maxHP )
+                                , ( "currMP", JE.int model.selectedActor.currentMP )
+                                , ( "maxMP", JE.int model.selectedActor.maxMP )
+                                , ( "currLP", JE.int model.selectedActor.currentLP )
+                                , ( "maxLP", JE.int model.selectedActor.maxLP )
+                                , ( "currDrive", JE.int model.selectedActor.currentDrive )
+                                , ( "maxDrive", JE.int model.selectedActor.maxDrive )
+                                , ( "initBase", JE.int model.selectedActor.initBase )
+                                , ( "row"
+                                  , if model.selectedActor.row == Front then
+                                        JE.string "Front"
+                                    else
+                                        JE.string "Back"
+                                  )
+                                , ( "statuses", JE.list (List.map statusEncoder model.selectedActor.status) )
+                                ]
+                            )
+            in
+            { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] } ! [ Phoenix.push lobbySocket push ]
 
         Mdl msg_ ->
             Material.update Mdl msg_ model
@@ -290,9 +480,6 @@ update msg model =
             case JD.decodeValue momentaDecoder payload of
                 Ok momenta ->
                     let
-                        _ =
-                            Debug.log "ok" momenta
-
                         enemyMomenta =
                             List.filter (\mwa -> mwa.actor == "enemy") momenta
                                 |> List.map (\mwa -> mwa.momentum)
@@ -307,20 +494,13 @@ update msg model =
                 Err err ->
                     let
                         _ =
-                            Debug.log "err" err
+                            Debug.log "momentumUpdate err" ( err, payload )
                     in
                     model ! []
 
         ActorsUpdate payload ->
             case JD.decodeValue actorsDecoder payload of
                 Ok actorsListContainer ->
-                    let
-                        _ =
-                            Debug.log "ok! players: " actorsListContainer.players
-
-                        _ =
-                            Debug.log "enemies: " actorsListContainer.enemies
-                    in
                     { model | players = actorsListContainer.players, enemies = actorsListContainer.enemies } ! []
 
                 Err err ->
@@ -370,6 +550,7 @@ actorListDecoder =
 actorDecoder : JD.Decoder Actor
 actorDecoder =
     decode Actor
+        |> required "uuid" JD.string
         |> required "name" JD.string
         |> required "currHP" JD.int
         |> required "maxHP" JD.int
@@ -406,6 +587,16 @@ statusDecoder =
         (JD.field "duration" JD.string)
         (JD.field "level" JD.int)
         (JD.field "meta" JD.string)
+
+
+statusEncoder : Status -> JE.Value
+statusEncoder status =
+    JE.object
+        [ ( "status", JE.string status.status )
+        , ( "duration", JE.string status.duration )
+        , ( "level", JE.int status.level )
+        , ( "meta", JE.string status.meta )
+        ]
 
 
 momentaDecoder : JD.Decoder (List MomentumWithActor)
@@ -531,10 +722,10 @@ editActor model actortype =
             ((playerSelected && (actortype == Player)) || (not playerSelected && (actortype == Enemy))) && not (model.selectedActorIdx == -1)
 
         data =
-            [ ( 1, "HP", model.selectedActor.currentHP, model.selectedActor.maxHP )
-            , ( 2, "MP", model.selectedActor.currentMP, model.selectedActor.maxMP )
-            , ( 3, "LP", model.selectedActor.currentLP, model.selectedActor.maxLP )
-            , ( 4, "DR", model.selectedActor.currentDrive, model.selectedActor.maxDrive )
+            [ ( 1, "HP", model.selectedActor.currentHP, model.selectedActor.maxHP, ChangeSelectedActorCurrentHP, ChangeSelectedActorMaxHP )
+            , ( 2, "MP", model.selectedActor.currentMP, model.selectedActor.maxMP, ChangeSelectedActorCurrentMP, ChangeSelectedActorMaxMP )
+            , ( 3, "LP", model.selectedActor.currentLP, model.selectedActor.maxLP, ChangeSelectedActorCurrentLP, ChangeSelectedActorMaxLP )
+            , ( 4, "DR", model.selectedActor.currentDrive, model.selectedActor.maxDrive, ChangeSelectedActorCurrentDrive, ChangeSelectedActorMaxDrive )
             ]
     in
     if shouldDisplay then
@@ -546,7 +737,7 @@ editActor model actortype =
             , Button.ripple
             , Options.css "margin-left" "87px"
             , Options.css "margin-top" "10px"
-            , Options.onClick UnselectActor
+            , Options.onClick SaveActorChanges
             ]
             [ text "SAVE" ]
         , div []
@@ -555,8 +746,10 @@ editActor model actortype =
                 model.mdl
                 [ Textfield.value model.selectedActor.name
                 , Options.onInput ChangeSelectedActorName
+                , Options.css "width" "255px"
                 , Options.input
                     [ Options.css "text-align" "center"
+                    , Options.css "width" "255px"
                     ]
                 ]
                 []
@@ -573,14 +766,39 @@ editActor model actortype =
             , Table.tbody []
                 (data
                     |> List.map
-                        (\( id, label, curr, max ) ->
+                        (\( id, label, curr, max, currAction, maxAction ) ->
                             Table.tr []
                                 [ Table.td [] [ text label ]
-                                , Table.td [] [ statTextField model (id * 10) curr ]
-                                , Table.td [] [ statTextField model (id * 100) max ]
+                                , Table.td [] [ statTextField model (id * 10) curr currAction ]
+                                , Table.td [] [ statTextField model (id * 100) max maxAction ]
                                 , Table.td [] [ text "+", text "-" ]
                                 ]
                         )
+                )
+            , Table.tr []
+                [ Table.td [] [ text "Init" ]
+                , Table.td [] [ statTextField model 142526 model.selectedActor.initBase ChangeSelectedActorBaseInit ]
+                , Table.td [] [ text "" ]
+                , Table.td [] [ text "+", text "-" ]
+                ]
+            ]
+        , Toggle.switch Mdl
+            [ 774 ]
+            model.mdl
+            [ Options.onToggle ToggleSelectedActorRow
+            , Toggle.ripple
+            , Toggle.value
+                (if model.selectedActor.row == Front then
+                    True
+                 else
+                    False
+                )
+            ]
+            [ text
+                (if model.selectedActor.row == Front then
+                    "Front"
+                 else
+                    "Back"
                 )
             ]
         ]
@@ -588,8 +806,8 @@ editActor model actortype =
         [ text "" ]
 
 
-statTextField : Model -> Int -> Int -> Html Msg
-statTextField model fieldId value =
+statTextField : Model -> Int -> Int -> (Int -> Msg) -> Html Msg
+statTextField model fieldId value action =
     div
         []
         [ Textfield.render Mdl
@@ -598,6 +816,7 @@ statTextField model fieldId value =
             [ Textfield.value (value |> toString)
             , Textfield.maxlength 3
             , Options.css "width" "30px"
+            , Options.onInput (action << Result.withDefault 0 << String.toInt)
             , Options.input
                 [ Options.css "text-align" "right"
                 , Options.css "width" "30px"
@@ -635,17 +854,31 @@ statusCard model actortype ( k, actor ) =
     Card.view
         [ dynamic dyn_id (SelectActor dyn_id) model
         , css "width" "240px"
-        , css "margin" "4px 8px 4px 0px"
+        , css
+            "margin"
+            ("4px 8px 4px "
+                ++ (if (actortype == Player && actor.row == Front) || (actortype == Enemy && actor.row == Back) then
+                        "35px"
+                    else
+                        "0px"
+                   )
+            )
         , Color.background (Color.color Color.Blue Color.S500)
         ]
         [ Card.title [ css "padding" "5px 8px 0px 8px" ] [ Card.head [ Color.text Color.white ] [ text actor.name ] ]
         , Card.text [ Color.text Color.white, css "padding" "0px 8px 8px 8px" ]
-            [ div []
-                [ renderStat model "HP" actor.currentHP actor.maxHP actortype
-                , renderStat model "MP" actor.currentMP actor.maxMP actortype
-                , renderStat model "LP" actor.currentLP actor.maxLP actortype
-                , renderStat model "DR" actor.currentDrive actor.maxDrive actortype
-                , renderStatus actor
+            [ div [ class "render-statcard-block" ]
+                [ div [ class "render-statcard-double" ]
+                    [ renderStat model "HP" actor.currentHP actor.maxHP actortype "left"
+                    , renderStat model "MP" actor.currentMP actor.maxMP actortype "right"
+                    ]
+                , div [ class "render-statcard-double" ]
+                    [ renderStat model "LP" actor.currentLP actor.maxLP actortype "left"
+                    , renderStat model "DR" actor.currentDrive actor.maxDrive actortype "right"
+                    ]
+                , div []
+                    [ renderStatus actor
+                    ]
                 ]
             ]
         ]
@@ -657,9 +890,13 @@ statDiv c m =
         |> toString
 
 
-renderStat : Model -> String -> Int -> Int -> ActorType -> Html Msg
-renderStat model label currentStat maxStat actortype =
-    div []
+renderStat : Model -> String -> Int -> Int -> ActorType -> String -> Html Msg
+renderStat model label currentStat maxStat actortype rorl =
+    let
+        span_class =
+            "render-stat-" ++ rorl
+    in
+    span [ class span_class ]
         [ if actortype == Player then
             text (label ++ "   " ++ (toString <| currentStat) ++ "/" ++ (toString <| maxStat))
           else

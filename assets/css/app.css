@@ -2,6 +2,18 @@
 
 .elm-overlay { z-index: 999; }
 
-.actor-edit-stat {
-  width: 70px;
+.render-statcard-block {
+  display: grid;
+}
+
+.render-statcard-double {
+  width: 100%;
+}
+
+.render-stat-right {
+  float: right;
+}
+
+.render-stat-left {
+  float: left;
 }

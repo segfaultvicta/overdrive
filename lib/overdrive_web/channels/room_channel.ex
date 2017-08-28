@@ -2,6 +2,7 @@ defmodule OverdriveWeb.RoomChannel do
   use OverdriveWeb, :channel
   alias Overdrive.MomentumServer
   alias Overdrive.ActorServer
+  alias Overdrive.Actor
   alias Overdrive.Momentum
   require Logger
 
@@ -41,13 +42,31 @@ defmodule OverdriveWeb.RoomChannel do
     {:reply, :ok, socket}
   end
 
+  def handle_in("add_actor", %{"team" => team_string}, socket) do
+    team = if team_string == "player" do :players else :enemies end
+    ActorServer.add_actor(:lobby, team)
+    send self(), {:status_update}
+    {:reply, :ok, socket}
+  end
+
+  def handle_in("save_actor", actor, socket) do
+    team = if actor["team"] == "player" do :players else :enemies end
+    to_save = %Actor{name: actor["name"], currHP: actor["currHP"], maxHP: actor["maxHP"],
+                     currMP: actor["currMP"], maxMP: actor["maxMP"], currLP: actor["currLP"],
+                     maxLP: actor["maxLP"], currDrive: actor["currDrive"], maxDrive: actor["maxDrive"],
+                     initBase: actor["initBase"], row: actor["row"], statuses: actor["statuses"], uuid: actor["uuid"]}
+    ActorServer.save_actor(:lobby, team, actor["uuid"], to_save)
+    send self(), {:status_update}
+    {:reply, :ok, socket}
+  end
+
   def handle_info({:momentum_update}, socket) do
     broadcast!(socket, "momentum_update", %{"momenta": MomentumServer.get(:lobby)})
     {:noreply, socket}
   end
 
   def handle_info({:status_update}, socket) do
-    broadcast!(socket, "status_update", %{"players": ActorServer.get(:players, :lobby), "enemies": ActorServer.get(:enemies, :lobby)})
+    broadcast!(socket, "status_update", %{"players": ActorServer.get(:lobby, :players), "enemies": ActorServer.get(:lobby, :enemies)})
     {:noreply, socket}
   end
 
