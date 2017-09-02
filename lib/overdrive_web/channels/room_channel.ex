@@ -2,6 +2,7 @@ defmodule OverdriveWeb.RoomChannel do
   use OverdriveWeb, :channel
   alias Overdrive.MomentumServer
   alias Overdrive.ActorServer
+  alias Overdrive.InitServer
   alias Overdrive.Actor
   alias Overdrive.Momentum
   require Logger
@@ -10,6 +11,7 @@ defmodule OverdriveWeb.RoomChannel do
     if authorized?(payload) do
       send self(), {:momentum_update}
       send self(), {:status_update}
+      send self(), {:inits_update}
       {:ok, socket}
     else
       {:error, %{reason: "unauthorized"}}
@@ -44,7 +46,13 @@ defmodule OverdriveWeb.RoomChannel do
 
   def handle_in("add_actor", %{"team" => team_string}, socket) do
     team = if team_string == "player" do :players else :enemies end
-    ActorServer.add_actor(:lobby, team)
+    ActorServer.add(:lobby, team)
+    send self(), {:status_update}
+    {:reply, :ok, socket}
+  end
+
+  def handle_in("remove_actor", %{"uuid" => uuid}, socket) do
+    ActorServer.delete(:lobby, uuid)
     send self(), {:status_update}
     {:reply, :ok, socket}
   end
@@ -55,8 +63,32 @@ defmodule OverdriveWeb.RoomChannel do
                      currMP: actor["currMP"], maxMP: actor["maxMP"], currLP: actor["currLP"],
                      maxLP: actor["maxLP"], currDrive: actor["currDrive"], maxDrive: actor["maxDrive"],
                      initBase: actor["initBase"], row: actor["row"], statuses: actor["statuses"], uuid: actor["uuid"]}
-    ActorServer.save_actor(:lobby, team, actor["uuid"], to_save)
+    ActorServer.save(:lobby, team, actor["uuid"], to_save)
     send self(), {:status_update}
+    {:reply, :ok, socket}
+  end
+
+  def handle_in("initialise_init", _, socket) do
+    InitServer.initialise(:lobby)
+    send self(), {:inits_update}
+    {:reply, :ok, socket}
+  end
+
+  def handle_in("clear_init", _, socket) do
+    InitServer.clear(:lobby)
+    send self(), {:inits_update}
+    {:reply, :ok, socket}
+  end
+
+  def handle_in("increment_init", %{"idx" => idx}, socket) do
+    InitServer.increment_at(:lobby, idx)
+    send self(), {:inits_update}
+    {:reply, :ok, socket}
+  end
+
+  def handle_in("decrement_init", %{"idx" => idx}, socket) do
+    InitServer.decrement_at(:lobby, idx)
+    send self(), {:inits_update}
     {:reply, :ok, socket}
   end
 
@@ -67,6 +99,11 @@ defmodule OverdriveWeb.RoomChannel do
 
   def handle_info({:status_update}, socket) do
     broadcast!(socket, "status_update", %{"players": ActorServer.get(:lobby, :players), "enemies": ActorServer.get(:lobby, :enemies)})
+    {:noreply, socket}
+  end
+
+  def handle_info({:inits_update}, socket) do
+    broadcast!(socket, "inits_update", %{"inits": InitServer.get(:lobby)})
     {:noreply, socket}
   end
 

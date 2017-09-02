@@ -35,7 +35,7 @@ defmodule Overdrive.MomentumServer do
   end
 
   def clear(room) do
-    set(room, [])
+
   end
 
 end

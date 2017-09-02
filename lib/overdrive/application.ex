@@ -16,6 +16,7 @@ defmodule Overdrive.Application do
       # worker(Overdrive.Worker, [arg1, arg2, arg3]),
       worker(Overdrive.MomentumServer, []),
       worker(Overdrive.ActorServer, []),
+      worker(Overdrive.InitServer, []),
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

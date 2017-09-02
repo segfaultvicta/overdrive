@@ -16,6 +16,7 @@ import Material.Grid exposing (Device(..), cell, grid, size)
 import Material.Helpers exposing (pure)
 import Material.Icon as Icon
 import Material.Layout as Layout
+import Material.List as Lists
 import Material.Options as Options exposing (css)
 import Material.Scheme
 import Material.Slider as Slider
@@ -52,6 +53,12 @@ type alias Momentum =
 type alias MomentumWithActor =
     { momentum : Momentum
     , actor : String
+    }
+
+
+type alias InitRecord =
+    { name : String
+    , idx : Int
     }
 
 
@@ -100,6 +107,7 @@ type alias Model =
     , players : List Actor
     , selectedActorIdx : Int
     , selectedActor : Actor
+    , inits : List InitRecord
     , connectionStatus : ConnectionStatus
     , currentTime : Time
     , mdl : Material.Model
@@ -117,6 +125,7 @@ init =
     , enemies = []
     , selectedActorIdx = -1
     , selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back []
+    , inits = []
     , connectionStatus = Disconnected
     , currentTime = 0
     , mdl = Material.model
@@ -144,6 +153,7 @@ type Msg
     | SetEnemyMomentumType String
     | SetEnemyMomentumStrength Float
     | AddActor ActorType
+    | RemoveActor
     | ChangeSelectedActorName String
     | ChangeSelectedActorMaxHP Int
     | ChangeSelectedActorCurrentHP Int
@@ -157,11 +167,17 @@ type Msg
     | ToggleSelectedActorRow
     | SelectActor Int
     | SaveActorChanges
+    | ClearActorChanges
+    | IncrementInitRecord Int
+    | DecrementInitRecord Int
+    | InitialiseInitRecords
+    | ClearInitRecords
     | Mdl (Material.Msg Msg)
     | Raise Int
     | Tick Time
     | MomentumUpdate JD.Value
     | ActorsUpdate JD.Value
+    | InitRecordsUpdate JD.Value
     | SocketClosedAbnormally AbnormalClose
     | ConnectionStatusChanged ConnectionStatus
 
@@ -275,6 +291,17 @@ update msg model =
                             )
             in
             model ! [ Phoenix.push lobbySocket push ]
+
+        RemoveActor ->
+            let
+                push =
+                    Push.init "room:lobby" "remove_actor"
+                        |> Push.withPayload
+                            (JE.object
+                                [ ( "uuid", JE.string model.selectedActor.uuid ) ]
+                            )
+            in
+            { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] } ! [ Phoenix.push lobbySocket push ]
 
         ChangeSelectedActorName name ->
             let
@@ -434,7 +461,6 @@ update msg model =
                 Nothing ->
                     ( { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] }, Cmd.none )
 
-        -- eventually this should also initiate a push of local changes to the server...
         SaveActorChanges ->
             let
                 push =
@@ -469,6 +495,47 @@ update msg model =
                             )
             in
             { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] } ! [ Phoenix.push lobbySocket push ]
+
+        ClearActorChanges ->
+            { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] } ! []
+
+        InitialiseInitRecords ->
+            let
+                push =
+                    Push.init "room:lobby" "initialise_init"
+                        |> Push.withPayload JE.null
+            in
+            model ! [ Phoenix.push lobbySocket push ]
+
+        ClearInitRecords ->
+            let
+                push =
+                    Push.init "room:lobby" "clear_init"
+                        |> Push.withPayload JE.null
+            in
+            model ! [ Phoenix.push lobbySocket push ]
+
+        IncrementInitRecord idx ->
+            let
+                push =
+                    Push.init "room:lobby" "increment_init"
+                        |> Push.withPayload
+                            (JE.object
+                                [ ( "idx", JE.int idx ) ]
+                            )
+            in
+            model ! [ Phoenix.push lobbySocket push ]
+
+        DecrementInitRecord idx ->
+            let
+                push =
+                    Push.init "room:lobby" "decrement_init"
+                        |> Push.withPayload
+                            (JE.object
+                                [ ( "idx", JE.int idx ) ]
+                            )
+            in
+            model ! [ Phoenix.push lobbySocket push ]
 
         Mdl msg_ ->
             Material.update Mdl msg_ model
@@ -510,6 +577,18 @@ update msg model =
                     in
                     model ! []
 
+        InitRecordsUpdate payload ->
+            case JD.decodeValue initsDecoder payload of
+                Ok inits ->
+                    { model | inits = inits } ! []
+
+                Err err ->
+                    let
+                        _ =
+                            Debug.log "initsUpdate err" ( err, payload )
+                    in
+                    model ! []
+
         SocketClosedAbnormally abnormalClose ->
             { model
                 | connectionStatus =
@@ -527,6 +606,18 @@ update msg model =
 roundDownToSecond : Time -> Time
 roundDownToSecond ms =
     (ms / 1000) |> truncate |> (*) 1000 |> toFloat
+
+
+initsDecoder : JD.Decoder (List InitRecord)
+initsDecoder =
+    JD.at [ "inits" ] (JD.list initDecoder)
+
+
+initDecoder : JD.Decoder InitRecord
+initDecoder =
+    decode InitRecord
+        |> required "name" JD.string
+        |> required "idx" JD.int
 
 
 type alias ActorsListContainer =
@@ -636,6 +727,7 @@ lobby userName =
         |> Channel.withPayload (JE.object [ ( "user_name", JE.string "foobie" ) ])
         |> Channel.on "momentum_update" (\msg -> MomentumUpdate msg)
         |> Channel.on "status_update" (\msg -> ActorsUpdate msg)
+        |> Channel.on "inits_update" (\msg -> InitRecordsUpdate msg)
         |> Channel.withDebug
 
 
@@ -674,7 +766,7 @@ view model =
                     , cell [ size All 2 ]
                         [ renderPlayerMomentum model ]
                     , cell [ size All 2 ]
-                        [ h4 [] [ text "Init List" ] ]
+                        [ renderInitList model ]
                     , cell [ size All 2 ]
                         [ renderEnemyMomentum model ]
                     , cell [ size All 3 ]
@@ -682,6 +774,66 @@ view model =
                     ]
                 ]
             }
+
+
+renderInitList : Model -> Html Msg
+renderInitList model =
+    div []
+        [ Button.render Mdl
+            [ 53524 ]
+            model.mdl
+            [ Button.raised
+            , Button.colored
+            , Button.ripple
+            , Options.css "margin-left" "16px"
+            , Options.onClick InitialiseInitRecords
+            ]
+            [ text "INITIALISE" ]
+        , Button.render Mdl
+            [ 53525 ]
+            model.mdl
+            [ Button.raised
+            , Button.colored
+            , Button.ripple
+            , Options.css "margin-left" "3px"
+            , Options.onClick ClearInitRecords
+            ]
+            [ text "CLEAR" ]
+        , Lists.ul []
+            (List.map (renderInit model) model.inits)
+        ]
+
+
+renderInit : Model -> InitRecord -> Html Msg
+renderInit model record =
+    let
+        plus model k =
+            Button.render Mdl
+                [ k ]
+                model.mdl
+                [ Button.icon
+                , Options.onClick (IncrementInitRecord k)
+                ]
+                [ Icon.i "arrow_drop_up" ]
+
+        minus model k =
+            Button.render Mdl
+                [ k ]
+                model.mdl
+                [ Button.icon
+                , Options.onClick (DecrementInitRecord k)
+                ]
+                [ Icon.i "arrow_drop_down" ]
+    in
+    Lists.li []
+        [ minus model record.idx
+        , Lists.content [] [ text record.name ]
+        , plus model record.idx
+        ]
+
+
+
+--div [] [ text ("init! " ++ record.name ++ toString record.idx) ]
 
 
 renderStatusList : Model -> ActorType -> Html Msg
@@ -725,7 +877,7 @@ editActor model actortype =
             [ ( 1, "HP", model.selectedActor.currentHP, model.selectedActor.maxHP, ChangeSelectedActorCurrentHP, ChangeSelectedActorMaxHP )
             , ( 2, "MP", model.selectedActor.currentMP, model.selectedActor.maxMP, ChangeSelectedActorCurrentMP, ChangeSelectedActorMaxMP )
             , ( 3, "LP", model.selectedActor.currentLP, model.selectedActor.maxLP, ChangeSelectedActorCurrentLP, ChangeSelectedActorMaxLP )
-            , ( 4, "DR", model.selectedActor.currentDrive, model.selectedActor.maxDrive, ChangeSelectedActorCurrentDrive, ChangeSelectedActorMaxDrive )
+            , ( 4, "Drive", model.selectedActor.currentDrive, model.selectedActor.maxDrive, ChangeSelectedActorCurrentDrive, ChangeSelectedActorMaxDrive )
             ]
     in
     if shouldDisplay then
@@ -735,11 +887,33 @@ editActor model actortype =
             [ Button.raised
             , Button.colored
             , Button.ripple
-            , Options.css "margin-left" "87px"
+            , Options.css "margin-left" "12px"
             , Options.css "margin-top" "10px"
             , Options.onClick SaveActorChanges
             ]
             [ text "SAVE" ]
+        , Button.render Mdl
+            [ 665 ]
+            model.mdl
+            [ Button.raised
+            , Button.colored
+            , Button.ripple
+            , Options.css "margin-left" "3px"
+            , Options.css "margin-top" "10px"
+            , Options.onClick ClearActorChanges
+            ]
+            [ text "RESET" ]
+        , Button.render Mdl
+            [ 666 ]
+            model.mdl
+            [ Button.raised
+            , Button.colored
+            , Button.ripple
+            , Options.css "margin-left" "3px"
+            , Options.css "margin-top" "10px"
+            , Options.onClick RemoveActor
+            ]
+            [ text "DELETE" ]
         , div []
             [ Textfield.render Mdl
                 [ 800 ]
@@ -874,7 +1048,7 @@ statusCard model actortype ( k, actor ) =
                     ]
                 , div [ class "render-statcard-double" ]
                     [ renderStat model "LP" actor.currentLP actor.maxLP actortype "left"
-                    , renderStat model "DR" actor.currentDrive actor.maxDrive actortype "right"
+                    , renderStat model "Drive" actor.currentDrive actor.maxDrive actortype "right"
                     ]
                 , div []
                     [ renderStatus actor

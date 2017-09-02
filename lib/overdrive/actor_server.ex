@@ -46,7 +46,32 @@ defmodule Overdrive.ActorServer do
     end
   end
 
-  def save_actor(room, side, uuid, actor) do
+  def delete(room, uuid) do
+    players = get(room, :players)
+    side = if Enum.any?(players, fn(actor) -> actor.uuid == uuid end) do
+      :players
+    else
+      :enemies
+    end
+    delete(room, side, uuid)
+  end
+
+  def delete(room, side, uuid) do
+    curr = get(room, side)
+    other_side = get_other_side(room, side)
+    other_side_name = get_other_side_name(side)
+    new_curr = Enum.reject(curr, fn(actor) -> actor.uuid == uuid end)
+    new_map = %{}
+    |> Map.put(side, new_curr)
+    |> Map.put(other_side_name, other_side)
+    
+    Agent.update(__MODULE__,
+      fn state ->
+        Map.put(state, room, new_map)
+      end)
+  end
+
+  def save(room, side, uuid, actor) do
     curr_side = get(room, side)
     other_side = get_other_side(room, side)
     other_side_name = get_other_side_name(side)
@@ -67,7 +92,7 @@ defmodule Overdrive.ActorServer do
       end)
   end
 
-  def add_actor(room, side) do
+  def add(room, side) do
     curr_side = get(room, side)
     other_side = get_other_side(room, side)
     other_side_name = get_other_side_name(side)
