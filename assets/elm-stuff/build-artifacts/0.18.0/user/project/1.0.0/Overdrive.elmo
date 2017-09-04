@@ -25,23 +25,388 @@ var _user$project$Overdrive$statusToString = function (status) {
 						_elm_lang$core$Native_Utils.eq(status.level, 1) ? 'I' : 'II',
 						_elm_lang$core$Native_Utils.eq(status.meta, '') ? '' : A2(_elm_lang$core$Basics_ops['++'], ': ', status.meta))))));
 };
-var _user$project$Overdrive$renderStatus = function (status) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
+var _user$project$Overdrive$tooltipsLookup = _elm_lang$core$Dict$fromList(
+	{
+		ctor: '::',
+		_0: {
+			ctor: '_Tuple2',
+			_0: {ctor: '_Tuple2', _0: 'Energize', _1: 1},
+			_1: 'Gain +1 extra Drive at the start of your turn.'
+		},
+		_1: {
 			ctor: '::',
-			_0: _elm_lang$html$Html$text(
-				_user$project$Overdrive$statusToString(status)),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Overdrive$renderStatuses = function (actor) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		A2(_elm_lang$core$List$map, _user$project$Overdrive$renderStatus, actor.status));
-};
+			_0: {
+				ctor: '_Tuple2',
+				_0: {ctor: '_Tuple2', _0: 'Energize', _1: 2},
+				_1: 'Gain +2 extra Drive at the start of your turn.'
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: {ctor: '_Tuple2', _0: 'Focus', _1: 1},
+					_1: 'Reduce the MP cost of your abilities by half, rounded up.'
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: {ctor: '_Tuple2', _0: 'Focus', _1: 2},
+						_1: 'Reduce the MP cost of your abilities to 0.'
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: {ctor: '_Tuple2', _0: 'Lucky', _1: 1},
+							_1: 'When you roll a d100, lower the result by -15.'
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: {ctor: '_Tuple2', _0: 'Lucky', _1: 2},
+								_1: 'When you roll a d100, lower the result by -30.'
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: {ctor: '_Tuple2', _0: 'Kinetic-Power', _1: 1},
+									_1: 'Deal +2 Physical and Supreme damage.'
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: {ctor: '_Tuple2', _0: 'Kinetic-Power', _1: 2},
+										_1: 'Deal +5 Physical and Supreme damage.'
+									},
+									_1: {
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: {ctor: '_Tuple2', _0: 'Elemental-Power', _1: 1},
+											_1: 'Deal +2 Fire, Water, Air and Earth damage.'
+										},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: {ctor: '_Tuple2', _0: 'Elemental-Power', _1: 2},
+												_1: 'Deal +5 Fire, Water, Air and Earth damage.'
+											},
+											_1: {
+												ctor: '::',
+												_0: {
+													ctor: '_Tuple2',
+													_0: {ctor: '_Tuple2', _0: 'Healing-Power', _1: 1},
+													_1: 'Gain +2 potency when using HP restoring abilities.'
+												},
+												_1: {
+													ctor: '::',
+													_0: {
+														ctor: '_Tuple2',
+														_0: {ctor: '_Tuple2', _0: 'Healing-Power', _1: 2},
+														_1: 'Gain +5 potency when using HP restoring abilities.'
+													},
+													_1: {
+														ctor: '::',
+														_0: {
+															ctor: '_Tuple2',
+															_0: {ctor: '_Tuple2', _0: 'Kinetic-Guard', _1: 1},
+															_1: 'Reduce physical and supreme damage against you by -2.'
+														},
+														_1: {
+															ctor: '::',
+															_0: {
+																ctor: '_Tuple2',
+																_0: {ctor: '_Tuple2', _0: 'Kinetic-Guard', _1: 2},
+																_1: 'Reduce physical and supreme damage against you by -5.'
+															},
+															_1: {
+																ctor: '::',
+																_0: {
+																	ctor: '_Tuple2',
+																	_0: {ctor: '_Tuple2', _0: 'Elemental-Guard', _1: 1},
+																	_1: 'Reduce Fire, Water, Air and Earth damage against you by -2.'
+																},
+																_1: {
+																	ctor: '::',
+																	_0: {
+																		ctor: '_Tuple2',
+																		_0: {ctor: '_Tuple2', _0: 'Elemental-Guard', _1: 2},
+																		_1: 'Reduce Fire, Water, Air and Earth damage against you by -5.'
+																	},
+																	_1: {
+																		ctor: '::',
+																		_0: {
+																			ctor: '_Tuple2',
+																			_0: {ctor: '_Tuple2', _0: 'Stalwart', _1: 1},
+																			_1: 'When someone uses a healing move on you, increase the value by +3, and gain +1 Drive.'
+																		},
+																		_1: {
+																			ctor: '::',
+																			_0: {
+																				ctor: '_Tuple2',
+																				_0: {ctor: '_Tuple2', _0: 'Stalwart', _1: 2},
+																				_1: 'When someone uses a healing move on you, increase the value by +6, and gain +2 Drive.'
+																			},
+																			_1: {
+																				ctor: '::',
+																				_0: {
+																					ctor: '_Tuple2',
+																					_0: {ctor: '_Tuple2', _0: 'Liberation', _1: 1},
+																					_1: 'You can activate a combo without expending the needed momentum.'
+																				},
+																				_1: {
+																					ctor: '::',
+																					_0: {
+																						ctor: '_Tuple2',
+																						_0: {ctor: '_Tuple2', _0: 'Liberation', _1: 2},
+																						_1: 'You can activate a combo without expending the needed momentum, and combo with abilities multiple times (or without spending LP, if you are a monster).'
+																					},
+																					_1: {
+																						ctor: '::',
+																						_0: {
+																							ctor: '_Tuple2',
+																							_0: {ctor: '_Tuple2', _0: 'Element-Absorb', _1: 1},
+																							_1: 'You receive 0 Damage from the corresponding element.'
+																						},
+																						_1: {
+																							ctor: '::',
+																							_0: {
+																								ctor: '_Tuple2',
+																								_0: {ctor: '_Tuple2', _0: 'Element-Absorb', _1: 2},
+																								_1: 'You receive 0 Damage from the corresponding element, and gain +2 Drive when struck by that element.'
+																							},
+																							_1: {
+																								ctor: '::',
+																								_0: {
+																									ctor: '_Tuple2',
+																									_0: {ctor: '_Tuple2', _0: 'Chill', _1: 1},
+																									_1: 'Lose -1 Drive at the start of your turn.'
+																								},
+																								_1: {
+																									ctor: '::',
+																									_0: {
+																										ctor: '_Tuple2',
+																										_0: {ctor: '_Tuple2', _0: 'Chill', _1: 2},
+																										_1: 'Lose -2 Drive at the start of your turn.'
+																									},
+																									_1: {
+																										ctor: '::',
+																										_0: {
+																											ctor: '_Tuple2',
+																											_0: {ctor: '_Tuple2', _0: 'Exhaust', _1: 1},
+																											_1: 'Double your MP costs.'
+																										},
+																										_1: {
+																											ctor: '::',
+																											_0: {
+																												ctor: '_Tuple2',
+																												_0: {ctor: '_Tuple2', _0: 'Exhaust', _1: 2},
+																												_1: 'Triple your MP costs!'
+																											},
+																											_1: {
+																												ctor: '::',
+																												_0: {
+																													ctor: '_Tuple2',
+																													_0: {ctor: '_Tuple2', _0: 'Shock', _1: 1},
+																													_1: 'When you roll a d100, increase the result by +15.'
+																												},
+																												_1: {
+																													ctor: '::',
+																													_0: {
+																														ctor: '_Tuple2',
+																														_0: {ctor: '_Tuple2', _0: 'Shock', _1: 2},
+																														_1: 'When you roll a d100, increase the result by +30.'
+																													},
+																													_1: {
+																														ctor: '::',
+																														_0: {
+																															ctor: '_Tuple2',
+																															_0: {ctor: '_Tuple2', _0: 'Curse', _1: 1},
+																															_1: 'Anytime you spend an LP, take 6 damage for each LP spent.'
+																														},
+																														_1: {
+																															ctor: '::',
+																															_0: {
+																																ctor: '_Tuple2',
+																																_0: {ctor: '_Tuple2', _0: 'Curse', _1: 2},
+																																_1: 'Anytime you spend an LP, take 12 damage for each LP spent.'
+																															},
+																															_1: {
+																																ctor: '::',
+																																_0: {
+																																	ctor: '_Tuple2',
+																																	_0: {ctor: '_Tuple2', _0: 'Burning', _1: 1},
+																																	_1: 'At the end of your turn, take 6 damage. Cleanse with Defend.'
+																																},
+																																_1: {
+																																	ctor: '::',
+																																	_0: {
+																																		ctor: '_Tuple2',
+																																		_0: {ctor: '_Tuple2', _0: 'Burning', _1: 2},
+																																		_1: 'At the end of your turn, take 12 damage. Cleanse with Defend.'
+																																	},
+																																	_1: {
+																																		ctor: '::',
+																																		_0: {
+																																			ctor: '_Tuple2',
+																																			_0: {ctor: '_Tuple2', _0: 'Kinetic-Shatter', _1: 1},
+																																			_1: 'When you take physical or supreme damage, take +2 more.'
+																																		},
+																																		_1: {
+																																			ctor: '::',
+																																			_0: {
+																																				ctor: '_Tuple2',
+																																				_0: {ctor: '_Tuple2', _0: 'Kinetic-Shatter', _1: 2},
+																																				_1: 'When you take physical or supreme damage, take +5 more.'
+																																			},
+																																			_1: {
+																																				ctor: '::',
+																																				_0: {
+																																					ctor: '_Tuple2',
+																																					_0: {ctor: '_Tuple2', _0: 'Elemental-Shatter', _1: 1},
+																																					_1: 'When you take fire, water, air or earth damage, take +2 more.'
+																																				},
+																																				_1: {
+																																					ctor: '::',
+																																					_0: {
+																																						ctor: '_Tuple2',
+																																						_0: {ctor: '_Tuple2', _0: 'Elemental-Shatter', _1: 2},
+																																						_1: 'When you take fire, water, air or earth damage, take +5 more.'
+																																					},
+																																					_1: {
+																																						ctor: '::',
+																																						_0: {
+																																							ctor: '_Tuple2',
+																																							_0: {ctor: '_Tuple2', _0: 'Kinetic-Falter', _1: 1},
+																																							_1: 'You deal -2 physical and supreme damage.'
+																																						},
+																																						_1: {
+																																							ctor: '::',
+																																							_0: {
+																																								ctor: '_Tuple2',
+																																								_0: {ctor: '_Tuple2', _0: 'Kinetic-Falter', _1: 2},
+																																								_1: 'You deal -5 physical and supreme damage.'
+																																							},
+																																							_1: {
+																																								ctor: '::',
+																																								_0: {
+																																									ctor: '_Tuple2',
+																																									_0: {ctor: '_Tuple2', _0: 'Elemental-Falter', _1: 1},
+																																									_1: 'You deal -2 fire, water, air and earth damage.'
+																																								},
+																																								_1: {
+																																									ctor: '::',
+																																									_0: {
+																																										ctor: '_Tuple2',
+																																										_0: {ctor: '_Tuple2', _0: 'Elemental-Falter', _1: 2},
+																																										_1: 'You deal -5 fire, water, air and earth damage.'
+																																									},
+																																									_1: {
+																																										ctor: '::',
+																																										_0: {
+																																											ctor: '_Tuple2',
+																																											_0: {ctor: '_Tuple2', _0: 'Toxin', _1: 1},
+																																											_1: 'Your HP restoring abilities have -4 potency, and you take 4 damage at the end of your turn.'
+																																										},
+																																										_1: {
+																																											ctor: '::',
+																																											_0: {
+																																												ctor: '_Tuple2',
+																																												_0: {ctor: '_Tuple2', _0: 'Toxin', _1: 2},
+																																												_1: 'Your HP restoring abilities have -8 potency, and you take 8 damage at the end of your turn.'
+																																											},
+																																											_1: {
+																																												ctor: '::',
+																																												_0: {
+																																													ctor: '_Tuple2',
+																																													_0: {ctor: '_Tuple2', _0: 'Taunt', _1: 1},
+																																													_1: 'If you fail to target the taunting enemy, you take 6 damage.'
+																																												},
+																																												_1: {
+																																													ctor: '::',
+																																													_0: {
+																																														ctor: '_Tuple2',
+																																														_0: {ctor: '_Tuple2', _0: 'Taunt', _1: 2},
+																																														_1: 'If you fail to target the taunting enemy, you take 12 damage.'
+																																													},
+																																													_1: {
+																																														ctor: '::',
+																																														_0: {
+																																															ctor: '_Tuple2',
+																																															_0: {ctor: '_Tuple2', _0: 'Challenge', _1: 1},
+																																															_1: 'If you fail to target the challenging enemy, you deal -6 damage.'
+																																														},
+																																														_1: {
+																																															ctor: '::',
+																																															_0: {
+																																																ctor: '_Tuple2',
+																																																_0: {ctor: '_Tuple2', _0: 'Challenge', _1: 2},
+																																																_1: 'If you fail to target the challenging enemy, you deal -12 damage.'
+																																															},
+																																															_1: {ctor: '[]'}
+																																														}
+																																													}
+																																												}
+																																											}
+																																										}
+																																									}
+																																								}
+																																							}
+																																						}
+																																					}
+																																				}
+																																			}
+																																		}
+																																	}
+																																}
+																															}
+																														}
+																													}
+																												}
+																											}
+																										}
+																									}
+																								}
+																							}
+																						}
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	});
+var _user$project$Overdrive$getTooltipFor = F2(
+	function (name, level) {
+		var _p0 = A2(
+			_elm_lang$core$Dict$get,
+			{ctor: '_Tuple2', _0: name, _1: level},
+			_user$project$Overdrive$tooltipsLookup);
+		if (_p0.ctor === 'Just') {
+			return _p0._0;
+		} else {
+			return 'no tooltip';
+		}
+	});
 var _user$project$Overdrive$statDiv = F2(
 	function (c, m) {
 		return _elm_lang$core$Basics$toString(
@@ -367,7 +732,7 @@ var _user$project$Overdrive$socket = A2(
 		_user$project$Overdrive$SocketClosedAbnormally,
 		A2(
 			_saschatimme$elm_phoenix$Phoenix_Socket$onClose,
-			function (_p0) {
+			function (_p1) {
 				return _user$project$Overdrive$ConnectionStatusChanged(_user$project$Overdrive$Disconnected);
 			},
 			A2(
@@ -465,8 +830,8 @@ var _user$project$Overdrive$Mdl = function (a) {
 };
 var _user$project$Overdrive$update = F2(
 	function (msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
+		var _p2 = msg;
+		switch (_p2.ctor) {
 			case 'AddMomentum':
 				var push = A2(
 					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
@@ -552,7 +917,7 @@ var _user$project$Overdrive$update = F2(
 						_1: {ctor: '[]'}
 					});
 			case 'RemoveMomentum':
-				var _p2 = _p1._0;
+				var _p3 = _p2._0;
 				var push = A2(
 					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
 					_elm_lang$core$Json_Encode$object(
@@ -561,14 +926,14 @@ var _user$project$Overdrive$update = F2(
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'element',
-								_1: _elm_lang$core$Json_Encode$string(_p2.element)
+								_1: _elm_lang$core$Json_Encode$string(_p3.element)
 							},
 							_1: {
 								ctor: '::',
 								_0: {
 									ctor: '_Tuple2',
 									_0: 'strength',
-									_1: _elm_lang$core$Json_Encode$float(_p2.strength)
+									_1: _elm_lang$core$Json_Encode$float(_p3.strength)
 								},
 								_1: {
 									ctor: '::',
@@ -591,7 +956,7 @@ var _user$project$Overdrive$update = F2(
 						_1: {ctor: '[]'}
 					});
 			case 'RemoveEnemyMomentum':
-				var _p3 = _p1._0;
+				var _p4 = _p2._0;
 				var push = A2(
 					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
 					_elm_lang$core$Json_Encode$object(
@@ -600,14 +965,14 @@ var _user$project$Overdrive$update = F2(
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'element',
-								_1: _elm_lang$core$Json_Encode$string(_p3.element)
+								_1: _elm_lang$core$Json_Encode$string(_p4.element)
 							},
 							_1: {
 								ctor: '::',
 								_0: {
 									ctor: '_Tuple2',
 									_0: 'strength',
-									_1: _elm_lang$core$Json_Encode$float(_p3.strength)
+									_1: _elm_lang$core$Json_Encode$float(_p4.strength)
 								},
 								_1: {
 									ctor: '::',
@@ -648,7 +1013,7 @@ var _user$project$Overdrive$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedMomentum: A2(_user$project$Overdrive$Momentum, _p1._0, model.selectedMomentum.strength)
+							selectedMomentum: A2(_user$project$Overdrive$Momentum, _p2._0, model.selectedMomentum.strength)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -658,7 +1023,7 @@ var _user$project$Overdrive$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedMomentum: A2(_user$project$Overdrive$Momentum, model.selectedMomentum.element, _p1._0)
+							selectedMomentum: A2(_user$project$Overdrive$Momentum, model.selectedMomentum.element, _p2._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -668,7 +1033,7 @@ var _user$project$Overdrive$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedEnemyMomentum: A2(_user$project$Overdrive$Momentum, _p1._0, model.selectedEnemyMomentum.strength)
+							selectedEnemyMomentum: A2(_user$project$Overdrive$Momentum, _p2._0, model.selectedEnemyMomentum.strength)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -678,7 +1043,7 @@ var _user$project$Overdrive$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedEnemyMomentum: A2(_user$project$Overdrive$Momentum, model.selectedEnemyMomentum.element, _p1._0)
+							selectedEnemyMomentum: A2(_user$project$Overdrive$Momentum, model.selectedEnemyMomentum.element, _p2._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -692,7 +1057,7 @@ var _user$project$Overdrive$update = F2(
 								ctor: '_Tuple2',
 								_0: 'team',
 								_1: _elm_lang$core$Json_Encode$string(
-									_elm_lang$core$Native_Utils.eq(_p1._0, _user$project$Overdrive$Player) ? 'player' : 'enemy')
+									_elm_lang$core$Native_Utils.eq(_p2._0, _user$project$Overdrive$Player) ? 'player' : 'enemy')
 							},
 							_1: {ctor: '[]'}
 						}),
@@ -737,7 +1102,7 @@ var _user$project$Overdrive$update = F2(
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
-					{name: _p1._0});
+					{name: _p2._0});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -749,7 +1114,7 @@ var _user$project$Overdrive$update = F2(
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
-					{maxHP: _p1._0});
+					{maxHP: _p2._0});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -758,12 +1123,12 @@ var _user$project$Overdrive$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ChangeSelectedActorCurrentHP':
-				var _p4 = _p1._0;
+				var _p5 = _p2._0;
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
 					{
-						currentHP: (_elm_lang$core$Native_Utils.cmp(_p4, model.selectedActor.maxHP) < 1) ? ((_elm_lang$core$Native_Utils.cmp(_p4, 0) < 0) ? 0 : _p4) : model.selectedActor.maxHP
+						currentHP: (_elm_lang$core$Native_Utils.cmp(_p5, model.selectedActor.maxHP) < 1) ? ((_elm_lang$core$Native_Utils.cmp(_p5, 0) < 0) ? 0 : _p5) : model.selectedActor.maxHP
 					});
 				return {
 					ctor: '_Tuple2',
@@ -776,7 +1141,7 @@ var _user$project$Overdrive$update = F2(
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
-					{maxMP: _p1._0});
+					{maxMP: _p2._0});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -785,12 +1150,12 @@ var _user$project$Overdrive$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ChangeSelectedActorCurrentMP':
-				var _p5 = _p1._0;
+				var _p6 = _p2._0;
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
 					{
-						currentMP: (_elm_lang$core$Native_Utils.cmp(_p5, model.selectedActor.maxMP) < 1) ? ((_elm_lang$core$Native_Utils.cmp(_p5, 0) < 0) ? 0 : _p5) : model.selectedActor.maxMP
+						currentMP: (_elm_lang$core$Native_Utils.cmp(_p6, model.selectedActor.maxMP) < 1) ? ((_elm_lang$core$Native_Utils.cmp(_p6, 0) < 0) ? 0 : _p6) : model.selectedActor.maxMP
 					});
 				return {
 					ctor: '_Tuple2',
@@ -803,7 +1168,7 @@ var _user$project$Overdrive$update = F2(
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
-					{maxLP: _p1._0});
+					{maxLP: _p2._0});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -812,12 +1177,12 @@ var _user$project$Overdrive$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ChangeSelectedActorCurrentLP':
-				var _p6 = _p1._0;
+				var _p7 = _p2._0;
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
 					{
-						currentLP: (_elm_lang$core$Native_Utils.cmp(_p6, model.selectedActor.maxLP) < 1) ? ((_elm_lang$core$Native_Utils.cmp(_p6, 0) < 0) ? 0 : _p6) : model.selectedActor.maxLP
+						currentLP: (_elm_lang$core$Native_Utils.cmp(_p7, model.selectedActor.maxLP) < 1) ? ((_elm_lang$core$Native_Utils.cmp(_p7, 0) < 0) ? 0 : _p7) : model.selectedActor.maxLP
 					});
 				return {
 					ctor: '_Tuple2',
@@ -830,7 +1195,7 @@ var _user$project$Overdrive$update = F2(
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
-					{maxDrive: _p1._0});
+					{maxDrive: _p2._0});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -839,12 +1204,12 @@ var _user$project$Overdrive$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ChangeSelectedActorCurrentDrive':
-				var _p7 = _p1._0;
+				var _p8 = _p2._0;
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
 					{
-						currentDrive: (_elm_lang$core$Native_Utils.cmp(_p7, 0) < 0) ? 0 : _p7
+						currentDrive: (_elm_lang$core$Native_Utils.cmp(_p8, 0) < 0) ? 0 : _p8
 					});
 				return {
 					ctor: '_Tuple2',
@@ -857,7 +1222,7 @@ var _user$project$Overdrive$update = F2(
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
-					{initBase: _p1._0});
+					{initBase: _p2._0});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -884,7 +1249,7 @@ var _user$project$Overdrive$update = F2(
 				var newStatusList = A2(
 					_elm_lang$core$List$filter,
 					function (s) {
-						return !_elm_lang$core$Native_Utils.eq(s, _p1._0);
+						return !_elm_lang$core$Native_Utils.eq(s, _p2._0);
 					},
 					model.selectedActor.status);
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
@@ -926,7 +1291,7 @@ var _user$project$Overdrive$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedStatus: A4(_user$project$Overdrive$Status, _p1._0, model.selectedStatus.duration, model.selectedStatus.level, model.selectedStatus.meta)
+							selectedStatus: A4(_user$project$Overdrive$Status, _p2._0, model.selectedStatus.duration, model.selectedStatus.level, model.selectedStatus.meta)
 						}),
 					{ctor: '[]'});
 			case 'ChangeSelectedStatusDuration':
@@ -935,7 +1300,7 @@ var _user$project$Overdrive$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedStatus: A4(_user$project$Overdrive$Status, model.selectedStatus.status, _p1._0, model.selectedStatus.level, model.selectedStatus.meta)
+							selectedStatus: A4(_user$project$Overdrive$Status, model.selectedStatus.status, _p2._0, model.selectedStatus.level, model.selectedStatus.meta)
 						}),
 					{ctor: '[]'});
 			case 'ChangeSelectedStatusLevel':
@@ -944,7 +1309,7 @@ var _user$project$Overdrive$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedStatus: A4(_user$project$Overdrive$Status, model.selectedStatus.status, model.selectedStatus.duration, _p1._0, model.selectedStatus.meta)
+							selectedStatus: A4(_user$project$Overdrive$Status, model.selectedStatus.status, model.selectedStatus.duration, _p2._0, model.selectedStatus.meta)
 						}),
 					{ctor: '[]'});
 			case 'ChangeSelectedStatusMeta':
@@ -953,21 +1318,21 @@ var _user$project$Overdrive$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedStatus: A4(_user$project$Overdrive$Status, model.selectedStatus.status, model.selectedStatus.duration, model.selectedStatus.level, _p1._0)
+							selectedStatus: A4(_user$project$Overdrive$Status, model.selectedStatus.status, model.selectedStatus.duration, model.selectedStatus.level, _p2._0)
 						}),
 					{ctor: '[]'});
 			case 'SelectActor':
-				var _p9 = _p1._0;
-				var selectedActorActualIndex = (_elm_lang$core$Native_Utils.cmp(_p9, 100) < 0) ? _p9 : (_p9 - 100);
-				var selectedActorArray = (_elm_lang$core$Native_Utils.cmp(_p9, 100) < 0) ? _elm_lang$core$Array$fromList(model.players) : _elm_lang$core$Array$fromList(model.enemies);
+				var _p10 = _p2._0;
+				var selectedActorActualIndex = (_elm_lang$core$Native_Utils.cmp(_p10, 100) < 0) ? _p10 : (_p10 - 100);
+				var selectedActorArray = (_elm_lang$core$Native_Utils.cmp(_p10, 100) < 0) ? _elm_lang$core$Array$fromList(model.players) : _elm_lang$core$Array$fromList(model.enemies);
 				var maybeActor = A2(_elm_lang$core$Array$get, selectedActorActualIndex, selectedActorArray);
-				var _p8 = maybeActor;
-				if (_p8.ctor === 'Just') {
+				var _p9 = maybeActor;
+				if (_p9.ctor === 'Just') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{selectedActorIdx: _p9, selectedActor: _p8._0}),
+							{selectedActorIdx: _p10, selectedActor: _p9._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -1162,7 +1527,7 @@ var _user$project$Overdrive$update = F2(
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'idx',
-								_1: _elm_lang$core$Json_Encode$int(_p1._0)
+								_1: _elm_lang$core$Json_Encode$int(_p2._0)
 							},
 							_1: {ctor: '[]'}
 						}),
@@ -1184,7 +1549,7 @@ var _user$project$Overdrive$update = F2(
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'idx',
-								_1: _elm_lang$core$Json_Encode$int(_p1._0)
+								_1: _elm_lang$core$Json_Encode$int(_p2._0)
 							},
 							_1: {ctor: '[]'}
 						}),
@@ -1198,19 +1563,19 @@ var _user$project$Overdrive$update = F2(
 						_1: {ctor: '[]'}
 					});
 			case 'Mdl':
-				return A3(_debois$elm_mdl$Material$update, _user$project$Overdrive$Mdl, _p1._0, model);
+				return A3(_debois$elm_mdl$Material$update, _user$project$Overdrive$Mdl, _p2._0, model);
 			case 'Raise':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{raised: _p1._0}),
+						{raised: _p2._0}),
 					{ctor: '[]'});
 			case 'MomentumUpdate':
-				var _p13 = _p1._0;
-				var _p10 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$momentaDecoder, _p13);
-				if (_p10.ctor === 'Ok') {
-					var _p11 = _p10._0;
+				var _p14 = _p2._0;
+				var _p11 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$momentaDecoder, _p14);
+				if (_p11.ctor === 'Ok') {
+					var _p12 = _p11._0;
 					var playerMomenta = A2(
 						_elm_lang$core$List$map,
 						function (mwa) {
@@ -1221,7 +1586,7 @@ var _user$project$Overdrive$update = F2(
 							function (mwa) {
 								return _elm_lang$core$Native_Utils.eq(mwa.actor, 'player');
 							},
-							_p11));
+							_p12));
 					var enemyMomenta = A2(
 						_elm_lang$core$List$map,
 						function (mwa) {
@@ -1232,7 +1597,7 @@ var _user$project$Overdrive$update = F2(
 							function (mwa) {
 								return _elm_lang$core$Native_Utils.eq(mwa.actor, 'enemy');
 							},
-							_p11));
+							_p12));
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
@@ -1240,51 +1605,51 @@ var _user$project$Overdrive$update = F2(
 							{momenta: playerMomenta, enemyMomenta: enemyMomenta}),
 						{ctor: '[]'});
 				} else {
-					var _p12 = A2(
+					var _p13 = A2(
 						_elm_lang$core$Debug$log,
 						'momentumUpdate err',
-						{ctor: '_Tuple2', _0: _p10._0, _1: _p13});
+						{ctor: '_Tuple2', _0: _p11._0, _1: _p14});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
 						{ctor: '[]'});
 				}
 			case 'ActorsUpdate':
-				var _p17 = _p1._0;
-				var _p14 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$actorsDecoder, _p17);
-				if (_p14.ctor === 'Ok') {
-					var _p15 = _p14._0;
+				var _p18 = _p2._0;
+				var _p15 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$actorsDecoder, _p18);
+				if (_p15.ctor === 'Ok') {
+					var _p16 = _p15._0;
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{players: _p15.players, enemies: _p15.enemies}),
+							{players: _p16.players, enemies: _p16.enemies}),
 						{ctor: '[]'});
 				} else {
-					var _p16 = A2(
+					var _p17 = A2(
 						_elm_lang$core$Debug$log,
 						'actorsUpdate err',
-						{ctor: '_Tuple2', _0: _p14._0, _1: _p17});
+						{ctor: '_Tuple2', _0: _p15._0, _1: _p18});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
 						{ctor: '[]'});
 				}
 			case 'InitRecordsUpdate':
-				var _p20 = _p1._0;
-				var _p18 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$initsDecoder, _p20);
-				if (_p18.ctor === 'Ok') {
+				var _p21 = _p2._0;
+				var _p19 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$initsDecoder, _p21);
+				if (_p19.ctor === 'Ok') {
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{inits: _p18._0}),
+							{inits: _p19._0}),
 						{ctor: '[]'});
 				} else {
-					var _p19 = A2(
+					var _p20 = A2(
 						_elm_lang$core$Debug$log,
 						'initsUpdate err',
-						{ctor: '_Tuple2', _0: _p18._0, _1: _p20});
+						{ctor: '_Tuple2', _0: _p19._0, _1: _p21});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
@@ -1298,7 +1663,7 @@ var _user$project$Overdrive$update = F2(
 						{
 							connectionStatus: _user$project$Overdrive$ScheduledReconnect(
 								{
-									time: _user$project$Overdrive$roundDownToSecond(model.currentTime + _p1._0.reconnectWait)
+									time: _user$project$Overdrive$roundDownToSecond(model.currentTime + _p2._0.reconnectWait)
 								})
 						}),
 					{ctor: '[]'});
@@ -1307,14 +1672,14 @@ var _user$project$Overdrive$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{connectionStatus: _p1._0}),
+						{connectionStatus: _p2._0}),
 					{ctor: '[]'});
 			default:
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{currentTime: _p1._0}),
+						{currentTime: _p2._0}),
 					{ctor: '[]'});
 		}
 	});
@@ -1424,12 +1789,12 @@ var _user$project$Overdrive$statTextField = F4(
 								_1: {
 									ctor: '::',
 									_0: _debois$elm_mdl$Material_Options$onInput(
-										function (_p21) {
+										function (_p22) {
 											return action(
 												A2(
 													_elm_lang$core$Result$withDefault,
 													0,
-													_elm_lang$core$String$toInt(_p21)));
+													_elm_lang$core$String$toInt(_p22)));
 										}),
 									_1: {
 										ctor: '::',
@@ -1452,6 +1817,81 @@ var _user$project$Overdrive$statTextField = F4(
 					{ctor: '[]'}),
 				_1: {ctor: '[]'}
 			});
+	});
+var _user$project$Overdrive$renderStatus = F4(
+	function (model, dyn_id, idx, status) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A3(
+					_debois$elm_mdl$Material_Options$styled,
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: A2(
+							_debois$elm_mdl$Material_Tooltip$attach,
+							_user$project$Overdrive$Mdl,
+							{
+								ctor: '::',
+								_0: ((dyn_id * 10000) + (idx * 100)) + 383874,
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$i,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									_user$project$Overdrive$statusToString(status)),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A5(
+						_debois$elm_mdl$Material_Tooltip$render,
+						_user$project$Overdrive$Mdl,
+						{
+							ctor: '::',
+							_0: ((dyn_id * 10000) + (idx * 100)) + 383874,
+							_1: {ctor: '[]'}
+						},
+						model.mdl,
+						{
+							ctor: '::',
+							_0: _debois$elm_mdl$Material_Tooltip$large,
+							_1: {
+								ctor: '::',
+								_0: _debois$elm_mdl$Material_Tooltip$top,
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								A2(_user$project$Overdrive$getTooltipFor, status.status, status.level)),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Overdrive$renderStatuses = F3(
+	function (actor, model, dyn_id) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			A2(
+				_elm_lang$core$List$indexedMap,
+				A2(_user$project$Overdrive$renderStatus, model, dyn_id),
+				actor.status));
 	});
 var _user$project$Overdrive$makeMomentumRadio = F6(
 	function (model, instance, momentumLabel, momentum, setMomentumElementFunction, mRadioGroup) {
@@ -1775,10 +2215,10 @@ var _user$project$Overdrive$SelectActor = function (a) {
 	return {ctor: 'SelectActor', _0: a};
 };
 var _user$project$Overdrive$statusCard = F3(
-	function (model, actortype, _p22) {
-		var _p23 = _p22;
-		var _p24 = _p23._1;
-		var dyn_id = _p23._0 + (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? 0 : 100);
+	function (model, actortype, _p23) {
+		var _p24 = _p23;
+		var _p25 = _p24._1;
+		var dyn_id = _p24._0 + (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? 0 : 100);
 		return A2(
 			_debois$elm_mdl$Material_Card$view,
 			{
@@ -1799,7 +2239,7 @@ var _user$project$Overdrive$statusCard = F3(
 							A2(
 								_elm_lang$core$Basics_ops['++'],
 								'4px 8px 4px ',
-								((_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) && _elm_lang$core$Native_Utils.eq(_p24.row, _user$project$Overdrive$Front)) || (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Enemy) && _elm_lang$core$Native_Utils.eq(_p24.row, _user$project$Overdrive$Back))) ? '35px' : '0px')),
+								((_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) && _elm_lang$core$Native_Utils.eq(_p25.row, _user$project$Overdrive$Front)) || (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Enemy) && _elm_lang$core$Native_Utils.eq(_p25.row, _user$project$Overdrive$Back))) ? '35px' : '0px')),
 						_1: {
 							ctor: '::',
 							_0: _debois$elm_mdl$Material_Color$background(
@@ -1829,7 +2269,7 @@ var _user$project$Overdrive$statusCard = F3(
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(_p24.name),
+								_0: _elm_lang$html$Html$text(_p25.name),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
@@ -1867,10 +2307,10 @@ var _user$project$Overdrive$statusCard = F3(
 										},
 										{
 											ctor: '::',
-											_0: A6(_user$project$Overdrive$renderStat, model, 'HP', _p24.currentHP, _p24.maxHP, actortype, 'left'),
+											_0: A6(_user$project$Overdrive$renderStat, model, 'HP', _p25.currentHP, _p25.maxHP, actortype, 'left'),
 											_1: {
 												ctor: '::',
-												_0: A6(_user$project$Overdrive$renderStat, model, 'MP', _p24.currentMP, _p24.maxMP, actortype, 'right'),
+												_0: A6(_user$project$Overdrive$renderStat, model, 'MP', _p25.currentMP, _p25.maxMP, actortype, 'right'),
 												_1: {ctor: '[]'}
 											}
 										}),
@@ -1885,10 +2325,10 @@ var _user$project$Overdrive$statusCard = F3(
 											},
 											{
 												ctor: '::',
-												_0: A6(_user$project$Overdrive$renderStat, model, 'LP', _p24.currentLP, _p24.maxLP, actortype, 'left'),
+												_0: A6(_user$project$Overdrive$renderStat, model, 'LP', _p25.currentLP, _p25.maxLP, actortype, 'left'),
 												_1: {
 													ctor: '::',
-													_0: A6(_user$project$Overdrive$renderStat, model, 'Drive', _p24.currentDrive, _p24.maxDrive, actortype, 'right'),
+													_0: A6(_user$project$Overdrive$renderStat, model, 'Drive', _p25.currentDrive, _p25.maxDrive, actortype, 'right'),
 													_1: {ctor: '[]'}
 												}
 											}),
@@ -1899,7 +2339,7 @@ var _user$project$Overdrive$statusCard = F3(
 												{ctor: '[]'},
 												{
 													ctor: '::',
-													_0: _user$project$Overdrive$renderStatuses(_p24),
+													_0: A3(_user$project$Overdrive$renderStatuses, _p25, model, dyn_id),
 													_1: {ctor: '[]'}
 												}),
 											_1: {ctor: '[]'}
@@ -2554,12 +2994,12 @@ var _user$project$Overdrive$editActor = F2(
 											{ctor: '[]'},
 											A2(
 												_elm_lang$core$List$map,
-												function (_p25) {
-													var _p26 = _p25;
-													var _p30 = _p26._3;
-													var _p29 = _p26._0;
-													var _p28 = _p26._4;
-													var _p27 = _p26._2;
+												function (_p26) {
+													var _p27 = _p26;
+													var _p31 = _p27._3;
+													var _p30 = _p27._0;
+													var _p29 = _p27._4;
+													var _p28 = _p27._2;
 													return A2(
 														_debois$elm_mdl$Material_Table$tr,
 														{ctor: '[]'},
@@ -2570,7 +3010,7 @@ var _user$project$Overdrive$editActor = F2(
 																{ctor: '[]'},
 																{
 																	ctor: '::',
-																	_0: _elm_lang$html$Html$text(_p26._1),
+																	_0: _elm_lang$html$Html$text(_p27._1),
 																	_1: {ctor: '[]'}
 																}),
 															_1: {
@@ -2580,7 +3020,7 @@ var _user$project$Overdrive$editActor = F2(
 																	{ctor: '[]'},
 																	{
 																		ctor: '::',
-																		_0: A4(_user$project$Overdrive$statTextField, model, _p29 * 10, _p27, _p28),
+																		_0: A4(_user$project$Overdrive$statTextField, model, _p30 * 10, _p28, _p29),
 																		_1: {ctor: '[]'}
 																	}),
 																_1: {
@@ -2590,7 +3030,7 @@ var _user$project$Overdrive$editActor = F2(
 																		{ctor: '[]'},
 																		{
 																			ctor: '::',
-																			_0: A4(_user$project$Overdrive$statTextField, model, _p29 * 100, _p30, _p26._5),
+																			_0: A4(_user$project$Overdrive$statTextField, model, _p30 * 100, _p31, _p27._5),
 																			_1: {ctor: '[]'}
 																		}),
 																	_1: {
@@ -2600,7 +3040,7 @@ var _user$project$Overdrive$editActor = F2(
 																			{ctor: '[]'},
 																			{
 																				ctor: '::',
-																				_0: A4(_user$project$Overdrive$plusMinusField, model, _p27, _p30, _p28),
+																				_0: A4(_user$project$Overdrive$plusMinusField, model, _p28, _p31, _p29),
 																				_1: {ctor: '[]'}
 																			}),
 																		_1: {ctor: '[]'}

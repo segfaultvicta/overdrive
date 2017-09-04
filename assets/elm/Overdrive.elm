@@ -1,6 +1,7 @@
 module Overdrive exposing (..)
 
 import Array exposing (Array)
+import Dict
 import Html exposing (..)
 import Html.Attributes exposing (class, href, id, style)
 import Json.Decode as JD
@@ -24,6 +25,7 @@ import Material.Slider as Slider
 import Material.Table as Table
 import Material.Textfield as Textfield
 import Material.Toggles as Toggle
+import Material.Tooltip as Tooltip
 import Phoenix
 import Phoenix.Channel as Channel exposing (Channel)
 import Phoenix.Push as Push
@@ -1258,7 +1260,7 @@ statusCard model actortype ( k, actor ) =
                     , renderStat model "Drive" actor.currentDrive actor.maxDrive actortype "right"
                     ]
                 , div []
-                    [ renderStatuses actor
+                    [ renderStatuses actor model dyn_id
                     ]
                 ]
             ]
@@ -1285,15 +1287,82 @@ renderStat model label currentStat maxStat actortype rorl =
         ]
 
 
-renderStatuses : Actor -> Html Msg
-renderStatuses actor =
-    div [] (List.map renderStatus actor.status)
+renderStatuses : Actor -> Model -> Int -> Html Msg
+renderStatuses actor model dyn_id =
+    div [] (List.indexedMap (renderStatus model dyn_id) actor.status)
 
 
-renderStatus : Status -> Html Msg
-renderStatus status =
+renderStatus : Model -> Int -> Int -> Status -> Html Msg
+renderStatus model dyn_id idx status =
     div []
-        [ text (statusToString status) ]
+        [ Options.styled span [ Tooltip.attach Mdl [ (dyn_id * 10000) + (idx * 100) + 383874 ] ] [ i [] [ text (statusToString status) ] ]
+        , Tooltip.render Mdl
+            [ (dyn_id * 10000) + (idx * 100) + 383874 ]
+            model.mdl
+            [ Tooltip.large, Tooltip.top ]
+            [ text (getTooltipFor status.status status.level) ]
+        ]
+
+
+tooltipsLookup =
+    Dict.fromList
+        [ ( ( "Energize", 1 ), "Gain +1 extra Drive at the start of your turn." )
+        , ( ( "Energize", 2 ), "Gain +2 extra Drive at the start of your turn." )
+        , ( ( "Focus", 1 ), "Reduce the MP cost of your abilities by half, rounded up." )
+        , ( ( "Focus", 2 ), "Reduce the MP cost of your abilities to 0." )
+        , ( ( "Lucky", 1 ), "When you roll a d100, lower the result by -15." )
+        , ( ( "Lucky", 2 ), "When you roll a d100, lower the result by -30." )
+        , ( ( "Kinetic-Power", 1 ), "Deal +2 Physical and Supreme damage." )
+        , ( ( "Kinetic-Power", 2 ), "Deal +5 Physical and Supreme damage." )
+        , ( ( "Elemental-Power", 1 ), "Deal +2 Fire, Water, Air and Earth damage." )
+        , ( ( "Elemental-Power", 2 ), "Deal +5 Fire, Water, Air and Earth damage." )
+        , ( ( "Healing-Power", 1 ), "Gain +2 potency when using HP restoring abilities." )
+        , ( ( "Healing-Power", 2 ), "Gain +5 potency when using HP restoring abilities." )
+        , ( ( "Kinetic-Guard", 1 ), "Reduce physical and supreme damage against you by -2." )
+        , ( ( "Kinetic-Guard", 2 ), "Reduce physical and supreme damage against you by -5." )
+        , ( ( "Elemental-Guard", 1 ), "Reduce Fire, Water, Air and Earth damage against you by -2." )
+        , ( ( "Elemental-Guard", 2 ), "Reduce Fire, Water, Air and Earth damage against you by -5." )
+        , ( ( "Stalwart", 1 ), "When someone uses a healing move on you, increase the value by +3, and gain +1 Drive." )
+        , ( ( "Stalwart", 2 ), "When someone uses a healing move on you, increase the value by +6, and gain +2 Drive." )
+        , ( ( "Liberation", 1 ), "You can activate a combo without expending the needed momentum." )
+        , ( ( "Liberation", 2 ), "You can activate a combo without expending the needed momentum, and combo with abilities multiple times (or without spending LP, if you are a monster)." )
+        , ( ( "Element-Absorb", 1 ), "You receive 0 Damage from the corresponding element." )
+        , ( ( "Element-Absorb", 2 ), "You receive 0 Damage from the corresponding element, and gain +2 Drive when struck by that element." )
+        , ( ( "Chill", 1 ), "Lose -1 Drive at the start of your turn." )
+        , ( ( "Chill", 2 ), "Lose -2 Drive at the start of your turn." )
+        , ( ( "Exhaust", 1 ), "Double your MP costs." )
+        , ( ( "Exhaust", 2 ), "Triple your MP costs!" )
+        , ( ( "Shock", 1 ), "When you roll a d100, increase the result by +15." )
+        , ( ( "Shock", 2 ), "When you roll a d100, increase the result by +30." )
+        , ( ( "Curse", 1 ), "Anytime you spend an LP, take 6 damage for each LP spent." )
+        , ( ( "Curse", 2 ), "Anytime you spend an LP, take 12 damage for each LP spent." )
+        , ( ( "Burning", 1 ), "At the end of your turn, take 6 damage. Cleanse with Defend." )
+        , ( ( "Burning", 2 ), "At the end of your turn, take 12 damage. Cleanse with Defend." )
+        , ( ( "Kinetic-Shatter", 1 ), "When you take physical or supreme damage, take +2 more." )
+        , ( ( "Kinetic-Shatter", 2 ), "When you take physical or supreme damage, take +5 more." )
+        , ( ( "Elemental-Shatter", 1 ), "When you take fire, water, air or earth damage, take +2 more." )
+        , ( ( "Elemental-Shatter", 2 ), "When you take fire, water, air or earth damage, take +5 more." )
+        , ( ( "Kinetic-Falter", 1 ), "You deal -2 physical and supreme damage." )
+        , ( ( "Kinetic-Falter", 2 ), "You deal -5 physical and supreme damage." )
+        , ( ( "Elemental-Falter", 1 ), "You deal -2 fire, water, air and earth damage." )
+        , ( ( "Elemental-Falter", 2 ), "You deal -5 fire, water, air and earth damage." )
+        , ( ( "Toxin", 1 ), "Your HP restoring abilities have -4 potency, and you take 4 damage at the end of your turn." )
+        , ( ( "Toxin", 2 ), "Your HP restoring abilities have -8 potency, and you take 8 damage at the end of your turn." )
+        , ( ( "Taunt", 1 ), "If you fail to target the taunting enemy, you take 6 damage." )
+        , ( ( "Taunt", 2 ), "If you fail to target the taunting enemy, you take 12 damage." )
+        , ( ( "Challenge", 1 ), "If you fail to target the challenging enemy, you deal -6 damage." )
+        , ( ( "Challenge", 2 ), "If you fail to target the challenging enemy, you deal -12 damage." )
+        ]
+
+
+getTooltipFor : String -> Int -> String
+getTooltipFor name level =
+    case Dict.get ( name, level ) tooltipsLookup of
+        Just tooltip ->
+            tooltip
+
+        Nothing ->
+            "no tooltip"
 
 
 statusToString : Status -> String
