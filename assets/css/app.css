@@ -17,3 +17,11 @@
 .render-stat-left {
   float: left;
 }
+
+.mdl-menu__container.is-visible {
+  position: initial;
+}
+
+.mdl-menu__container.is-visible .mdl-menu__outline {
+  position: initial;
+}

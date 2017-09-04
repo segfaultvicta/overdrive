@@ -17,6 +17,7 @@ import Material.Helpers exposing (pure)
 import Material.Icon as Icon
 import Material.Layout as Layout
 import Material.List as Lists
+import Material.Menu as Menu
 import Material.Options as Options exposing (css)
 import Material.Scheme
 import Material.Slider as Slider
@@ -107,6 +108,7 @@ type alias Model =
     , players : List Actor
     , selectedActorIdx : Int
     , selectedActor : Actor
+    , selectedStatus : Status
     , inits : List InitRecord
     , connectionStatus : ConnectionStatus
     , currentTime : Time
@@ -125,6 +127,7 @@ init =
     , enemies = []
     , selectedActorIdx = -1
     , selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back []
+    , selectedStatus = Status "" "" 0 ""
     , inits = []
     , connectionStatus = Disconnected
     , currentTime = 0
@@ -165,6 +168,12 @@ type Msg
     | ChangeSelectedActorCurrentDrive Int
     | ChangeSelectedActorBaseInit Int
     | ToggleSelectedActorRow
+    | RemoveSelectedModelStatus Status
+    | AddSelectedModelStatus
+    | ChangeSelectedStatusName String
+    | ChangeSelectedStatusDuration String
+    | ChangeSelectedStatusLevel Int
+    | ChangeSelectedStatusMeta String
     | SelectActor Int
     | SaveActorChanges
     | ClearActorChanges
@@ -436,6 +445,53 @@ update msg model =
                     }
             in
             ( { model | selectedActor = newSelectedActor }, Cmd.none )
+
+        RemoveSelectedModelStatus status ->
+            let
+                newStatusList =
+                    List.filter (\s -> s /= status) model.selectedActor.status
+
+                oldSelectedActor =
+                    model.selectedActor
+
+                newSelectedActor =
+                    { oldSelectedActor | status = newStatusList }
+            in
+            { model | selectedActor = newSelectedActor } ! []
+
+        AddSelectedModelStatus ->
+            let
+                status =
+                    model.selectedStatus
+
+                valid =
+                    status.status /= "" && status.duration /= "" && status.level > 0
+
+                newStatusList =
+                    model.selectedActor.status ++ [ Status status.status status.duration status.level status.meta ]
+
+                oldSelectedActor =
+                    model.selectedActor
+
+                newSelectedActor =
+                    { oldSelectedActor | status = newStatusList }
+            in
+            if valid then
+                { model | selectedActor = newSelectedActor, selectedStatus = Status "" "" 0 "" } ! []
+            else
+                ( model, Cmd.none )
+
+        ChangeSelectedStatusName status ->
+            { model | selectedStatus = Status status model.selectedStatus.duration model.selectedStatus.level model.selectedStatus.meta } ! []
+
+        ChangeSelectedStatusDuration duration ->
+            { model | selectedStatus = Status model.selectedStatus.status duration model.selectedStatus.level model.selectedStatus.meta } ! []
+
+        ChangeSelectedStatusLevel level ->
+            { model | selectedStatus = Status model.selectedStatus.status model.selectedStatus.duration level model.selectedStatus.meta } ! []
+
+        ChangeSelectedStatusMeta meta ->
+            { model | selectedStatus = Status model.selectedStatus.status model.selectedStatus.duration model.selectedStatus.level meta } ! []
 
         SelectActor actorIdx ->
             let
@@ -733,7 +789,7 @@ lobby userName =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch [ phoenixSubscription model, Time.every Time.second Tick ]
+    Sub.batch [ phoenixSubscription model, Time.every Time.second Tick, Menu.subs Mdl model.mdl ]
 
 
 phoenixSubscription model =
@@ -975,9 +1031,113 @@ editActor model actortype =
                     "Back"
                 )
             ]
+        , renderEditStatusList model
         ]
     else
         [ text "" ]
+
+
+changeStatusMenuItem : String -> Menu.Item Msg
+changeStatusMenuItem string =
+    Menu.item
+        [ Menu.onSelect (ChangeSelectedStatusName string) ]
+        [ text string ]
+
+
+renderEditStatusList : Model -> Html Msg
+renderEditStatusList model =
+    let
+        printableLevel =
+            if model.selectedStatus.level > 0 then
+                if model.selectedStatus.level == 1 then
+                    "I"
+                else
+                    "II"
+            else
+                ""
+    in
+    Lists.ul []
+        (List.map (renderEditStatusListItem model) model.selectedActor.status
+            ++ [ Lists.li []
+                    [ Lists.content []
+                        [ Menu.render Mdl
+                            [ 7854625 ]
+                            model.mdl
+                            [ Menu.topRight ]
+                            [ changeStatusMenuItem "Energize"
+                            , changeStatusMenuItem "Focus"
+                            , changeStatusMenuItem "Lucky"
+                            , changeStatusMenuItem "Kinetic-Power"
+                            , changeStatusMenuItem "Elemental-Power"
+                            , changeStatusMenuItem "Healing-Power"
+                            , changeStatusMenuItem "Kinetic-Guard"
+                            , changeStatusMenuItem "Elemental-Guard"
+                            , changeStatusMenuItem "Stalwart"
+                            , changeStatusMenuItem "Liberation"
+                            , changeStatusMenuItem "Element-Absorb"
+                            , changeStatusMenuItem "Chill"
+                            , changeStatusMenuItem "Exhaust"
+                            , changeStatusMenuItem "Shock"
+                            , changeStatusMenuItem "Curse"
+                            , changeStatusMenuItem "Burning"
+                            , changeStatusMenuItem "Kinetic-Shatter"
+                            , changeStatusMenuItem "Elemental-Shatter"
+                            , changeStatusMenuItem "Kinetic-Falter"
+                            , changeStatusMenuItem "Elemental-Falter"
+                            , changeStatusMenuItem "Toxin"
+                            , changeStatusMenuItem "Taunt"
+                            , changeStatusMenuItem "Challenge"
+                            ]
+                        , text model.selectedStatus.status
+                        , Menu.render Mdl
+                            [ 7854626 ]
+                            model.mdl
+                            [ Menu.bottomLeft ]
+                            [ Menu.item
+                                [ Menu.onSelect (ChangeSelectedStatusDuration "Long") ]
+                                [ text "Long" ]
+                            , Menu.item
+                                [ Menu.onSelect (ChangeSelectedStatusDuration "Short") ]
+                                [ text "Short" ]
+                            ]
+                        , text model.selectedStatus.duration
+                        , Menu.render Mdl
+                            [ 7854627 ]
+                            model.mdl
+                            [ Menu.bottomLeft ]
+                            [ Menu.item
+                                [ Menu.onSelect (ChangeSelectedStatusLevel 1) ]
+                                [ text "I" ]
+                            , Menu.item
+                                [ Menu.onSelect (ChangeSelectedStatusLevel 2) ]
+                                [ text "II" ]
+                            ]
+                        , text printableLevel
+                        ]
+                    , Button.render Mdl
+                        [ 45734857345 ]
+                        model.mdl
+                        [ Button.icon
+                        , Options.onClick AddSelectedModelStatus
+                        ]
+                        [ Icon.i "library_add" ]
+                    ]
+               ]
+        )
+
+
+renderEditStatusListItem : Model -> Status -> Html Msg
+renderEditStatusListItem model status =
+    Lists.li []
+        [ Lists.content [] [ text (statusToString status) ]
+        , Button.render Mdl
+            [ 134454526 ]
+            model.mdl
+            [ Button.icon
+            , Options.onClick (RemoveSelectedModelStatus status)
+            ]
+            [ Icon.i "delete_forever" ]
+        ]
 
 
 statTextField : Model -> Int -> Int -> (Int -> Msg) -> Html Msg
@@ -1051,7 +1211,7 @@ statusCard model actortype ( k, actor ) =
                     , renderStat model "Drive" actor.currentDrive actor.maxDrive actortype "right"
                     ]
                 , div []
-                    [ renderStatus actor
+                    [ renderStatuses actor
                     ]
                 ]
             ]
@@ -1078,9 +1238,33 @@ renderStat model label currentStat maxStat actortype rorl =
         ]
 
 
-renderStatus : Actor -> Html Msg
-renderStatus actor =
-    div [] [ text "No Statuses" ]
+renderStatuses : Actor -> Html Msg
+renderStatuses actor =
+    div [] (List.map renderStatus actor.status)
+
+
+renderStatus : Status -> Html Msg
+renderStatus status =
+    div []
+        [ text (statusToString status) ]
+
+
+statusToString : Status -> String
+statusToString status =
+    status.duration
+        ++ " "
+        ++ status.status
+        ++ " "
+        ++ (if status.level == 1 then
+                "I"
+            else
+                "II"
+           )
+        ++ (if status.meta == "" then
+                ""
+            else
+                ": " ++ status.meta
+           )
 
 
 renderEnemyMomentum : Model -> Html Msg
