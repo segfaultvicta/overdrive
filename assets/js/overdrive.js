@@ -23650,7 +23650,7 @@ var _user$project$Overdrive$update = F2(
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
 					{
-						currentHP: (_elm_lang$core$Native_Utils.cmp(_p4, model.selectedActor.maxHP) < 1) ? _p4 : model.selectedActor.maxHP
+						currentHP: (_elm_lang$core$Native_Utils.cmp(_p4, model.selectedActor.maxHP) < 1) ? ((_elm_lang$core$Native_Utils.cmp(_p4, 0) < 0) ? 0 : _p4) : model.selectedActor.maxHP
 					});
 				return {
 					ctor: '_Tuple2',
@@ -23677,7 +23677,7 @@ var _user$project$Overdrive$update = F2(
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
 					{
-						currentMP: (_elm_lang$core$Native_Utils.cmp(_p5, model.selectedActor.maxMP) < 1) ? _p5 : model.selectedActor.maxMP
+						currentMP: (_elm_lang$core$Native_Utils.cmp(_p5, model.selectedActor.maxMP) < 1) ? ((_elm_lang$core$Native_Utils.cmp(_p5, 0) < 0) ? 0 : _p5) : model.selectedActor.maxMP
 					});
 				return {
 					ctor: '_Tuple2',
@@ -23704,7 +23704,7 @@ var _user$project$Overdrive$update = F2(
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
 					{
-						currentLP: (_elm_lang$core$Native_Utils.cmp(_p6, model.selectedActor.maxLP) < 1) ? _p6 : model.selectedActor.maxLP
+						currentLP: (_elm_lang$core$Native_Utils.cmp(_p6, model.selectedActor.maxLP) < 1) ? ((_elm_lang$core$Native_Utils.cmp(_p6, 0) < 0) ? 0 : _p6) : model.selectedActor.maxLP
 					});
 				return {
 					ctor: '_Tuple2',
@@ -23726,10 +23726,13 @@ var _user$project$Overdrive$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ChangeSelectedActorCurrentDrive':
+				var _p7 = _p1._0;
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
-					{currentDrive: _p1._0});
+					{
+						currentDrive: (_elm_lang$core$Native_Utils.cmp(_p7, 0) < 0) ? 0 : _p7
+					});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -23841,17 +23844,17 @@ var _user$project$Overdrive$update = F2(
 						}),
 					{ctor: '[]'});
 			case 'SelectActor':
-				var _p8 = _p1._0;
-				var selectedActorActualIndex = (_elm_lang$core$Native_Utils.cmp(_p8, 100) < 0) ? _p8 : (_p8 - 100);
-				var selectedActorArray = (_elm_lang$core$Native_Utils.cmp(_p8, 100) < 0) ? _elm_lang$core$Array$fromList(model.players) : _elm_lang$core$Array$fromList(model.enemies);
+				var _p9 = _p1._0;
+				var selectedActorActualIndex = (_elm_lang$core$Native_Utils.cmp(_p9, 100) < 0) ? _p9 : (_p9 - 100);
+				var selectedActorArray = (_elm_lang$core$Native_Utils.cmp(_p9, 100) < 0) ? _elm_lang$core$Array$fromList(model.players) : _elm_lang$core$Array$fromList(model.enemies);
 				var maybeActor = A2(_elm_lang$core$Array$get, selectedActorActualIndex, selectedActorArray);
-				var _p7 = maybeActor;
-				if (_p7.ctor === 'Just') {
+				var _p8 = maybeActor;
+				if (_p8.ctor === 'Just') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{selectedActorIdx: _p8, selectedActor: _p7._0}),
+							{selectedActorIdx: _p9, selectedActor: _p8._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -24091,10 +24094,10 @@ var _user$project$Overdrive$update = F2(
 						{raised: _p1._0}),
 					{ctor: '[]'});
 			case 'MomentumUpdate':
-				var _p12 = _p1._0;
-				var _p9 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$momentaDecoder, _p12);
-				if (_p9.ctor === 'Ok') {
-					var _p10 = _p9._0;
+				var _p13 = _p1._0;
+				var _p10 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$momentaDecoder, _p13);
+				if (_p10.ctor === 'Ok') {
+					var _p11 = _p10._0;
 					var playerMomenta = A2(
 						_elm_lang$core$List$map,
 						function (mwa) {
@@ -24105,7 +24108,7 @@ var _user$project$Overdrive$update = F2(
 							function (mwa) {
 								return _elm_lang$core$Native_Utils.eq(mwa.actor, 'player');
 							},
-							_p10));
+							_p11));
 					var enemyMomenta = A2(
 						_elm_lang$core$List$map,
 						function (mwa) {
@@ -24116,7 +24119,7 @@ var _user$project$Overdrive$update = F2(
 							function (mwa) {
 								return _elm_lang$core$Native_Utils.eq(mwa.actor, 'enemy');
 							},
-							_p10));
+							_p11));
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
@@ -24124,51 +24127,51 @@ var _user$project$Overdrive$update = F2(
 							{momenta: playerMomenta, enemyMomenta: enemyMomenta}),
 						{ctor: '[]'});
 				} else {
-					var _p11 = A2(
+					var _p12 = A2(
 						_elm_lang$core$Debug$log,
 						'momentumUpdate err',
-						{ctor: '_Tuple2', _0: _p9._0, _1: _p12});
+						{ctor: '_Tuple2', _0: _p10._0, _1: _p13});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
 						{ctor: '[]'});
 				}
 			case 'ActorsUpdate':
-				var _p16 = _p1._0;
-				var _p13 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$actorsDecoder, _p16);
-				if (_p13.ctor === 'Ok') {
-					var _p14 = _p13._0;
+				var _p17 = _p1._0;
+				var _p14 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$actorsDecoder, _p17);
+				if (_p14.ctor === 'Ok') {
+					var _p15 = _p14._0;
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{players: _p14.players, enemies: _p14.enemies}),
+							{players: _p15.players, enemies: _p15.enemies}),
 						{ctor: '[]'});
 				} else {
-					var _p15 = A2(
+					var _p16 = A2(
 						_elm_lang$core$Debug$log,
 						'actorsUpdate err',
-						{ctor: '_Tuple2', _0: _p13._0, _1: _p16});
+						{ctor: '_Tuple2', _0: _p14._0, _1: _p17});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
 						{ctor: '[]'});
 				}
 			case 'InitRecordsUpdate':
-				var _p19 = _p1._0;
-				var _p17 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$initsDecoder, _p19);
-				if (_p17.ctor === 'Ok') {
+				var _p20 = _p1._0;
+				var _p18 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$initsDecoder, _p20);
+				if (_p18.ctor === 'Ok') {
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{inits: _p17._0}),
+							{inits: _p18._0}),
 						{ctor: '[]'});
 				} else {
-					var _p18 = A2(
+					var _p19 = A2(
 						_elm_lang$core$Debug$log,
 						'initsUpdate err',
-						{ctor: '_Tuple2', _0: _p17._0, _1: _p19});
+						{ctor: '_Tuple2', _0: _p18._0, _1: _p20});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
@@ -24218,6 +24221,67 @@ var _user$project$Overdrive$subscriptions = function (model) {
 			}
 		});
 };
+var _user$project$Overdrive$plusMinusField = F4(
+	function (model, curr, max, currAction) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A5(
+					_debois$elm_mdl$Material_Button$render,
+					_user$project$Overdrive$Mdl,
+					{
+						ctor: '::',
+						_0: 99928,
+						_1: {ctor: '[]'}
+					},
+					model.mdl,
+					{
+						ctor: '::',
+						_0: _debois$elm_mdl$Material_Button$icon,
+						_1: {
+							ctor: '::',
+							_0: _debois$elm_mdl$Material_Options$onClick(
+								currAction(curr + 1)),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _debois$elm_mdl$Material_Icon$i('keyboard_arrow_up'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A5(
+						_debois$elm_mdl$Material_Button$render,
+						_user$project$Overdrive$Mdl,
+						{
+							ctor: '::',
+							_0: 99927,
+							_1: {ctor: '[]'}
+						},
+						model.mdl,
+						{
+							ctor: '::',
+							_0: _debois$elm_mdl$Material_Button$icon,
+							_1: {
+								ctor: '::',
+								_0: _debois$elm_mdl$Material_Options$onClick(
+									currAction(curr - 1)),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _debois$elm_mdl$Material_Icon$i('keyboard_arrow_down'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
 var _user$project$Overdrive$statTextField = F4(
 	function (model, fieldId, value, action) {
 		return A2(
@@ -24247,12 +24311,12 @@ var _user$project$Overdrive$statTextField = F4(
 								_1: {
 									ctor: '::',
 									_0: _debois$elm_mdl$Material_Options$onInput(
-										function (_p20) {
+										function (_p21) {
 											return action(
 												A2(
 													_elm_lang$core$Result$withDefault,
 													0,
-													_elm_lang$core$String$toInt(_p20)));
+													_elm_lang$core$String$toInt(_p21)));
 										}),
 									_1: {
 										ctor: '::',
@@ -24598,10 +24662,10 @@ var _user$project$Overdrive$SelectActor = function (a) {
 	return {ctor: 'SelectActor', _0: a};
 };
 var _user$project$Overdrive$statusCard = F3(
-	function (model, actortype, _p21) {
-		var _p22 = _p21;
-		var _p23 = _p22._1;
-		var dyn_id = _p22._0 + (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? 0 : 100);
+	function (model, actortype, _p22) {
+		var _p23 = _p22;
+		var _p24 = _p23._1;
+		var dyn_id = _p23._0 + (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? 0 : 100);
 		return A2(
 			_debois$elm_mdl$Material_Card$view,
 			{
@@ -24622,7 +24686,7 @@ var _user$project$Overdrive$statusCard = F3(
 							A2(
 								_elm_lang$core$Basics_ops['++'],
 								'4px 8px 4px ',
-								((_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) && _elm_lang$core$Native_Utils.eq(_p23.row, _user$project$Overdrive$Front)) || (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Enemy) && _elm_lang$core$Native_Utils.eq(_p23.row, _user$project$Overdrive$Back))) ? '35px' : '0px')),
+								((_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) && _elm_lang$core$Native_Utils.eq(_p24.row, _user$project$Overdrive$Front)) || (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Enemy) && _elm_lang$core$Native_Utils.eq(_p24.row, _user$project$Overdrive$Back))) ? '35px' : '0px')),
 						_1: {
 							ctor: '::',
 							_0: _debois$elm_mdl$Material_Color$background(
@@ -24652,7 +24716,7 @@ var _user$project$Overdrive$statusCard = F3(
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(_p23.name),
+								_0: _elm_lang$html$Html$text(_p24.name),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
@@ -24690,10 +24754,10 @@ var _user$project$Overdrive$statusCard = F3(
 										},
 										{
 											ctor: '::',
-											_0: A6(_user$project$Overdrive$renderStat, model, 'HP', _p23.currentHP, _p23.maxHP, actortype, 'left'),
+											_0: A6(_user$project$Overdrive$renderStat, model, 'HP', _p24.currentHP, _p24.maxHP, actortype, 'left'),
 											_1: {
 												ctor: '::',
-												_0: A6(_user$project$Overdrive$renderStat, model, 'MP', _p23.currentMP, _p23.maxMP, actortype, 'right'),
+												_0: A6(_user$project$Overdrive$renderStat, model, 'MP', _p24.currentMP, _p24.maxMP, actortype, 'right'),
 												_1: {ctor: '[]'}
 											}
 										}),
@@ -24708,10 +24772,10 @@ var _user$project$Overdrive$statusCard = F3(
 											},
 											{
 												ctor: '::',
-												_0: A6(_user$project$Overdrive$renderStat, model, 'LP', _p23.currentLP, _p23.maxLP, actortype, 'left'),
+												_0: A6(_user$project$Overdrive$renderStat, model, 'LP', _p24.currentLP, _p24.maxLP, actortype, 'left'),
 												_1: {
 													ctor: '::',
-													_0: A6(_user$project$Overdrive$renderStat, model, 'Drive', _p23.currentDrive, _p23.maxDrive, actortype, 'right'),
+													_0: A6(_user$project$Overdrive$renderStat, model, 'Drive', _p24.currentDrive, _p24.maxDrive, actortype, 'right'),
 													_1: {ctor: '[]'}
 												}
 											}),
@@ -24722,7 +24786,7 @@ var _user$project$Overdrive$statusCard = F3(
 												{ctor: '[]'},
 												{
 													ctor: '::',
-													_0: _user$project$Overdrive$renderStatuses(_p23),
+													_0: _user$project$Overdrive$renderStatuses(_p24),
 													_1: {ctor: '[]'}
 												}),
 											_1: {ctor: '[]'}
@@ -25377,9 +25441,12 @@ var _user$project$Overdrive$editActor = F2(
 											{ctor: '[]'},
 											A2(
 												_elm_lang$core$List$map,
-												function (_p24) {
-													var _p25 = _p24;
-													var _p26 = _p25._0;
+												function (_p25) {
+													var _p26 = _p25;
+													var _p30 = _p26._3;
+													var _p29 = _p26._0;
+													var _p28 = _p26._4;
+													var _p27 = _p26._2;
 													return A2(
 														_debois$elm_mdl$Material_Table$tr,
 														{ctor: '[]'},
@@ -25390,7 +25457,7 @@ var _user$project$Overdrive$editActor = F2(
 																{ctor: '[]'},
 																{
 																	ctor: '::',
-																	_0: _elm_lang$html$Html$text(_p25._1),
+																	_0: _elm_lang$html$Html$text(_p26._1),
 																	_1: {ctor: '[]'}
 																}),
 															_1: {
@@ -25400,7 +25467,7 @@ var _user$project$Overdrive$editActor = F2(
 																	{ctor: '[]'},
 																	{
 																		ctor: '::',
-																		_0: A4(_user$project$Overdrive$statTextField, model, _p26 * 10, _p25._2, _p25._4),
+																		_0: A4(_user$project$Overdrive$statTextField, model, _p29 * 10, _p27, _p28),
 																		_1: {ctor: '[]'}
 																	}),
 																_1: {
@@ -25410,7 +25477,7 @@ var _user$project$Overdrive$editActor = F2(
 																		{ctor: '[]'},
 																		{
 																			ctor: '::',
-																			_0: A4(_user$project$Overdrive$statTextField, model, _p26 * 100, _p25._3, _p25._5),
+																			_0: A4(_user$project$Overdrive$statTextField, model, _p29 * 100, _p30, _p26._5),
 																			_1: {ctor: '[]'}
 																		}),
 																	_1: {
@@ -25420,12 +25487,8 @@ var _user$project$Overdrive$editActor = F2(
 																			{ctor: '[]'},
 																			{
 																				ctor: '::',
-																				_0: _elm_lang$html$Html$text('+'),
-																				_1: {
-																					ctor: '::',
-																					_0: _elm_lang$html$Html$text('-'),
-																					_1: {ctor: '[]'}
-																				}
+																				_0: A4(_user$project$Overdrive$plusMinusField, model, _p27, _p30, _p28),
+																				_1: {ctor: '[]'}
 																			}),
 																		_1: {ctor: '[]'}
 																	}
@@ -25476,12 +25539,8 @@ var _user$project$Overdrive$editActor = F2(
 																	{ctor: '[]'},
 																	{
 																		ctor: '::',
-																		_0: _elm_lang$html$Html$text('+'),
-																		_1: {
-																			ctor: '::',
-																			_0: _elm_lang$html$Html$text('-'),
-																			_1: {ctor: '[]'}
-																		}
+																		_0: _elm_lang$html$Html$text(''),
+																		_1: {ctor: '[]'}
 																	}),
 																_1: {ctor: '[]'}
 															}

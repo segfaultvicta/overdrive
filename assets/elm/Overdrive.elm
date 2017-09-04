@@ -341,7 +341,10 @@ update msg model =
                     { oldSelectedActor
                         | currentHP =
                             if stat <= model.selectedActor.maxHP then
-                                stat
+                                if stat < 0 then
+                                    0
+                                else
+                                    stat
                             else
                                 model.selectedActor.maxHP
                     }
@@ -367,7 +370,10 @@ update msg model =
                     { oldSelectedActor
                         | currentMP =
                             if stat <= model.selectedActor.maxMP then
-                                stat
+                                if stat < 0 then
+                                    0
+                                else
+                                    stat
                             else
                                 model.selectedActor.maxMP
                     }
@@ -393,7 +399,10 @@ update msg model =
                     { oldSelectedActor
                         | currentLP =
                             if stat <= model.selectedActor.maxLP then
-                                stat
+                                if stat < 0 then
+                                    0
+                                else
+                                    stat
                             else
                                 model.selectedActor.maxLP
                     }
@@ -416,7 +425,13 @@ update msg model =
                     model.selectedActor
 
                 newSelectedActor =
-                    { oldSelectedActor | currentDrive = stat }
+                    { oldSelectedActor
+                        | currentDrive =
+                            if stat < 0 then
+                                0
+                            else
+                                stat
+                    }
             in
             ( { model | selectedActor = newSelectedActor }, Cmd.none )
 
@@ -1001,7 +1016,7 @@ editActor model actortype =
                                 [ Table.td [] [ text label ]
                                 , Table.td [] [ statTextField model (id * 10) curr currAction ]
                                 , Table.td [] [ statTextField model (id * 100) max maxAction ]
-                                , Table.td [] [ text "+", text "-" ]
+                                , Table.td [] [ plusMinusField model curr max currAction ]
                                 ]
                         )
                 )
@@ -1009,7 +1024,7 @@ editActor model actortype =
                 [ Table.td [] [ text "Init" ]
                 , Table.td [] [ statTextField model 142526 model.selectedActor.initBase ChangeSelectedActorBaseInit ]
                 , Table.td [] [ text "" ]
-                , Table.td [] [ text "+", text "-" ]
+                , Table.td [] [ text "" ]
                 ]
             ]
         , Toggle.switch Mdl
@@ -1137,6 +1152,26 @@ renderEditStatusListItem model status =
             , Options.onClick (RemoveSelectedModelStatus status)
             ]
             [ Icon.i "delete_forever" ]
+        ]
+
+
+plusMinusField : Model -> Int -> Int -> (Int -> Msg) -> Html Msg
+plusMinusField model curr max currAction =
+    div []
+        [ Button.render Mdl
+            [ 99928 ]
+            model.mdl
+            [ Button.icon
+            , Options.onClick (currAction (curr + 1))
+            ]
+            [ Icon.i "keyboard_arrow_up" ]
+        , Button.render Mdl
+            [ 99927 ]
+            model.mdl
+            [ Button.icon
+            , Options.onClick (currAction (curr - 1))
+            ]
+            [ Icon.i "keyboard_arrow_down" ]
         ]
 
 
