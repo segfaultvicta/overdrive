@@ -24,3 +24,5 @@ import Elm from "./overdrive.js"
 
 const elmDiv = document.getElementById('elm-main')
     , elmApp = Elm.Overdrive.embed(elmDiv)
+
+elmApp.ports.loc.send(window.location.search);

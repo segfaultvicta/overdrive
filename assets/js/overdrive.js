@@ -23300,6 +23300,11 @@ var _user$project$Overdrive$statDiv = F2(
 			_elm_lang$core$Basics$round(
 				(_elm_lang$core$Basics$toFloat(c) / _elm_lang$core$Basics$toFloat(m)) * 100));
 	});
+var _user$project$Overdrive$seekrit = function (model) {
+	return _elm_lang$core$Native_Utils.eq(
+		A2(_elm_lang$core$Dict$get, 'gmpass', model.urlParams),
+		_elm_lang$core$Maybe$Just('leilani')) ? true : false;
+};
 var _user$project$Overdrive$lobbySocket = 'ws://gaius.ddns.net:4000/socket/websocket';
 var _user$project$Overdrive$statusEncoder = function (status) {
 	return _elm_lang$core$Json_Encode$object(
@@ -23347,6 +23352,41 @@ var _user$project$Overdrive$roundDownToSecond = function (ms) {
 			1000,
 			_elm_lang$core$Basics$truncate(ms / 1000)));
 };
+var _user$project$Overdrive$firstOccurrence = F2(
+	function (c, s) {
+		var _p1 = A2(
+			_elm_lang$core$String$indexes,
+			_elm_lang$core$String$fromChar(c),
+			s);
+		if (_p1.ctor === '[]') {
+			return _elm_lang$core$Maybe$Nothing;
+		} else {
+			return _elm_lang$core$Maybe$Just(_p1._0);
+		}
+	});
+var _user$project$Overdrive$splitAtFirst = F2(
+	function (c, s) {
+		var _p2 = A2(_user$project$Overdrive$firstOccurrence, c, s);
+		if (_p2.ctor === 'Nothing') {
+			return {ctor: '_Tuple2', _0: s, _1: ''};
+		} else {
+			var _p3 = _p2._0;
+			return {
+				ctor: '_Tuple2',
+				_0: A2(_elm_lang$core$String$left, _p3, s),
+				_1: A2(_elm_lang$core$String$dropLeft, _p3 + 1, s)
+			};
+		}
+	});
+var _user$project$Overdrive$paramsToDict = function (result) {
+	var _p4 = result;
+	if (_p4.ctor === 'Error') {
+		return _elm_lang$core$Dict$empty;
+	} else {
+		return _p4._0;
+	}
+};
+var _user$project$Overdrive$loc = _elm_lang$core$Native_Platform.incomingPort('loc', _elm_lang$core$Json_Decode$string);
 var _user$project$Overdrive$Momentum = F2(
 	function (a, b) {
 		return {element: a, strength: b};
@@ -23451,7 +23491,9 @@ var _user$project$Overdrive$Model = function (a) {
 											return function (l) {
 												return function (m) {
 													return function (n) {
-														return {momenta: a, enemyMomenta: b, selectedMomentum: c, selectedEnemyMomentum: d, enemies: e, players: f, selectedActorIdx: g, selectedActor: h, selectedStatus: i, inits: j, connectionStatus: k, currentTime: l, mdl: m, raised: n};
+														return function (o) {
+															return {momenta: a, enemyMomenta: b, selectedMomentum: c, selectedEnemyMomentum: d, enemies: e, players: f, selectedActorIdx: g, selectedActor: h, selectedStatus: i, inits: j, connectionStatus: k, currentTime: l, mdl: m, raised: n, urlParams: o};
+														};
 													};
 												};
 											};
@@ -23470,6 +23512,34 @@ var _user$project$Overdrive$ActorsListContainer = F2(
 	function (a, b) {
 		return {players: a, enemies: b};
 	});
+var _user$project$Overdrive$UrlParams = function (a) {
+	return {ctor: 'UrlParams', _0: a};
+};
+var _user$project$Overdrive$parseParams = function (stringWithAmpersands) {
+	var eachParam = A2(_elm_lang$core$String$split, '&', stringWithAmpersands);
+	var eachPair = A2(
+		_elm_lang$core$List$map,
+		_user$project$Overdrive$splitAtFirst(
+			_elm_lang$core$Native_Utils.chr('=')),
+		eachParam);
+	return _user$project$Overdrive$UrlParams(
+		_elm_lang$core$Dict$fromList(eachPair));
+};
+var _user$project$Overdrive$Error = function (a) {
+	return {ctor: 'Error', _0: a};
+};
+var _user$project$Overdrive$parseUrlParams = function (startsWithQuestionMarkThenParams) {
+	var _p5 = _elm_lang$core$String$uncons(startsWithQuestionMarkThenParams);
+	if (_p5.ctor === 'Nothing') {
+		return _user$project$Overdrive$Error('No URL params');
+	} else {
+		if (_p5._0._0.valueOf() === '?') {
+			return _user$project$Overdrive$parseParams(_p5._0._1);
+		} else {
+			return _user$project$Overdrive$Error('Didn\'t begin with a ?');
+		}
+	}
+};
 var _user$project$Overdrive$Back = {ctor: 'Back'};
 var _user$project$Overdrive$Front = {ctor: 'Front'};
 var _user$project$Overdrive$rowDecoder = A2(
@@ -23559,7 +23629,8 @@ var _user$project$Overdrive$init = {
 	connectionStatus: _user$project$Overdrive$Disconnected,
 	currentTime: 0,
 	mdl: _debois$elm_mdl$Material$model,
-	raised: -1
+	raised: -1,
+	urlParams: _elm_lang$core$Dict$empty
 };
 var _user$project$Overdrive$Connected = {ctor: 'Connected'};
 var _user$project$Overdrive$Enemy = {ctor: 'Enemy'};
@@ -23576,13 +23647,13 @@ var _user$project$Overdrive$renderStat = F6(
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? _elm_lang$html$Html$text(
+				_0: (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) || _user$project$Overdrive$seekrit(model)) ? _elm_lang$html$Html$text(
 					A2(
 						_elm_lang$core$Basics_ops['++'],
 						label,
 						A2(
 							_elm_lang$core$Basics_ops['++'],
-							'   ',
+							' ',
 							A2(
 								_elm_lang$core$Basics_ops['++'],
 								_elm_lang$core$Basics$toString(currentStat),
@@ -23595,7 +23666,7 @@ var _user$project$Overdrive$renderStat = F6(
 						label,
 						A2(
 							_elm_lang$core$Basics_ops['++'],
-							'   ',
+							' ',
 							A2(
 								_elm_lang$core$Basics_ops['++'],
 								A2(_user$project$Overdrive$statDiv, currentStat, maxStat),
@@ -23603,6 +23674,9 @@ var _user$project$Overdrive$renderStat = F6(
 				_1: {ctor: '[]'}
 			});
 	});
+var _user$project$Overdrive$ParseUrlParams = function (a) {
+	return {ctor: 'ParseUrlParams', _0: a};
+};
 var _user$project$Overdrive$ConnectionStatusChanged = function (a) {
 	return {ctor: 'ConnectionStatusChanged', _0: a};
 };
@@ -23619,7 +23693,7 @@ var _user$project$Overdrive$socket = A2(
 		_user$project$Overdrive$SocketClosedAbnormally,
 		A2(
 			_saschatimme$elm_phoenix$Phoenix_Socket$onClose,
-			function (_p1) {
+			function (_p6) {
 				return _user$project$Overdrive$ConnectionStatusChanged(_user$project$Overdrive$Disconnected);
 			},
 			A2(
@@ -23717,8 +23791,8 @@ var _user$project$Overdrive$Mdl = function (a) {
 };
 var _user$project$Overdrive$update = F2(
 	function (msg, model) {
-		var _p2 = msg;
-		switch (_p2.ctor) {
+		var _p7 = msg;
+		switch (_p7.ctor) {
 			case 'AddMomentum':
 				var push = A2(
 					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
@@ -23804,7 +23878,7 @@ var _user$project$Overdrive$update = F2(
 						_1: {ctor: '[]'}
 					});
 			case 'RemoveMomentum':
-				var _p3 = _p2._0;
+				var _p8 = _p7._0;
 				var push = A2(
 					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
 					_elm_lang$core$Json_Encode$object(
@@ -23813,14 +23887,14 @@ var _user$project$Overdrive$update = F2(
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'element',
-								_1: _elm_lang$core$Json_Encode$string(_p3.element)
+								_1: _elm_lang$core$Json_Encode$string(_p8.element)
 							},
 							_1: {
 								ctor: '::',
 								_0: {
 									ctor: '_Tuple2',
 									_0: 'strength',
-									_1: _elm_lang$core$Json_Encode$float(_p3.strength)
+									_1: _elm_lang$core$Json_Encode$float(_p8.strength)
 								},
 								_1: {
 									ctor: '::',
@@ -23843,7 +23917,7 @@ var _user$project$Overdrive$update = F2(
 						_1: {ctor: '[]'}
 					});
 			case 'RemoveEnemyMomentum':
-				var _p4 = _p2._0;
+				var _p9 = _p7._0;
 				var push = A2(
 					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
 					_elm_lang$core$Json_Encode$object(
@@ -23852,14 +23926,14 @@ var _user$project$Overdrive$update = F2(
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'element',
-								_1: _elm_lang$core$Json_Encode$string(_p4.element)
+								_1: _elm_lang$core$Json_Encode$string(_p9.element)
 							},
 							_1: {
 								ctor: '::',
 								_0: {
 									ctor: '_Tuple2',
 									_0: 'strength',
-									_1: _elm_lang$core$Json_Encode$float(_p4.strength)
+									_1: _elm_lang$core$Json_Encode$float(_p9.strength)
 								},
 								_1: {
 									ctor: '::',
@@ -23900,7 +23974,7 @@ var _user$project$Overdrive$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedMomentum: A2(_user$project$Overdrive$Momentum, _p2._0, model.selectedMomentum.strength)
+							selectedMomentum: A2(_user$project$Overdrive$Momentum, _p7._0, model.selectedMomentum.strength)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -23910,7 +23984,7 @@ var _user$project$Overdrive$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedMomentum: A2(_user$project$Overdrive$Momentum, model.selectedMomentum.element, _p2._0)
+							selectedMomentum: A2(_user$project$Overdrive$Momentum, model.selectedMomentum.element, _p7._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -23920,7 +23994,7 @@ var _user$project$Overdrive$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedEnemyMomentum: A2(_user$project$Overdrive$Momentum, _p2._0, model.selectedEnemyMomentum.strength)
+							selectedEnemyMomentum: A2(_user$project$Overdrive$Momentum, _p7._0, model.selectedEnemyMomentum.strength)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -23930,7 +24004,7 @@ var _user$project$Overdrive$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedEnemyMomentum: A2(_user$project$Overdrive$Momentum, model.selectedEnemyMomentum.element, _p2._0)
+							selectedEnemyMomentum: A2(_user$project$Overdrive$Momentum, model.selectedEnemyMomentum.element, _p7._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -23944,7 +24018,7 @@ var _user$project$Overdrive$update = F2(
 								ctor: '_Tuple2',
 								_0: 'team',
 								_1: _elm_lang$core$Json_Encode$string(
-									_elm_lang$core$Native_Utils.eq(_p2._0, _user$project$Overdrive$Player) ? 'player' : 'enemy')
+									_elm_lang$core$Native_Utils.eq(_p7._0, _user$project$Overdrive$Player) ? 'player' : 'enemy')
 							},
 							_1: {ctor: '[]'}
 						}),
@@ -23989,7 +24063,7 @@ var _user$project$Overdrive$update = F2(
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
-					{name: _p2._0});
+					{name: _p7._0});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -24001,7 +24075,7 @@ var _user$project$Overdrive$update = F2(
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
-					{maxHP: _p2._0});
+					{maxHP: _p7._0});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -24010,12 +24084,12 @@ var _user$project$Overdrive$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ChangeSelectedActorCurrentHP':
-				var _p5 = _p2._0;
+				var _p10 = _p7._0;
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
 					{
-						currentHP: (_elm_lang$core$Native_Utils.cmp(_p5, model.selectedActor.maxHP) < 1) ? ((_elm_lang$core$Native_Utils.cmp(_p5, 0) < 0) ? 0 : _p5) : model.selectedActor.maxHP
+						currentHP: (_elm_lang$core$Native_Utils.cmp(_p10, model.selectedActor.maxHP) < 1) ? ((_elm_lang$core$Native_Utils.cmp(_p10, 0) < 0) ? 0 : _p10) : model.selectedActor.maxHP
 					});
 				return {
 					ctor: '_Tuple2',
@@ -24028,7 +24102,7 @@ var _user$project$Overdrive$update = F2(
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
-					{maxMP: _p2._0});
+					{maxMP: _p7._0});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -24037,12 +24111,12 @@ var _user$project$Overdrive$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ChangeSelectedActorCurrentMP':
-				var _p6 = _p2._0;
+				var _p11 = _p7._0;
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
 					{
-						currentMP: (_elm_lang$core$Native_Utils.cmp(_p6, model.selectedActor.maxMP) < 1) ? ((_elm_lang$core$Native_Utils.cmp(_p6, 0) < 0) ? 0 : _p6) : model.selectedActor.maxMP
+						currentMP: (_elm_lang$core$Native_Utils.cmp(_p11, model.selectedActor.maxMP) < 1) ? ((_elm_lang$core$Native_Utils.cmp(_p11, 0) < 0) ? 0 : _p11) : model.selectedActor.maxMP
 					});
 				return {
 					ctor: '_Tuple2',
@@ -24055,7 +24129,7 @@ var _user$project$Overdrive$update = F2(
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
-					{maxLP: _p2._0});
+					{maxLP: _p7._0});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -24064,12 +24138,12 @@ var _user$project$Overdrive$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ChangeSelectedActorCurrentLP':
-				var _p7 = _p2._0;
+				var _p12 = _p7._0;
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
 					{
-						currentLP: (_elm_lang$core$Native_Utils.cmp(_p7, model.selectedActor.maxLP) < 1) ? ((_elm_lang$core$Native_Utils.cmp(_p7, 0) < 0) ? 0 : _p7) : model.selectedActor.maxLP
+						currentLP: (_elm_lang$core$Native_Utils.cmp(_p12, model.selectedActor.maxLP) < 1) ? ((_elm_lang$core$Native_Utils.cmp(_p12, 0) < 0) ? 0 : _p12) : model.selectedActor.maxLP
 					});
 				return {
 					ctor: '_Tuple2',
@@ -24082,7 +24156,7 @@ var _user$project$Overdrive$update = F2(
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
-					{maxDrive: _p2._0});
+					{maxDrive: _p7._0});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -24091,12 +24165,12 @@ var _user$project$Overdrive$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ChangeSelectedActorCurrentDrive':
-				var _p8 = _p2._0;
+				var _p13 = _p7._0;
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
 					{
-						currentDrive: (_elm_lang$core$Native_Utils.cmp(_p8, 0) < 0) ? 0 : _p8
+						currentDrive: (_elm_lang$core$Native_Utils.cmp(_p13, 0) < 0) ? 0 : _p13
 					});
 				return {
 					ctor: '_Tuple2',
@@ -24109,7 +24183,7 @@ var _user$project$Overdrive$update = F2(
 				var oldSelectedActor = model.selectedActor;
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
 					oldSelectedActor,
-					{initBase: _p2._0});
+					{initBase: _p7._0});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -24136,7 +24210,7 @@ var _user$project$Overdrive$update = F2(
 				var newStatusList = A2(
 					_elm_lang$core$List$filter,
 					function (s) {
-						return !_elm_lang$core$Native_Utils.eq(s, _p2._0);
+						return !_elm_lang$core$Native_Utils.eq(s, _p7._0);
 					},
 					model.selectedActor.status);
 				var newSelectedActor = _elm_lang$core$Native_Utils.update(
@@ -24178,7 +24252,7 @@ var _user$project$Overdrive$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedStatus: A4(_user$project$Overdrive$Status, _p2._0, model.selectedStatus.duration, model.selectedStatus.level, model.selectedStatus.meta)
+							selectedStatus: A4(_user$project$Overdrive$Status, _p7._0, model.selectedStatus.duration, model.selectedStatus.level, model.selectedStatus.meta)
 						}),
 					{ctor: '[]'});
 			case 'ChangeSelectedStatusDuration':
@@ -24187,7 +24261,7 @@ var _user$project$Overdrive$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedStatus: A4(_user$project$Overdrive$Status, model.selectedStatus.status, _p2._0, model.selectedStatus.level, model.selectedStatus.meta)
+							selectedStatus: A4(_user$project$Overdrive$Status, model.selectedStatus.status, _p7._0, model.selectedStatus.level, model.selectedStatus.meta)
 						}),
 					{ctor: '[]'});
 			case 'ChangeSelectedStatusLevel':
@@ -24196,7 +24270,7 @@ var _user$project$Overdrive$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedStatus: A4(_user$project$Overdrive$Status, model.selectedStatus.status, model.selectedStatus.duration, _p2._0, model.selectedStatus.meta)
+							selectedStatus: A4(_user$project$Overdrive$Status, model.selectedStatus.status, model.selectedStatus.duration, _p7._0, model.selectedStatus.meta)
 						}),
 					{ctor: '[]'});
 			case 'ChangeSelectedStatusMeta':
@@ -24205,23 +24279,27 @@ var _user$project$Overdrive$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selectedStatus: A4(_user$project$Overdrive$Status, model.selectedStatus.status, model.selectedStatus.duration, model.selectedStatus.level, _p2._0)
+							selectedStatus: A4(_user$project$Overdrive$Status, model.selectedStatus.status, model.selectedStatus.duration, model.selectedStatus.level, _p7._0)
 						}),
 					{ctor: '[]'});
 			case 'SelectActor':
-				var _p10 = _p2._0;
-				var selectedActorActualIndex = (_elm_lang$core$Native_Utils.cmp(_p10, 100) < 0) ? _p10 : (_p10 - 100);
-				var selectedActorArray = (_elm_lang$core$Native_Utils.cmp(_p10, 100) < 0) ? _elm_lang$core$Array$fromList(model.players) : _elm_lang$core$Array$fromList(model.enemies);
+				var _p15 = _p7._0;
+				var selectedActorActualIndex = (_elm_lang$core$Native_Utils.cmp(_p15, 100) < 0) ? _p15 : (_p15 - 100);
+				var needsSeekrit = (_elm_lang$core$Native_Utils.cmp(_p15, 100) < 0) ? false : true;
+				var selectedActorArray = (_elm_lang$core$Native_Utils.cmp(_p15, 100) < 0) ? _elm_lang$core$Array$fromList(model.players) : _elm_lang$core$Array$fromList(model.enemies);
 				var maybeActor = A2(_elm_lang$core$Array$get, selectedActorActualIndex, selectedActorArray);
-				var _p9 = maybeActor;
-				if (_p9.ctor === 'Just') {
-					return {
+				var _p14 = maybeActor;
+				if (_p14.ctor === 'Just') {
+					return ((!needsSeekrit) || _user$project$Overdrive$seekrit(model)) ? {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{selectedActorIdx: _p10, selectedActor: _p9._0}),
+							{selectedActorIdx: _p15, selectedActor: _p14._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
-					};
+					} : A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						{ctor: '[]'});
 				} else {
 					return {
 						ctor: '_Tuple2',
@@ -24414,7 +24492,7 @@ var _user$project$Overdrive$update = F2(
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'idx',
-								_1: _elm_lang$core$Json_Encode$int(_p2._0)
+								_1: _elm_lang$core$Json_Encode$int(_p7._0)
 							},
 							_1: {ctor: '[]'}
 						}),
@@ -24436,7 +24514,7 @@ var _user$project$Overdrive$update = F2(
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'idx',
-								_1: _elm_lang$core$Json_Encode$int(_p2._0)
+								_1: _elm_lang$core$Json_Encode$int(_p7._0)
 							},
 							_1: {ctor: '[]'}
 						}),
@@ -24450,19 +24528,19 @@ var _user$project$Overdrive$update = F2(
 						_1: {ctor: '[]'}
 					});
 			case 'Mdl':
-				return A3(_debois$elm_mdl$Material$update, _user$project$Overdrive$Mdl, _p2._0, model);
+				return A3(_debois$elm_mdl$Material$update, _user$project$Overdrive$Mdl, _p7._0, model);
 			case 'Raise':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{raised: _p2._0}),
+						{raised: _p7._0}),
 					{ctor: '[]'});
 			case 'MomentumUpdate':
-				var _p14 = _p2._0;
-				var _p11 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$momentaDecoder, _p14);
-				if (_p11.ctor === 'Ok') {
-					var _p12 = _p11._0;
+				var _p19 = _p7._0;
+				var _p16 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$momentaDecoder, _p19);
+				if (_p16.ctor === 'Ok') {
+					var _p17 = _p16._0;
 					var playerMomenta = A2(
 						_elm_lang$core$List$map,
 						function (mwa) {
@@ -24473,7 +24551,7 @@ var _user$project$Overdrive$update = F2(
 							function (mwa) {
 								return _elm_lang$core$Native_Utils.eq(mwa.actor, 'player');
 							},
-							_p12));
+							_p17));
 					var enemyMomenta = A2(
 						_elm_lang$core$List$map,
 						function (mwa) {
@@ -24484,7 +24562,7 @@ var _user$project$Overdrive$update = F2(
 							function (mwa) {
 								return _elm_lang$core$Native_Utils.eq(mwa.actor, 'enemy');
 							},
-							_p12));
+							_p17));
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
@@ -24492,51 +24570,51 @@ var _user$project$Overdrive$update = F2(
 							{momenta: playerMomenta, enemyMomenta: enemyMomenta}),
 						{ctor: '[]'});
 				} else {
-					var _p13 = A2(
+					var _p18 = A2(
 						_elm_lang$core$Debug$log,
 						'momentumUpdate err',
-						{ctor: '_Tuple2', _0: _p11._0, _1: _p14});
+						{ctor: '_Tuple2', _0: _p16._0, _1: _p19});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
 						{ctor: '[]'});
 				}
 			case 'ActorsUpdate':
-				var _p18 = _p2._0;
-				var _p15 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$actorsDecoder, _p18);
-				if (_p15.ctor === 'Ok') {
-					var _p16 = _p15._0;
+				var _p23 = _p7._0;
+				var _p20 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$actorsDecoder, _p23);
+				if (_p20.ctor === 'Ok') {
+					var _p21 = _p20._0;
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{players: _p16.players, enemies: _p16.enemies}),
+							{players: _p21.players, enemies: _p21.enemies}),
 						{ctor: '[]'});
 				} else {
-					var _p17 = A2(
+					var _p22 = A2(
 						_elm_lang$core$Debug$log,
 						'actorsUpdate err',
-						{ctor: '_Tuple2', _0: _p15._0, _1: _p18});
+						{ctor: '_Tuple2', _0: _p20._0, _1: _p23});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
 						{ctor: '[]'});
 				}
 			case 'InitRecordsUpdate':
-				var _p21 = _p2._0;
-				var _p19 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$initsDecoder, _p21);
-				if (_p19.ctor === 'Ok') {
+				var _p26 = _p7._0;
+				var _p24 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$initsDecoder, _p26);
+				if (_p24.ctor === 'Ok') {
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{inits: _p19._0}),
+							{inits: _p24._0}),
 						{ctor: '[]'});
 				} else {
-					var _p20 = A2(
+					var _p25 = A2(
 						_elm_lang$core$Debug$log,
 						'initsUpdate err',
-						{ctor: '_Tuple2', _0: _p19._0, _1: _p21});
+						{ctor: '_Tuple2', _0: _p24._0, _1: _p26});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
@@ -24550,7 +24628,7 @@ var _user$project$Overdrive$update = F2(
 						{
 							connectionStatus: _user$project$Overdrive$ScheduledReconnect(
 								{
-									time: _user$project$Overdrive$roundDownToSecond(model.currentTime + _p2._0.reconnectWait)
+									time: _user$project$Overdrive$roundDownToSecond(model.currentTime + _p7._0.reconnectWait)
 								})
 						}),
 					{ctor: '[]'});
@@ -24559,14 +24637,24 @@ var _user$project$Overdrive$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{connectionStatus: _p2._0}),
+						{connectionStatus: _p7._0}),
+					{ctor: '[]'});
+			case 'Tick':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{currentTime: _p7._0}),
 					{ctor: '[]'});
 			default:
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{currentTime: _p2._0}),
+						{
+							urlParams: _user$project$Overdrive$paramsToDict(
+								_user$project$Overdrive$parseUrlParams(_p7._0))
+						}),
 					{ctor: '[]'});
 		}
 	});
@@ -24581,7 +24669,11 @@ var _user$project$Overdrive$subscriptions = function (model) {
 				_1: {
 					ctor: '::',
 					_0: A2(_debois$elm_mdl$Material_Menu$subs, _user$project$Overdrive$Mdl, model.mdl),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: _user$project$Overdrive$loc(_user$project$Overdrive$ParseUrlParams),
+						_1: {ctor: '[]'}
+					}
 				}
 			}
 		});
@@ -24676,12 +24768,12 @@ var _user$project$Overdrive$statTextField = F4(
 								_1: {
 									ctor: '::',
 									_0: _debois$elm_mdl$Material_Options$onInput(
-										function (_p22) {
+										function (_p27) {
 											return action(
 												A2(
 													_elm_lang$core$Result$withDefault,
 													0,
-													_elm_lang$core$String$toInt(_p22)));
+													_elm_lang$core$String$toInt(_p27)));
 										}),
 									_1: {
 										ctor: '::',
@@ -25102,10 +25194,10 @@ var _user$project$Overdrive$SelectActor = function (a) {
 	return {ctor: 'SelectActor', _0: a};
 };
 var _user$project$Overdrive$statusCard = F3(
-	function (model, actortype, _p23) {
-		var _p24 = _p23;
-		var _p25 = _p24._1;
-		var dyn_id = _p24._0 + (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? 0 : 100);
+	function (model, actortype, _p28) {
+		var _p29 = _p28;
+		var _p30 = _p29._1;
+		var dyn_id = _p29._0 + (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? 0 : 100);
 		return A2(
 			_debois$elm_mdl$Material_Card$view,
 			{
@@ -25126,7 +25218,7 @@ var _user$project$Overdrive$statusCard = F3(
 							A2(
 								_elm_lang$core$Basics_ops['++'],
 								'4px 8px 4px ',
-								((_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) && _elm_lang$core$Native_Utils.eq(_p25.row, _user$project$Overdrive$Front)) || (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Enemy) && _elm_lang$core$Native_Utils.eq(_p25.row, _user$project$Overdrive$Back))) ? '35px' : '0px')),
+								((_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) && _elm_lang$core$Native_Utils.eq(_p30.row, _user$project$Overdrive$Front)) || (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Enemy) && _elm_lang$core$Native_Utils.eq(_p30.row, _user$project$Overdrive$Back))) ? '35px' : '0px')),
 						_1: {
 							ctor: '::',
 							_0: _debois$elm_mdl$Material_Color$background(
@@ -25156,7 +25248,7 @@ var _user$project$Overdrive$statusCard = F3(
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(_p25.name),
+								_0: _elm_lang$html$Html$text(_p30.name),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
@@ -25194,10 +25286,10 @@ var _user$project$Overdrive$statusCard = F3(
 										},
 										{
 											ctor: '::',
-											_0: A6(_user$project$Overdrive$renderStat, model, 'HP', _p25.currentHP, _p25.maxHP, actortype, 'left'),
+											_0: A6(_user$project$Overdrive$renderStat, model, 'HP', _p30.currentHP, _p30.maxHP, actortype, 'left'),
 											_1: {
 												ctor: '::',
-												_0: A6(_user$project$Overdrive$renderStat, model, 'MP', _p25.currentMP, _p25.maxMP, actortype, 'right'),
+												_0: A6(_user$project$Overdrive$renderStat, model, 'MP', _p30.currentMP, _p30.maxMP, actortype, 'right'),
 												_1: {ctor: '[]'}
 											}
 										}),
@@ -25212,10 +25304,10 @@ var _user$project$Overdrive$statusCard = F3(
 											},
 											{
 												ctor: '::',
-												_0: A6(_user$project$Overdrive$renderStat, model, 'LP', _p25.currentLP, _p25.maxLP, actortype, 'left'),
+												_0: A6(_user$project$Overdrive$renderStat, model, 'LP', _p30.currentLP, _p30.maxLP, actortype, 'left'),
 												_1: {
 													ctor: '::',
-													_0: A6(_user$project$Overdrive$renderStat, model, 'Drive', _p25.currentDrive, _p25.maxDrive, actortype, 'right'),
+													_0: A6(_user$project$Overdrive$renderStat, model, 'Drive', _p30.currentDrive, _p30.maxDrive, actortype, 'right'),
 													_1: {ctor: '[]'}
 												}
 											}),
@@ -25226,7 +25318,7 @@ var _user$project$Overdrive$statusCard = F3(
 												{ctor: '[]'},
 												{
 													ctor: '::',
-													_0: A3(_user$project$Overdrive$renderStatuses, _p25, model, dyn_id),
+													_0: A3(_user$project$Overdrive$renderStatuses, _p30, model, dyn_id),
 													_1: {ctor: '[]'}
 												}),
 											_1: {ctor: '[]'}
@@ -25881,12 +25973,12 @@ var _user$project$Overdrive$editActor = F2(
 											{ctor: '[]'},
 											A2(
 												_elm_lang$core$List$map,
-												function (_p26) {
-													var _p27 = _p26;
-													var _p31 = _p27._3;
-													var _p30 = _p27._0;
-													var _p29 = _p27._4;
-													var _p28 = _p27._2;
+												function (_p31) {
+													var _p32 = _p31;
+													var _p36 = _p32._3;
+													var _p35 = _p32._0;
+													var _p34 = _p32._4;
+													var _p33 = _p32._2;
 													return A2(
 														_debois$elm_mdl$Material_Table$tr,
 														{ctor: '[]'},
@@ -25897,7 +25989,7 @@ var _user$project$Overdrive$editActor = F2(
 																{ctor: '[]'},
 																{
 																	ctor: '::',
-																	_0: _elm_lang$html$Html$text(_p27._1),
+																	_0: _elm_lang$html$Html$text(_p32._1),
 																	_1: {ctor: '[]'}
 																}),
 															_1: {
@@ -25907,7 +25999,7 @@ var _user$project$Overdrive$editActor = F2(
 																	{ctor: '[]'},
 																	{
 																		ctor: '::',
-																		_0: A4(_user$project$Overdrive$statTextField, model, _p30 * 10, _p28, _p29),
+																		_0: A4(_user$project$Overdrive$statTextField, model, _p35 * 10, _p33, _p34),
 																		_1: {ctor: '[]'}
 																	}),
 																_1: {
@@ -25917,7 +26009,7 @@ var _user$project$Overdrive$editActor = F2(
 																		{ctor: '[]'},
 																		{
 																			ctor: '::',
-																			_0: A4(_user$project$Overdrive$statTextField, model, _p30 * 100, _p31, _p27._5),
+																			_0: A4(_user$project$Overdrive$statTextField, model, _p35 * 100, _p36, _p32._5),
 																			_1: {ctor: '[]'}
 																		}),
 																	_1: {
@@ -25927,7 +26019,7 @@ var _user$project$Overdrive$editActor = F2(
 																			{ctor: '[]'},
 																			{
 																				ctor: '::',
-																				_0: A4(_user$project$Overdrive$plusMinusField, model, _p28, _p31, _p29),
+																				_0: A4(_user$project$Overdrive$plusMinusField, model, _p33, _p36, _p34),
 																				_1: {ctor: '[]'}
 																			}),
 																		_1: {ctor: '[]'}
@@ -26295,7 +26387,11 @@ var _user$project$Overdrive$renderEnemyMomentum = function (model) {
 								{
 									ctor: '::',
 									_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$AddEnemyMomentum),
-									_1: {ctor: '[]'}
+									_1: {
+										ctor: '::',
+										_0: (!_user$project$Overdrive$seekrit(model)) ? _debois$elm_mdl$Material_Button$disabled : _debois$elm_mdl$Material_Button$plain,
+										_1: {ctor: '[]'}
+									}
 								},
 								{
 									ctor: '::',
@@ -26328,7 +26424,11 @@ var _user$project$Overdrive$renderEnemyMomentum = function (model) {
 								{
 									ctor: '::',
 									_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$ClearMomentum),
-									_1: {ctor: '[]'}
+									_1: {
+										ctor: '::',
+										_0: (!_user$project$Overdrive$seekrit(model)) ? _debois$elm_mdl$Material_Button$disabled : _debois$elm_mdl$Material_Button$plain,
+										_1: {ctor: '[]'}
+									}
 								},
 								{
 									ctor: '::',
@@ -26561,7 +26661,7 @@ var _user$project$Overdrive$main = _elm_lang$html$Html$program(
 var Elm = {};
 Elm['Overdrive'] = Elm['Overdrive'] || {};
 if (typeof _user$project$Overdrive$main !== 'undefined') {
-    _user$project$Overdrive$main(Elm['Overdrive'], 'Overdrive', {"types":{"message":"Overdrive.Msg","aliases":{"Material.Msg":{"type":"Material.Component.Msg Material.Button.Msg Material.Textfield.Msg (Material.Menu.Msg m) Material.Layout.Msg Material.Toggles.Msg Material.Tooltip.Msg Material.Tabs.Msg (List m)","args":["m"]},"Json.Decode.Value":{"type":"Json.Encode.Value","args":[]},"Material.Menu.Geometry.Element":{"type":"{ offsetTop : Float , offsetLeft : Float , offsetHeight : Float , bounds : DOM.Rectangle }","args":[]},"Time.Time":{"type":"Float","args":[]},"Material.Menu.Geometry.Geometry":{"type":"{ button : Material.Menu.Geometry.Element , menu : Material.Menu.Geometry.Element , container : Material.Menu.Geometry.Element , offsetTops : List Float , offsetHeights : List Float }","args":[]},"Phoenix.Socket.AbnormalClose":{"type":"{ reconnectAttempt : Int, reconnectWait : Time.Time }","args":[]},"DOM.Rectangle":{"type":"{ top : Float, left : Float, width : Float, height : Float }","args":[]},"Material.Layout.TabScrollState":{"type":"{ canScrollLeft : Bool , canScrollRight : Bool , width : Maybe.Maybe Int }","args":[]},"Material.Button.Msg":{"type":"Material.Ripple.Msg","args":[]},"Overdrive.Momentum":{"type":"{ element : String, strength : Float }","args":[]},"Material.Menu.ItemConfig":{"type":"{ enabled : Bool, divider : Bool, onSelect : Maybe.Maybe m }","args":["m"]},"Html.Attribute":{"type":"VirtualDom.Property msg","args":["msg"]},"Material.Tooltip.DOMState":{"type":"{ rect : DOM.Rectangle, offsetWidth : Float, offsetHeight : Float }","args":[]},"Material.Component.Index":{"type":"List Int","args":[]},"Html.Events.Options":{"type":"{ stopPropagation : Bool, preventDefault : Bool }","args":[]},"Overdrive.Status":{"type":"{ status : String, duration : String, level : Int, meta : String }","args":[]},"Material.Ripple.DOMState":{"type":"{ rect : DOM.Rectangle , clientX : Maybe.Maybe Float , clientY : Maybe.Maybe Float , touchX : Maybe.Maybe Float , touchY : Maybe.Maybe Float , type_ : String }","args":[]},"Material.Options.Internal.Summary":{"type":"{ classes : List String , css : List ( String, String ) , attrs : List (Html.Attribute m) , internal : List (Html.Attribute m) , dispatch : Material.Dispatch.Config m , config : c }","args":["c","m"]},"Mouse.Position":{"type":"{ x : Int, y : Int }","args":[]}},"unions":{"Overdrive.ActorType":{"tags":{"Enemy":[],"Player":[]},"args":[]},"Material.Tooltip.Msg":{"tags":{"Leave":[],"Enter":["Material.Tooltip.DOMState"]},"args":[]},"Json.Decode.Decoder":{"tags":{"Decoder":[]},"args":["a"]},"Material.Textfield.Msg":{"tags":{"Focus":[],"Input":["String"],"Blur":[]},"args":[]},"Material.Layout.Msg":{"tags":{"ScrollPane":["Bool","Float"],"ScrollTab":["Material.Layout.TabScrollState"],"Ripple":["Int","Material.Ripple.Msg"],"TransitionHeader":["{ toCompact : Bool, fixedHeader : Bool }"],"NOP":[],"Resize":["Int"],"ToggleDrawer":[],"TransitionEnd":[]},"args":[]},"Material.Toggles.Msg":{"tags":{"Ripple":["Material.Ripple.Msg"],"SetFocus":["Bool"]},"args":[]},"Material.Tabs.Msg":{"tags":{"Ripple":["Int","Material.Ripple.Msg"]},"args":[]},"VirtualDom.Property":{"tags":{"Property":[]},"args":["msg"]},"Material.Dispatch.Config":{"tags":{"Config":["{ decoders : List ( String , ( Json.Decode.Decoder msg, Maybe.Maybe Html.Events.Options ) ) , lift : Maybe.Maybe (Json.Decode.Decoder (List msg) -> Json.Decode.Decoder msg) }"]},"args":["msg"]},"Material.Menu.Msg":{"tags":{"Open":["Material.Menu.Geometry.Geometry"],"Key":["List (Material.Options.Internal.Summary (Material.Menu.ItemConfig m) m)","Int"],"Ripple":["Int","Material.Ripple.Msg"],"Select":["Int","Maybe.Maybe m"],"Click":["Mouse.Position"],"Tick":[],"Close":[]},"args":["m"]},"Json.Encode.Value":{"tags":{"Value":[]},"args":[]},"Material.Component.Msg":{"tags":{"ButtonMsg":["Material.Component.Index","button"],"MenuMsg":["Material.Component.Index","menu"],"TabsMsg":["Material.Component.Index","tabs"],"Dispatch":["dispatch"],"TextfieldMsg":["Material.Component.Index","textfield"],"TooltipMsg":["Material.Component.Index","tooltip"],"TogglesMsg":["Material.Component.Index","toggles"],"LayoutMsg":["layout"]},"args":["button","textfield","menu","layout","toggles","tooltip","tabs","dispatch"]},"Overdrive.Msg":{"tags":{"RemoveSelectedModelStatus":["Overdrive.Status"],"ClearActorChanges":[],"AddActor":["Overdrive.ActorType"],"SetMomentumType":["String"],"SocketClosedAbnormally":["Phoenix.Socket.AbnormalClose"],"ChangeSelectedStatusDuration":["String"],"ChangeSelectedActorCurrentHP":["Int"],"SetEnemyMomentumStrength":["Float"],"Mdl":["Material.Msg Overdrive.Msg"],"RemoveActor":[],"ChangeSelectedActorMaxMP":["Int"],"ConnectionStatusChanged":["Overdrive.ConnectionStatus"],"DecrementInitRecord":["Int"],"ChangeSelectedActorCurrentMP":["Int"],"ChangeSelectedActorMaxHP":["Int"],"SelectActor":["Int"],"AddSelectedModelStatus":[],"ChangeSelectedActorName":["String"],"ChangeSelectedStatusMeta":["String"],"IncrementInitRecord":["Int"],"MomentumUpdate":["Json.Decode.Value"],"ChangeSelectedActorCurrentDrive":["Int"],"ActorsUpdate":["Json.Decode.Value"],"Raise":["Int"],"ChangeSelectedStatusName":["String"],"ChangeSelectedActorMaxDrive":["Int"],"ChangeSelectedActorMaxLP":["Int"],"RemoveEnemyMomentum":["Overdrive.Momentum"],"SaveActorChanges":[],"SetMomentumStrength":["Float"],"ToggleSelectedActorRow":[],"ClearInitRecords":[],"Tick":["Time.Time"],"ChangeSelectedStatusLevel":["Int"],"InitRecordsUpdate":["Json.Decode.Value"],"InitialiseInitRecords":[],"SetEnemyMomentumType":["String"],"ChangeSelectedActorBaseInit":["Int"],"AddEnemyMomentum":[],"RemoveMomentum":["Overdrive.Momentum"],"AddMomentum":[],"ChangeSelectedActorCurrentLP":["Int"],"ClearMomentum":[]},"args":[]},"Material.Ripple.Msg":{"tags":{"Down":["Material.Ripple.DOMState"],"Tick":[],"Up":[]},"args":[]},"Overdrive.ConnectionStatus":{"tags":{"ScheduledReconnect":["{ time : Time.Time }"],"Connected":[],"Disconnected":[]},"args":[]},"Maybe.Maybe":{"tags":{"Nothing":[],"Just":["a"]},"args":["a"]}}},"versions":{"elm":"0.18.0"}});
+    _user$project$Overdrive$main(Elm['Overdrive'], 'Overdrive', {"types":{"message":"Overdrive.Msg","aliases":{"Material.Msg":{"type":"Material.Component.Msg Material.Button.Msg Material.Textfield.Msg (Material.Menu.Msg m) Material.Layout.Msg Material.Toggles.Msg Material.Tooltip.Msg Material.Tabs.Msg (List m)","args":["m"]},"Json.Decode.Value":{"type":"Json.Encode.Value","args":[]},"Material.Menu.Geometry.Element":{"type":"{ offsetTop : Float , offsetLeft : Float , offsetHeight : Float , bounds : DOM.Rectangle }","args":[]},"Time.Time":{"type":"Float","args":[]},"Material.Menu.Geometry.Geometry":{"type":"{ button : Material.Menu.Geometry.Element , menu : Material.Menu.Geometry.Element , container : Material.Menu.Geometry.Element , offsetTops : List Float , offsetHeights : List Float }","args":[]},"Phoenix.Socket.AbnormalClose":{"type":"{ reconnectAttempt : Int, reconnectWait : Time.Time }","args":[]},"DOM.Rectangle":{"type":"{ top : Float, left : Float, width : Float, height : Float }","args":[]},"Material.Layout.TabScrollState":{"type":"{ canScrollLeft : Bool , canScrollRight : Bool , width : Maybe.Maybe Int }","args":[]},"Material.Button.Msg":{"type":"Material.Ripple.Msg","args":[]},"Overdrive.Momentum":{"type":"{ element : String, strength : Float }","args":[]},"Material.Menu.ItemConfig":{"type":"{ enabled : Bool, divider : Bool, onSelect : Maybe.Maybe m }","args":["m"]},"Html.Attribute":{"type":"VirtualDom.Property msg","args":["msg"]},"Material.Tooltip.DOMState":{"type":"{ rect : DOM.Rectangle, offsetWidth : Float, offsetHeight : Float }","args":[]},"Material.Component.Index":{"type":"List Int","args":[]},"Html.Events.Options":{"type":"{ stopPropagation : Bool, preventDefault : Bool }","args":[]},"Overdrive.Status":{"type":"{ status : String, duration : String, level : Int, meta : String }","args":[]},"Material.Ripple.DOMState":{"type":"{ rect : DOM.Rectangle , clientX : Maybe.Maybe Float , clientY : Maybe.Maybe Float , touchX : Maybe.Maybe Float , touchY : Maybe.Maybe Float , type_ : String }","args":[]},"Material.Options.Internal.Summary":{"type":"{ classes : List String , css : List ( String, String ) , attrs : List (Html.Attribute m) , internal : List (Html.Attribute m) , dispatch : Material.Dispatch.Config m , config : c }","args":["c","m"]},"Mouse.Position":{"type":"{ x : Int, y : Int }","args":[]}},"unions":{"Overdrive.ActorType":{"tags":{"Enemy":[],"Player":[]},"args":[]},"Material.Tooltip.Msg":{"tags":{"Leave":[],"Enter":["Material.Tooltip.DOMState"]},"args":[]},"Json.Decode.Decoder":{"tags":{"Decoder":[]},"args":["a"]},"Material.Textfield.Msg":{"tags":{"Focus":[],"Input":["String"],"Blur":[]},"args":[]},"Material.Layout.Msg":{"tags":{"ScrollPane":["Bool","Float"],"ScrollTab":["Material.Layout.TabScrollState"],"Ripple":["Int","Material.Ripple.Msg"],"TransitionHeader":["{ toCompact : Bool, fixedHeader : Bool }"],"NOP":[],"Resize":["Int"],"ToggleDrawer":[],"TransitionEnd":[]},"args":[]},"Material.Toggles.Msg":{"tags":{"Ripple":["Material.Ripple.Msg"],"SetFocus":["Bool"]},"args":[]},"Material.Tabs.Msg":{"tags":{"Ripple":["Int","Material.Ripple.Msg"]},"args":[]},"VirtualDom.Property":{"tags":{"Property":[]},"args":["msg"]},"Material.Dispatch.Config":{"tags":{"Config":["{ decoders : List ( String , ( Json.Decode.Decoder msg, Maybe.Maybe Html.Events.Options ) ) , lift : Maybe.Maybe (Json.Decode.Decoder (List msg) -> Json.Decode.Decoder msg) }"]},"args":["msg"]},"Material.Menu.Msg":{"tags":{"Open":["Material.Menu.Geometry.Geometry"],"Key":["List (Material.Options.Internal.Summary (Material.Menu.ItemConfig m) m)","Int"],"Ripple":["Int","Material.Ripple.Msg"],"Select":["Int","Maybe.Maybe m"],"Click":["Mouse.Position"],"Tick":[],"Close":[]},"args":["m"]},"Json.Encode.Value":{"tags":{"Value":[]},"args":[]},"Material.Component.Msg":{"tags":{"ButtonMsg":["Material.Component.Index","button"],"MenuMsg":["Material.Component.Index","menu"],"TabsMsg":["Material.Component.Index","tabs"],"Dispatch":["dispatch"],"TextfieldMsg":["Material.Component.Index","textfield"],"TooltipMsg":["Material.Component.Index","tooltip"],"TogglesMsg":["Material.Component.Index","toggles"],"LayoutMsg":["layout"]},"args":["button","textfield","menu","layout","toggles","tooltip","tabs","dispatch"]},"Overdrive.Msg":{"tags":{"RemoveSelectedModelStatus":["Overdrive.Status"],"ClearActorChanges":[],"AddActor":["Overdrive.ActorType"],"SetMomentumType":["String"],"SocketClosedAbnormally":["Phoenix.Socket.AbnormalClose"],"ParseUrlParams":["String"],"ChangeSelectedStatusDuration":["String"],"ChangeSelectedActorCurrentHP":["Int"],"SetEnemyMomentumStrength":["Float"],"Mdl":["Material.Msg Overdrive.Msg"],"RemoveActor":[],"ChangeSelectedActorMaxMP":["Int"],"ConnectionStatusChanged":["Overdrive.ConnectionStatus"],"DecrementInitRecord":["Int"],"ChangeSelectedActorCurrentMP":["Int"],"ChangeSelectedActorMaxHP":["Int"],"SelectActor":["Int"],"AddSelectedModelStatus":[],"ChangeSelectedActorName":["String"],"ChangeSelectedStatusMeta":["String"],"IncrementInitRecord":["Int"],"MomentumUpdate":["Json.Decode.Value"],"ChangeSelectedActorCurrentDrive":["Int"],"ActorsUpdate":["Json.Decode.Value"],"Raise":["Int"],"ChangeSelectedStatusName":["String"],"ChangeSelectedActorMaxDrive":["Int"],"ChangeSelectedActorMaxLP":["Int"],"RemoveEnemyMomentum":["Overdrive.Momentum"],"SaveActorChanges":[],"SetMomentumStrength":["Float"],"ToggleSelectedActorRow":[],"ClearInitRecords":[],"Tick":["Time.Time"],"ChangeSelectedStatusLevel":["Int"],"InitRecordsUpdate":["Json.Decode.Value"],"InitialiseInitRecords":[],"SetEnemyMomentumType":["String"],"ChangeSelectedActorBaseInit":["Int"],"AddEnemyMomentum":[],"RemoveMomentum":["Overdrive.Momentum"],"AddMomentum":[],"ChangeSelectedActorCurrentLP":["Int"],"ClearMomentum":[]},"args":[]},"Material.Ripple.Msg":{"tags":{"Down":["Material.Ripple.DOMState"],"Tick":[],"Up":[]},"args":[]},"Overdrive.ConnectionStatus":{"tags":{"ScheduledReconnect":["{ time : Time.Time }"],"Connected":[],"Disconnected":[]},"args":[]},"Maybe.Maybe":{"tags":{"Nothing":[],"Just":["a"]},"args":["a"]}}},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])

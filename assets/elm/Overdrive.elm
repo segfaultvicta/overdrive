@@ -1,4 +1,4 @@
-module Overdrive exposing (..)
+port module Overdrive exposing (..)
 
 import Array exposing (Array)
 import Dict
@@ -41,6 +41,69 @@ main =
         , subscriptions = subscriptions
         , update = update
         }
+
+
+port loc : (String -> msg) -> Sub msg
+
+
+type ParseResult
+    = Error String
+    | UrlParams (Dict.Dict String String)
+
+
+paramsToDict : ParseResult -> Dict.Dict String String
+paramsToDict result =
+    case result of
+        Error _ ->
+            Dict.empty
+
+        UrlParams dict ->
+            dict
+
+
+parseUrlParams : String -> ParseResult
+parseUrlParams startsWithQuestionMarkThenParams =
+    case String.uncons startsWithQuestionMarkThenParams of
+        Nothing ->
+            Error "No URL params"
+
+        Just ( '?', rest ) ->
+            parseParams rest
+
+        Just ( _, rest ) ->
+            Error "Didn't begin with a ?"
+
+
+parseParams : String -> ParseResult
+parseParams stringWithAmpersands =
+    let
+        eachParam =
+            String.split "&" stringWithAmpersands
+
+        eachPair =
+            List.map (splitAtFirst '=') eachParam
+    in
+    UrlParams (Dict.fromList eachPair)
+
+
+splitAtFirst : Char -> String -> ( String, String )
+splitAtFirst c s =
+    case firstOccurrence c s of
+        Nothing ->
+            ( s, "" )
+
+        Just i ->
+            ( String.left i s, String.dropLeft (i + 1) s )
+
+
+firstOccurrence : Char -> String -> Maybe Int
+firstOccurrence c s =
+    case String.indexes (String.fromChar c) s of
+        [] ->
+            Nothing
+
+        head :: _ ->
+            Just head
 
 
 
@@ -116,6 +179,7 @@ type alias Model =
     , currentTime : Time
     , mdl : Material.Model
     , raised : Int
+    , urlParams : Dict.Dict String String
     }
 
 
@@ -135,6 +199,7 @@ init =
     , currentTime = 0
     , mdl = Material.model
     , raised = -1
+    , urlParams = Dict.empty
     }
 
 
@@ -191,6 +256,7 @@ type Msg
     | InitRecordsUpdate JD.Value
     | SocketClosedAbnormally AbnormalClose
     | ConnectionStatusChanged ConnectionStatus
+    | ParseUrlParams String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -518,6 +584,12 @@ update msg model =
                     else
                         Array.fromList model.enemies
 
+                needsSeekrit =
+                    if actorIdx < 100 then
+                        False
+                    else
+                        True
+
                 selectedActorActualIndex =
                     if actorIdx < 100 then
                         actorIdx
@@ -529,7 +601,10 @@ update msg model =
             in
             case maybeActor of
                 Just actor ->
-                    ( { model | selectedActorIdx = actorIdx, selectedActor = actor }, Cmd.none )
+                    if not needsSeekrit || seekrit model then
+                        ( { model | selectedActorIdx = actorIdx, selectedActor = actor }, Cmd.none )
+                    else
+                        model ! []
 
                 Nothing ->
                     ( { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] }, Cmd.none )
@@ -675,6 +750,9 @@ update msg model =
         Tick time ->
             { model | currentTime = time } ! []
 
+        ParseUrlParams params ->
+            { model | urlParams = parseUrlParams params |> paramsToDict } ! []
+
 
 roundDownToSecond : Time -> Time
 roundDownToSecond ms =
@@ -806,7 +884,7 @@ lobby userName =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch [ phoenixSubscription model, Time.every Time.second Tick, Menu.subs Mdl model.mdl ]
+    Sub.batch [ phoenixSubscription model, Time.every Time.second Tick, Menu.subs Mdl model.mdl, loc ParseUrlParams ]
 
 
 phoenixSubscription model =
@@ -1267,6 +1345,14 @@ statusCard model actortype ( k, actor ) =
         ]
 
 
+seekrit : Model -> Bool
+seekrit model =
+    if Dict.get "gmpass" model.urlParams == Just "leilani" then
+        True
+    else
+        False
+
+
 statDiv : Int -> Int -> String
 statDiv c m =
     round ((toFloat c / toFloat m) * 100)
@@ -1280,10 +1366,10 @@ renderStat model label currentStat maxStat actortype rorl =
             "render-stat-" ++ rorl
     in
     span [ class span_class ]
-        [ if actortype == Player then
-            text (label ++ "   " ++ (toString <| currentStat) ++ "/" ++ (toString <| maxStat))
+        [ if (actortype == Player) || seekrit model then
+            text (label ++ " " ++ (toString <| currentStat) ++ "/" ++ (toString <| maxStat))
           else
-            text (label ++ "   " ++ statDiv currentStat maxStat ++ "%")
+            text (label ++ " " ++ statDiv currentStat maxStat ++ "%")
         ]
 
 
@@ -1392,7 +1478,12 @@ renderEnemyMomentum model =
             , Button.render Mdl
                 [ 1 ]
                 model.mdl
-                [ Options.onClick AddEnemyMomentum ]
+                [ Options.onClick AddEnemyMomentum
+                , if not (seekrit model) then
+                    Button.disabled
+                  else
+                    Button.plain
+                ]
                 [ text ("Add " ++ printMomentum model.selectedEnemyMomentum) ]
             ]
         , div []
@@ -1400,6 +1491,10 @@ renderEnemyMomentum model =
                 [ 0 ]
                 model.mdl
                 [ Options.onClick ClearMomentum
+                , if not (seekrit model) then
+                    Button.disabled
+                  else
+                    Button.plain
                 ]
                 [ text "Clear Momentum" ]
             ]
