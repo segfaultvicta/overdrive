@@ -1047,6 +1047,18 @@ editActor model actortype =
                 )
             ]
         , renderEditStatusList model
+        , Textfield.render Mdl
+            [ 84764 ]
+            model.mdl
+            [ Textfield.label "New Status Metadata"
+            , Textfield.floatingLabel
+            , Textfield.value model.selectedStatus.meta
+            , Options.input
+                [ Options.css "text-align" "center"
+                ]
+            , Options.onInput ChangeSelectedStatusMeta
+            ]
+            []
         ]
     else
         [ text "" ]

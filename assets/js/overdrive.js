@@ -25585,7 +25585,46 @@ var _user$project$Overdrive$editActor = F2(
 								_1: {
 									ctor: '::',
 									_0: _user$project$Overdrive$renderEditStatusList(model),
-									_1: {ctor: '[]'}
+									_1: {
+										ctor: '::',
+										_0: A5(
+											_debois$elm_mdl$Material_Textfield$render,
+											_user$project$Overdrive$Mdl,
+											{
+												ctor: '::',
+												_0: 84764,
+												_1: {ctor: '[]'}
+											},
+											model.mdl,
+											{
+												ctor: '::',
+												_0: _debois$elm_mdl$Material_Textfield$label('New Status Metadata'),
+												_1: {
+													ctor: '::',
+													_0: _debois$elm_mdl$Material_Textfield$floatingLabel,
+													_1: {
+														ctor: '::',
+														_0: _debois$elm_mdl$Material_Textfield$value(model.selectedStatus.meta),
+														_1: {
+															ctor: '::',
+															_0: _debois$elm_mdl$Material_Options$input(
+																{
+																	ctor: '::',
+																	_0: A2(_debois$elm_mdl$Material_Options$css, 'text-align', 'center'),
+																	_1: {ctor: '[]'}
+																}),
+															_1: {
+																ctor: '::',
+																_0: _debois$elm_mdl$Material_Options$onInput(_user$project$Overdrive$ChangeSelectedStatusMeta),
+																_1: {ctor: '[]'}
+															}
+														}
+													}
+												}
+											},
+											{ctor: '[]'}),
+										_1: {ctor: '[]'}
+									}
 								}
 							}
 						}
