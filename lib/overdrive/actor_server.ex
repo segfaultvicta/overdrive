@@ -10,14 +10,14 @@ defmodule Overdrive.ActorServer do
   def init_model do
     %{lobby: %{enemies: [
       %Actor{uuid: UUID.uuid4, name: "Some Fucken Robot", currHP: 50, maxHP: 100, currMP: 5, maxMP: 10, currLP: 2, maxLP: 4, currDrive: 10, maxDrive: 10, initBase: 5, row: "Back",
-        statuses: [%Status{status: "Energize", duration: "Short", level: 1, meta: ""}, %Status{status: "Chill", duration: "Long", level: 2, meta: ""}]},
+        statuses: [%Status{status: "Energize", duration: "Short", level: 1, meta: ""}, %Status{status: "Chill", duration: "Long", level: 2, meta: ""}], currAmmo: 1, maxAmmo: 2},
       %Actor{uuid: UUID.uuid4, name: "Beeeees!?", currHP: 20, maxHP: 100, currMP: 10, maxMP: 10, currLP: 0, maxLP: 4, currDrive: 2, maxDrive: 10, initBase: 3, row: "Front",
-        statuses: []}
+        statuses: [], currAmmo: 2, maxAmmo: 2}
       ], players: [
       %Actor{uuid: UUID.uuid4, name: "Phyllis", currHP: 50, maxHP: 100, currMP: 5, maxMP: 10, currLP: 2, maxLP: 4, currDrive: 10, maxDrive: 10, initBase: 5, row: "Back",
-          statuses: [%Status{status: "Shock", duration: "Short", level: 2, meta: ""}]},
+          statuses: [%Status{status: "Shock", duration: "Short", level: 2, meta: ""}], currAmmo: 2, maxAmmo: 3},
       %Actor{uuid: UUID.uuid4, name: "Chandrasekhar", currHP: 20, maxHP: 100, currMP: 10, maxMP: 10, currLP: 0, maxLP: 4, currDrive: 2, maxDrive: 10, initBase: 3, row: "Front",
-          statuses: []}
+          statuses: [], currAmmo: 5, maxAmmo: 5}
       ]
     }}
   end
@@ -64,7 +64,7 @@ defmodule Overdrive.ActorServer do
     new_map = %{}
     |> Map.put(side, new_curr)
     |> Map.put(other_side_name, other_side)
-    
+
     Agent.update(__MODULE__,
       fn state ->
         Map.put(state, room, new_map)
@@ -96,7 +96,7 @@ defmodule Overdrive.ActorServer do
     curr_side = get(room, side)
     other_side = get_other_side(room, side)
     other_side_name = get_other_side_name(side)
-    new_curr_side = curr_side ++ [%Actor{uuid: UUID.uuid4(), name: "???", currHP: 0, maxHP: 0, currMP: 0, maxMP: 0, currLP: 0, maxLP: 0, currDrive: 0, maxDrive: 0, initBase: 0, row: "Front", statuses: []}]
+    new_curr_side = curr_side ++ [%Actor{uuid: UUID.uuid4(), name: "???", currHP: 0, maxHP: 0, currMP: 0, maxMP: 0, currLP: 0, maxLP: 0, currDrive: 0, maxDrive: 0, initBase: 0, row: "Front", statuses: [], currAmmo: 0, maxAmmo: 0}]
     new_map = %{}
     |> Map.put(side, new_curr_side)
     |> Map.put(other_side_name, other_side)

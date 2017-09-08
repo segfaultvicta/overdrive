@@ -142,6 +142,8 @@ type alias Actor =
     , initBase : Int
     , row : Row
     , status : List Status
+    , currentAmmo : Int
+    , maxAmmo : Int
     }
 
 
@@ -192,7 +194,7 @@ init =
     , players = []
     , enemies = []
     , selectedActorIdx = -1
-    , selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back []
+    , selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] 0 0
     , selectedStatus = Status "" "" 0 ""
     , inits = []
     , connectionStatus = Disconnected
@@ -233,6 +235,8 @@ type Msg
     | ChangeSelectedActorCurrentLP Int
     | ChangeSelectedActorMaxDrive Int
     | ChangeSelectedActorCurrentDrive Int
+    | ChangeSelectedActorMaxAmmo Int
+    | ChangeSelectedActorCurrentAmmo Int
     | ChangeSelectedActorBaseInit Int
     | ToggleSelectedActorRow
     | RemoveSelectedModelStatus Status
@@ -378,7 +382,7 @@ update msg model =
                                 [ ( "uuid", JE.string model.selectedActor.uuid ) ]
                             )
             in
-            { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] } ! [ Phoenix.push lobbySocket push ]
+            { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] 0 0 } ! [ Phoenix.push lobbySocket push ]
 
         ChangeSelectedActorName name ->
             let
@@ -503,6 +507,35 @@ update msg model =
             in
             ( { model | selectedActor = newSelectedActor }, Cmd.none )
 
+        ChangeSelectedActorMaxAmmo stat ->
+            let
+                oldSelectedActor =
+                    model.selectedActor
+
+                newSelectedActor =
+                    { oldSelectedActor | maxAmmo = stat }
+            in
+            ( { model | selectedActor = newSelectedActor }, Cmd.none )
+
+        ChangeSelectedActorCurrentAmmo stat ->
+            let
+                oldSelectedActor =
+                    model.selectedActor
+
+                newSelectedActor =
+                    { oldSelectedActor
+                        | currentAmmo =
+                            if stat <= model.selectedActor.maxAmmo then
+                                if stat < 0 then
+                                    0
+                                else
+                                    stat
+                            else
+                                model.selectedActor.maxAmmo
+                    }
+            in
+            ( { model | selectedActor = newSelectedActor }, Cmd.none )
+
         ChangeSelectedActorBaseInit stat ->
             let
                 oldSelectedActor =
@@ -607,7 +640,7 @@ update msg model =
                         model ! []
 
                 Nothing ->
-                    ( { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] }, Cmd.none )
+                    ( { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] 0 0 }, Cmd.none )
 
         SaveActorChanges ->
             let
@@ -631,6 +664,8 @@ update msg model =
                                 , ( "maxLP", JE.int model.selectedActor.maxLP )
                                 , ( "currDrive", JE.int model.selectedActor.currentDrive )
                                 , ( "maxDrive", JE.int model.selectedActor.maxDrive )
+                                , ( "currAmmo", JE.int model.selectedActor.currentAmmo )
+                                , ( "maxAmmo", JE.int model.selectedActor.maxAmmo )
                                 , ( "initBase", JE.int model.selectedActor.initBase )
                                 , ( "row"
                                   , if model.selectedActor.row == Front then
@@ -642,10 +677,10 @@ update msg model =
                                 ]
                             )
             in
-            { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] } ! [ Phoenix.push lobbySocket push ]
+            { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] 0 0 } ! [ Phoenix.push lobbySocket push ]
 
         ClearActorChanges ->
-            { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] } ! []
+            { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] 0 0 } ! []
 
         InitialiseInitRecords ->
             let
@@ -805,6 +840,8 @@ actorDecoder =
         |> required "initBase" JD.int
         |> required "row" rowDecoder
         |> required "statuses" (JD.list statusDecoder)
+        |> required "currAmmo" JD.int
+        |> required "maxAmmo" JD.int
 
 
 rowDecoder : JD.Decoder Row
@@ -1029,6 +1066,7 @@ editActor model actortype =
             , ( 2, "MP", model.selectedActor.currentMP, model.selectedActor.maxMP, ChangeSelectedActorCurrentMP, ChangeSelectedActorMaxMP )
             , ( 3, "LP", model.selectedActor.currentLP, model.selectedActor.maxLP, ChangeSelectedActorCurrentLP, ChangeSelectedActorMaxLP )
             , ( 4, "Drive", model.selectedActor.currentDrive, model.selectedActor.maxDrive, ChangeSelectedActorCurrentDrive, ChangeSelectedActorMaxDrive )
+            , ( 5, "Ammo", model.selectedActor.currentAmmo, model.selectedActor.maxAmmo, ChangeSelectedActorCurrentAmmo, ChangeSelectedActorMaxAmmo )
             ]
     in
     if shouldDisplay then
@@ -1337,6 +1375,9 @@ statusCard model actortype ( k, actor ) =
                     [ renderStat model "LP" actor.currentLP actor.maxLP actortype "left"
                     , renderStat model "Drive" actor.currentDrive actor.maxDrive actortype "right"
                     ]
+                , div [ class "render-statcard-single" ]
+                    [ renderStat model "Ammo" actor.currentAmmo actor.maxAmmo actortype "left"
+                    ]
                 , div []
                     [ renderStatuses actor model dyn_id
                     ]
@@ -1548,10 +1589,7 @@ addMomentumInput model momentum setMomentumStrengthFunction setMomentumElementFu
             [ makeMomentumRadio model (idBase + 6) "Launch" momentum setMomentumElementFunction mRadioGroup
             , makeMomentumRadio model (idBase + 7) "Pin" momentum setMomentumElementFunction mRadioGroup
             , makeMomentumRadio model (idBase + 8) "Rush" momentum setMomentumElementFunction mRadioGroup
-            ]
-        , div []
-            [ makeMomentumRadio model (idBase + 9) "Recovery" momentum setMomentumElementFunction mRadioGroup
-            , makeMomentumRadio model (idBase + 10) "Supreme" momentum setMomentumElementFunction mRadioGroup
+            , makeMomentumRadio model (idBase + 9) "Recovery" momentum setMomentumElementFunction mRadioGroup
             ]
         , div []
             [ Slider.view

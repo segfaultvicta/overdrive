@@ -1,6 +1,6 @@
 defmodule Overdrive.Actor do
   @derive [Poison.Encoder]
-  defstruct [:uuid, :name, :currHP, :maxHP, :currMP, :maxMP, :currLP, :maxLP, :currDrive, :maxDrive, :initBase, :row, :statuses]
+  defstruct [:uuid, :name, :currHP, :maxHP, :currMP, :maxMP, :currLP, :maxLP, :currDrive, :maxDrive, :initBase, :row, :statuses, :currAmmo, :maxAmmo]
 end
 
 defmodule Overdrive.Status do

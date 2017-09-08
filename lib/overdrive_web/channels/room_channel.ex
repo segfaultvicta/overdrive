@@ -62,7 +62,8 @@ defmodule OverdriveWeb.RoomChannel do
     to_save = %Actor{name: actor["name"], currHP: actor["currHP"], maxHP: actor["maxHP"],
                      currMP: actor["currMP"], maxMP: actor["maxMP"], currLP: actor["currLP"],
                      maxLP: actor["maxLP"], currDrive: actor["currDrive"], maxDrive: actor["maxDrive"],
-                     initBase: actor["initBase"], row: actor["row"], statuses: actor["statuses"], uuid: actor["uuid"]}
+                     initBase: actor["initBase"], row: actor["row"], statuses: actor["statuses"], uuid: actor["uuid"],
+                     currAmmo: actor["currAmmo"], maxAmmo: actor["maxAmmo"]}
     ActorServer.save(:lobby, team, actor["uuid"], to_save)
     send self(), {:status_update}
     {:reply, :ok, socket}
