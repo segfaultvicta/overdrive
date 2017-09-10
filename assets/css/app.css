@@ -25,3 +25,24 @@
 .mdl-menu__container.is-visible .mdl-menu__outline {
   position: initial;
 }
+
+.quick-damage-target .mdl-menu__container {
+  position: absolute;
+}
+
+.mdl-list__item {
+  padding: 0px;
+}
+
+.quick-damage {
+  display: flex;
+}
+
+.quick-damage-target {
+  display: flex;
+}
+
+p {
+  margin-top: 20px;
+  margin-right: 10px;
+}

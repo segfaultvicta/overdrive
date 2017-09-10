@@ -54,6 +54,7 @@ defmodule OverdriveWeb.RoomChannel do
   def handle_in("remove_actor", %{"uuid" => uuid}, socket) do
     ActorServer.delete(:lobby, uuid)
     send self(), {:status_update}
+    send self(), {:inits_update}
     {:reply, :ok, socket}
   end
 
@@ -63,8 +64,36 @@ defmodule OverdriveWeb.RoomChannel do
                      currMP: actor["currMP"], maxMP: actor["maxMP"], currLP: actor["currLP"],
                      maxLP: actor["maxLP"], currDrive: actor["currDrive"], maxDrive: actor["maxDrive"],
                      initBase: actor["initBase"], row: actor["row"], statuses: actor["statuses"], uuid: actor["uuid"],
-                     currAmmo: actor["currAmmo"], maxAmmo: actor["maxAmmo"]}
+                     currAmmo: actor["currAmmo"], maxAmmo: actor["maxAmmo"], visible: actor["visible"]}
     ActorServer.save(:lobby, team, actor["uuid"], to_save)
+    send self(), {:status_update}
+    send self(), {:inits_update}
+    {:reply, :ok, socket}
+  end
+
+  def handle_in("quick_damage", %{"target" => target_string, "damage" => damage}, socket) do
+    # target is either "Front", "Row", "All", or a UUID
+    target = case target_string do
+      "Front" ->
+        ActorServer.get_actors(:lobby, :enemies, :row, "Front")
+      "Back" ->
+        ActorServer.get_actors(:lobby, :enemies, :row, "Back")
+      "All" ->
+        ActorServer.get_actors(:lobby, :enemies)
+      _ ->
+        [ActorServer.get_actor_by_uuid(:lobby, target_string)]
+    end
+    Enum.each(target, fn(actor) ->
+      team = ActorServer.get_side_by_uuid(:lobby, actor.uuid)
+      newHP = if actor.currHP - damage >= 0 do actor.currHP - damage else 0 end
+      ActorServer.save(:lobby, team, actor.uuid, %{actor|currHP: newHP})
+    end)
+    send self(), {:status_update}
+    {:reply, :ok, socket}
+  end
+
+  def handle_in("duplicate_actor", %{"uuid" => uuid}, socket) do
+    ActorServer.duplicate(:lobby, uuid)
     send self(), {:status_update}
     {:reply, :ok, socket}
   end
@@ -89,6 +118,13 @@ defmodule OverdriveWeb.RoomChannel do
 
   def handle_in("decrement_init", %{"idx" => idx}, socket) do
     InitServer.decrement_at(:lobby, idx)
+    send self(), {:inits_update}
+    {:reply, :ok, socket}
+  end
+
+  def handle_in("toggle_visibility", %{"uuid" => uuid}, socket) do
+    InitServer.toggle(:lobby, uuid)
+    send self(), {:status_update}
     send self(), {:inits_update}
     {:reply, :ok, socket}
   end

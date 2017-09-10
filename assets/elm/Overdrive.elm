@@ -26,6 +26,7 @@ import Material.Table as Table
 import Material.Textfield as Textfield
 import Material.Toggles as Toggle
 import Material.Tooltip as Tooltip
+import Material.Typography as Typo
 import Phoenix
 import Phoenix.Channel as Channel exposing (Channel)
 import Phoenix.Push as Push
@@ -144,6 +145,7 @@ type alias Actor =
     , status : List Status
     , currentAmmo : Int
     , maxAmmo : Int
+    , visible : Bool
     }
 
 
@@ -177,6 +179,9 @@ type alias Model =
     , selectedActor : Actor
     , selectedStatus : Status
     , inits : List InitRecord
+    , quickTargetName : String
+    , quickTarget : String
+    , quickDamage : Int
     , connectionStatus : ConnectionStatus
     , currentTime : Time
     , mdl : Material.Model
@@ -194,9 +199,12 @@ init =
     , players = []
     , enemies = []
     , selectedActorIdx = -1
-    , selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] 0 0
+    , selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] 0 0 False
     , selectedStatus = Status "" "" 0 ""
     , inits = []
+    , quickTargetName = "All"
+    , quickTarget = "All"
+    , quickDamage = 0
     , connectionStatus = Disconnected
     , currentTime = 0
     , mdl = Material.model
@@ -226,6 +234,10 @@ type Msg
     | SetEnemyMomentumStrength Float
     | AddActor ActorType
     | RemoveActor
+    | DuplicateActor
+    | QuickDamage
+    | ChangeQuickTarget ( String, String )
+    | ChangeQuickDamage Int
     | ChangeSelectedActorName String
     | ChangeSelectedActorMaxHP Int
     | ChangeSelectedActorCurrentHP Int
@@ -246,6 +258,7 @@ type Msg
     | ChangeSelectedStatusLevel Int
     | ChangeSelectedStatusMeta String
     | SelectActor Int
+    | ToggleVisibility Int
     | SaveActorChanges
     | ClearActorChanges
     | IncrementInitRecord Int
@@ -382,7 +395,37 @@ update msg model =
                                 [ ( "uuid", JE.string model.selectedActor.uuid ) ]
                             )
             in
-            { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] 0 0 } ! [ Phoenix.push lobbySocket push ]
+            { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] 0 0 False } ! [ Phoenix.push lobbySocket push ]
+
+        DuplicateActor ->
+            let
+                push =
+                    Push.init "room:lobby" "duplicate_actor"
+                        |> Push.withPayload
+                            (JE.object
+                                [ ( "uuid", JE.string model.selectedActor.uuid ) ]
+                            )
+            in
+            model ! [ Phoenix.push lobbySocket push ]
+
+        ChangeQuickTarget ( name, target ) ->
+            { model | quickTarget = target, quickTargetName = name } ! []
+
+        ChangeQuickDamage dmg ->
+            { model | quickDamage = dmg } ! []
+
+        QuickDamage ->
+            let
+                push =
+                    Push.init "room:lobby" "quick_damage"
+                        |> Push.withPayload
+                            (JE.object
+                                [ ( "target", JE.string model.quickTarget )
+                                , ( "damage", JE.int model.quickDamage )
+                                ]
+                            )
+            in
+            { model | quickTarget = "All", quickTargetName = "All", quickDamage = 0 } ! [ Phoenix.push lobbySocket push ]
 
         ChangeSelectedActorName name ->
             let
@@ -640,7 +683,29 @@ update msg model =
                         model ! []
 
                 Nothing ->
-                    ( { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] 0 0 }, Cmd.none )
+                    ( { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] 0 0 False }, Cmd.none )
+
+        ToggleVisibility idx ->
+            let
+                maybeActor =
+                    Array.get idx (Array.fromList model.enemies)
+
+                uuid =
+                    case maybeActor of
+                        Just actor ->
+                            actor.uuid
+
+                        Nothing ->
+                            "error"
+
+                push =
+                    Push.init "room:lobby" "toggle_visibility"
+                        |> Push.withPayload
+                            (JE.object
+                                [ ( "uuid", JE.string uuid ) ]
+                            )
+            in
+            model ! [ Phoenix.push lobbySocket push ]
 
         SaveActorChanges ->
             let
@@ -649,6 +714,7 @@ update msg model =
                         |> Push.withPayload
                             (JE.object
                                 [ ( "uuid", JE.string model.selectedActor.uuid )
+                                , ( "visible", JE.bool model.selectedActor.visible )
                                 , ( "name", JE.string model.selectedActor.name )
                                 , ( "team"
                                   , if model.selectedActorIdx < 100 then
@@ -677,10 +743,10 @@ update msg model =
                                 ]
                             )
             in
-            { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] 0 0 } ! [ Phoenix.push lobbySocket push ]
+            { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] 0 0 False } ! [ Phoenix.push lobbySocket push ]
 
         ClearActorChanges ->
-            { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] 0 0 } ! []
+            { model | selectedActorIdx = -1, selectedActor = Actor "." "Error" 0 0 0 0 0 0 0 0 0 Back [] 0 0 False } ! []
 
         InitialiseInitRecords ->
             let
@@ -842,6 +908,7 @@ actorDecoder =
         |> required "statuses" (JD.list statusDecoder)
         |> required "currAmmo" JD.int
         |> required "maxAmmo" JD.int
+        |> required "visible" JD.bool
 
 
 rowDecoder : JD.Decoder Row
@@ -938,39 +1005,45 @@ type alias Mdl =
 
 view : Model -> Html Msg
 view model =
-    Material.Scheme.topWithScheme Color.Blue Color.Indigo <|
-        Layout.render Mdl
-            model.mdl
-            [ Layout.fixedHeader
-            , Layout.fixedDrawer
-            ]
-            { header = [ h1 [ style [ ( "padding", "1rem" ) ] ] [ text "S33D OVERDRIVE" ] ]
-            , drawer = []
-            , tabs = ( [], [] )
-            , main =
-                [ grid []
-                    [ cell [ size All 3 ]
-                        [ renderStatusList model Player ]
-                    , cell [ size All 2 ]
-                        [ renderPlayerMomentum model ]
-                    , cell [ size All 2 ]
-                        [ renderInitList model ]
-                    , cell [ size All 2 ]
-                        [ renderEnemyMomentum model ]
-                    , cell [ size All 3 ]
-                        [ renderStatusList model Enemy ]
-                    ]
+    Layout.render Mdl
+        model.mdl
+        [ Layout.fixedHeader
+        , Layout.fixedDrawer
+        ]
+        { header = [ h1 [ style [ ( "padding", "1rem" ) ] ] [ text "S33D OVERDRIVE" ] ]
+        , drawer = []
+        , tabs = ( [], [] )
+        , main =
+            [ grid []
+                [ cell [ size All 3 ]
+                    [ renderStatusList model Player ]
+                , cell [ size All 2 ]
+                    [ renderPlayerMomentum model ]
+                , cell [ size All 2 ]
+                    [ renderInitList model ]
+                , cell [ size All 2 ]
+                    [ renderEnemyMomentum model ]
+                , cell [ size All 3 ]
+                    [ renderStatusList model Enemy ]
                 ]
-            }
+            ]
+        }
 
 
 renderInitList : Model -> Html Msg
 renderInitList model =
+    let
+        buttonStatus =
+            if seekrit model then
+                Button.raised
+            else
+                Button.disabled
+    in
     div []
         [ Button.render Mdl
             [ 53524 ]
             model.mdl
-            [ Button.raised
+            [ buttonStatus
             , Button.colored
             , Button.ripple
             , Options.css "margin-left" "16px"
@@ -980,7 +1053,7 @@ renderInitList model =
         , Button.render Mdl
             [ 53525 ]
             model.mdl
-            [ Button.raised
+            [ buttonStatus
             , Button.colored
             , Button.ripple
             , Options.css "margin-left" "3px"
@@ -1028,7 +1101,11 @@ renderStatusList : Model -> ActorType -> Html Msg
 renderStatusList model actortype =
     div
         []
-        [ div []
+        [ if seekrit model && actortype == Enemy then
+            renderQuickDamage model
+          else
+            text ""
+        , Lists.ul []
             (List.map (statusCard model actortype)
                 (if actortype == Player then
                     List.indexedMap (,) model.players
@@ -1050,6 +1127,47 @@ renderStatusList model actortype =
         , div []
             (editActor model actortype)
         ]
+
+
+renderQuickDamage : Model -> Html Msg
+renderQuickDamage model =
+    span [ class "quick-damage" ]
+        [ Options.styled p [ Typo.title ] [ text "Quick Damage: " ]
+        , statTextField model 89164 model.quickDamage ChangeQuickDamage
+        , quickDamageTargetSelector model
+        , Button.render Mdl
+            [ 89163 ]
+            model.mdl
+            [ Button.icon
+            , Options.onClick QuickDamage
+            , Options.css "margin-top" "16px"
+            ]
+            [ Icon.i "colorize" ]
+        ]
+
+
+quickDamageTargetSelector : Model -> Html Msg
+quickDamageTargetSelector model =
+    span [ class "quick-damage-target" ]
+        [ Menu.render Mdl
+            [ 1247772 ]
+            model.mdl
+            [ Menu.bottomLeft
+            , Options.css "margin-top" "16px"
+            ]
+            ([ Menu.item [ Menu.onSelect (ChangeQuickTarget ( "All", "All" )) ] [ text "All" ]
+             , Menu.item [ Menu.onSelect (ChangeQuickTarget ( "Front", "Front" )) ] [ text "Front" ]
+             , Menu.item [ Menu.onSelect (ChangeQuickTarget ( "Back", "Back" )) ] [ text "Back" ]
+             ]
+                ++ List.map quickDamageEnemyAsMenuItem model.enemies
+            )
+        , Options.styled p [ Typo.title ] [ text model.quickTargetName ]
+        ]
+
+
+quickDamageEnemyAsMenuItem : Actor -> Menu.Item Msg
+quickDamageEnemyAsMenuItem enemy =
+    Menu.item [ Menu.onSelect (ChangeQuickTarget ( enemy.name, enemy.uuid )) ] [ text enemy.name ]
 
 
 editActor : Model -> ActorType -> List (Html Msg)
@@ -1076,7 +1194,6 @@ editActor model actortype =
             [ Button.raised
             , Button.colored
             , Button.ripple
-            , Options.css "margin-left" "12px"
             , Options.css "margin-top" "10px"
             , Options.onClick SaveActorChanges
             ]
@@ -1103,6 +1220,20 @@ editActor model actortype =
             , Options.onClick RemoveActor
             ]
             [ text "DELETE" ]
+        , if not playerSelected then
+            Button.render Mdl
+                [ 667 ]
+                model.mdl
+                [ Button.raised
+                , Button.colored
+                , Button.ripple
+                , Options.css "margin-left" "3px"
+                , Options.css "margin-top" "10px"
+                , Options.onClick DuplicateActor
+                ]
+                [ text "COPY" ]
+          else
+            text ""
         , div []
             [ Textfield.render Mdl
                 [ 800 ]
@@ -1349,41 +1480,68 @@ statusCard model actortype ( k, actor ) =
                    else
                     100
                   )
+
+        visible =
+            seekrit model || (actortype == Enemy && actor.visible) || actortype == Player
     in
-    Card.view
-        [ dynamic dyn_id (SelectActor dyn_id) model
-        , css "width" "240px"
-        , css
-            "margin"
-            ("4px 8px 4px "
-                ++ (if (actortype == Player && actor.row == Front) || (actortype == Enemy && actor.row == Back) then
-                        "35px"
-                    else
-                        "0px"
-                   )
-            )
-        , Color.background (Color.color Color.Blue Color.S500)
-        ]
-        [ Card.title [ css "padding" "5px 8px 0px 8px" ] [ Card.head [ Color.text Color.white ] [ text actor.name ] ]
-        , Card.text [ Color.text Color.white, css "padding" "0px 8px 8px 8px" ]
-            [ div [ class "render-statcard-block" ]
-                [ div [ class "render-statcard-double" ]
-                    [ renderStat model "HP" actor.currentHP actor.maxHP actortype "left"
-                    , renderStat model "MP" actor.currentMP actor.maxMP actortype "right"
+    if visible then
+        Lists.li []
+            [ Lists.content []
+                [ Card.view
+                    [ dynamic dyn_id (SelectActor dyn_id) model
+                    , css "width" "240px"
+                    , css
+                        "margin"
+                        ("4px 8px 4px "
+                            ++ (if (actortype == Player && actor.row == Front) || (actortype == Enemy && actor.row == Back) then
+                                    "35px"
+                                else
+                                    "0px"
+                               )
+                        )
+                    , Color.background (Color.color Color.Blue Color.S500)
                     ]
-                , div [ class "render-statcard-double" ]
-                    [ renderStat model "LP" actor.currentLP actor.maxLP actortype "left"
-                    , renderStat model "Drive" actor.currentDrive actor.maxDrive actortype "right"
-                    ]
-                , div [ class "render-statcard-single" ]
-                    [ renderStat model "Ammo" actor.currentAmmo actor.maxAmmo actortype "left"
-                    ]
-                , div []
-                    [ renderStatuses actor model dyn_id
+                    [ Card.title [ css "padding" "5px 8px 0px 8px" ] [ Card.head [ Color.text Color.white ] [ text actor.name ] ]
+                    , Card.text [ Color.text Color.white, css "padding" "0px 8px 8px 8px" ]
+                        [ div [ class "render-statcard-block" ]
+                            [ div [ class "render-statcard-double" ]
+                                [ renderStat model "HP" actor.currentHP actor.maxHP actortype "left"
+                                , renderStat model "MP" actor.currentMP actor.maxMP actortype "right"
+                                ]
+                            , div [ class "render-statcard-double" ]
+                                [ renderStat model "LP" actor.currentLP actor.maxLP actortype "left"
+                                , renderStat model "Drive" actor.currentDrive actor.maxDrive actortype "right"
+                                ]
+                            , div [ class "render-statcard-single" ]
+                                [ renderStat model "Ammo" actor.currentAmmo actor.maxAmmo actortype "left"
+                                ]
+                            , div []
+                                [ renderStatuses actor model dyn_id
+                                ]
+                            ]
+                        ]
                     ]
                 ]
+            , if seekrit model && (actortype == Enemy) then
+                visibilityButton model k actor
+              else
+                text ""
             ]
+    else
+        text ""
+
+
+visibilityButton : Model -> Int -> Actor -> Html Msg
+visibilityButton model k actor =
+    Button.render Mdl
+        [ k + 19888 ]
+        model.mdl
+        [ Button.icon
+        , Button.accent |> Options.when actor.visible
+        , Options.onClick (ToggleVisibility k)
+        , Options.css "margin-right" "45px"
         ]
+        [ Icon.i "visibility" ]
 
 
 seekrit : Model -> Bool

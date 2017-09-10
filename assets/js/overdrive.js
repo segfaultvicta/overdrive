@@ -20487,6 +20487,34 @@ var _debois$elm_mdl$Material_Table$descending = _debois$elm_mdl$Material_Table$s
 var _debois$elm_mdl$Material_Table$Ascending = {ctor: 'Ascending'};
 var _debois$elm_mdl$Material_Table$ascending = _debois$elm_mdl$Material_Table$sorted(_debois$elm_mdl$Material_Table$Ascending);
 
+var _debois$elm_mdl$Material_Typography$uppercase = _debois$elm_mdl$Material_Options$cs('mdl-typography--text-uppercase');
+var _debois$elm_mdl$Material_Typography$lowercase = _debois$elm_mdl$Material_Options$cs('mdl-typography--text-lowercase');
+var _debois$elm_mdl$Material_Typography$capitalize = _debois$elm_mdl$Material_Options$cs('mdl-typography--text-capitalize');
+var _debois$elm_mdl$Material_Typography$justify = _debois$elm_mdl$Material_Options$cs('mdl-typography--text-justify');
+var _debois$elm_mdl$Material_Typography$right = _debois$elm_mdl$Material_Options$cs('mdl-typography--text-right');
+var _debois$elm_mdl$Material_Typography$left = _debois$elm_mdl$Material_Options$cs('mdl-typography--text-left');
+var _debois$elm_mdl$Material_Typography$center = _debois$elm_mdl$Material_Options$cs('mdl-typography--text-center');
+var _debois$elm_mdl$Material_Typography$tableStriped = _debois$elm_mdl$Material_Options$cs('mdl-typography--table-striped');
+var _debois$elm_mdl$Material_Typography$nowrap = _debois$elm_mdl$Material_Options$cs('mdl-typography--text-nowrap');
+var _debois$elm_mdl$Material_Typography$contrast = function (x) {
+	return A2(
+		_debois$elm_mdl$Material_Options$css,
+		'opacity',
+		_elm_lang$core$Basics$toString(x));
+};
+var _debois$elm_mdl$Material_Typography$menu = _debois$elm_mdl$Material_Options$cs('mdl-typography--menu-color-contrast');
+var _debois$elm_mdl$Material_Typography$button = _debois$elm_mdl$Material_Options$cs('mdl-typography--button-color-contrast');
+var _debois$elm_mdl$Material_Typography$caption = _debois$elm_mdl$Material_Options$cs('mdl-typography--caption-force-preferred-font-color-contrast');
+var _debois$elm_mdl$Material_Typography$body2 = _debois$elm_mdl$Material_Options$cs('mdl-typography--body-2-force-preferred-font-color-contrast');
+var _debois$elm_mdl$Material_Typography$body1 = _debois$elm_mdl$Material_Options$cs('mdl-typography--body-1-force-preferred-font-color-contrast');
+var _debois$elm_mdl$Material_Typography$subhead = _debois$elm_mdl$Material_Options$cs('mdl-typography--subhead-color-contrast');
+var _debois$elm_mdl$Material_Typography$title = _debois$elm_mdl$Material_Options$cs('mdl-typography--title-color-contrast');
+var _debois$elm_mdl$Material_Typography$headline = _debois$elm_mdl$Material_Options$cs('mdl-typography--headline-color-contrast');
+var _debois$elm_mdl$Material_Typography$display4 = _debois$elm_mdl$Material_Options$cs('mdl-typography--display-4-color-contrast');
+var _debois$elm_mdl$Material_Typography$display3 = _debois$elm_mdl$Material_Options$cs('mdl-typography--display-3-color-contrast');
+var _debois$elm_mdl$Material_Typography$display2 = _debois$elm_mdl$Material_Options$cs('mdl-typography--display-2-color-contrast');
+var _debois$elm_mdl$Material_Typography$display1 = _debois$elm_mdl$Material_Options$cs('mdl-typography--display-1-color-contrast');
+
 var _elm_lang$websocket$Native_WebSocket = function() {
 
 function open(url, settings)
@@ -23451,7 +23479,9 @@ var _user$project$Overdrive$Actor = function (a) {
 												return function (m) {
 													return function (n) {
 														return function (o) {
-															return {uuid: a, name: b, currentHP: c, maxHP: d, currentMP: e, maxMP: f, currentLP: g, maxLP: h, currentDrive: i, maxDrive: j, initBase: k, row: l, status: m, currentAmmo: n, maxAmmo: o};
+															return function (p) {
+																return {uuid: a, name: b, currentHP: c, maxHP: d, currentMP: e, maxMP: f, currentLP: g, maxLP: h, currentDrive: i, maxDrive: j, initBase: k, row: l, status: m, currentAmmo: n, maxAmmo: o, visible: p};
+															};
 														};
 													};
 												};
@@ -23496,7 +23526,13 @@ var _user$project$Overdrive$Model = function (a) {
 												return function (m) {
 													return function (n) {
 														return function (o) {
-															return {momenta: a, enemyMomenta: b, selectedMomentum: c, selectedEnemyMomentum: d, enemies: e, players: f, selectedActorIdx: g, selectedActor: h, selectedStatus: i, inits: j, connectionStatus: k, currentTime: l, mdl: m, raised: n, urlParams: o};
+															return function (p) {
+																return function (q) {
+																	return function (r) {
+																		return {momenta: a, enemyMomenta: b, selectedMomentum: c, selectedEnemyMomentum: d, enemies: e, players: f, selectedActorIdx: g, selectedActor: h, selectedStatus: i, inits: j, quickTargetName: k, quickTarget: l, quickDamage: m, connectionStatus: n, currentTime: o, mdl: p, raised: q, urlParams: r};
+																	};
+																};
+															};
 														};
 													};
 												};
@@ -23554,65 +23590,69 @@ var _user$project$Overdrive$rowDecoder = A2(
 	_elm_lang$core$Json_Decode$string);
 var _user$project$Overdrive$actorDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'maxAmmo',
-	_elm_lang$core$Json_Decode$int,
+	'visible',
+	_elm_lang$core$Json_Decode$bool,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'currAmmo',
+		'maxAmmo',
 		_elm_lang$core$Json_Decode$int,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'statuses',
-			_elm_lang$core$Json_Decode$list(_user$project$Overdrive$statusDecoder),
+			'currAmmo',
+			_elm_lang$core$Json_Decode$int,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'row',
-				_user$project$Overdrive$rowDecoder,
+				'statuses',
+				_elm_lang$core$Json_Decode$list(_user$project$Overdrive$statusDecoder),
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'initBase',
-					_elm_lang$core$Json_Decode$int,
+					'row',
+					_user$project$Overdrive$rowDecoder,
 					A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'maxDrive',
+						'initBase',
 						_elm_lang$core$Json_Decode$int,
 						A3(
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'currDrive',
+							'maxDrive',
 							_elm_lang$core$Json_Decode$int,
 							A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'maxLP',
+								'currDrive',
 								_elm_lang$core$Json_Decode$int,
 								A3(
 									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-									'currLP',
+									'maxLP',
 									_elm_lang$core$Json_Decode$int,
 									A3(
 										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-										'maxMP',
+										'currLP',
 										_elm_lang$core$Json_Decode$int,
 										A3(
 											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-											'currMP',
+											'maxMP',
 											_elm_lang$core$Json_Decode$int,
 											A3(
 												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-												'maxHP',
+												'currMP',
 												_elm_lang$core$Json_Decode$int,
 												A3(
 													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-													'currHP',
+													'maxHP',
 													_elm_lang$core$Json_Decode$int,
 													A3(
 														_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-														'name',
-														_elm_lang$core$Json_Decode$string,
+														'currHP',
+														_elm_lang$core$Json_Decode$int,
 														A3(
 															_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-															'uuid',
+															'name',
 															_elm_lang$core$Json_Decode$string,
-															_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Overdrive$Actor))))))))))))))));
+															A3(
+																_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+																'uuid',
+																_elm_lang$core$Json_Decode$string,
+																_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Overdrive$Actor)))))))))))))))));
 var _user$project$Overdrive$actorListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Overdrive$actorDecoder);
 var _user$project$Overdrive$actorsDecoder = A3(
 	_elm_lang$core$Json_Decode$map2,
@@ -23635,9 +23675,12 @@ var _user$project$Overdrive$init = {
 	enemies: {ctor: '[]'},
 	selectedActorIdx: -1,
 	selectedActor: _user$project$Overdrive$Actor('.')('Error')(0)(0)(0)(0)(0)(0)(0)(0)(0)(_user$project$Overdrive$Back)(
-		{ctor: '[]'})(0)(0),
+		{ctor: '[]'})(0)(0)(false),
 	selectedStatus: A4(_user$project$Overdrive$Status, '', '', 0, ''),
 	inits: {ctor: '[]'},
+	quickTargetName: 'All',
+	quickTarget: 'All',
+	quickDamage: 0,
 	connectionStatus: _user$project$Overdrive$Disconnected,
 	currentTime: 0,
 	mdl: _debois$elm_mdl$Material$model,
@@ -24064,8 +24107,76 @@ var _user$project$Overdrive$update = F2(
 						{
 							selectedActorIdx: -1,
 							selectedActor: _user$project$Overdrive$Actor('.')('Error')(0)(0)(0)(0)(0)(0)(0)(0)(0)(_user$project$Overdrive$Back)(
-								{ctor: '[]'})(0)(0)
+								{ctor: '[]'})(0)(0)(false)
 						}),
+					{
+						ctor: '::',
+						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
+						_1: {ctor: '[]'}
+					});
+			case 'DuplicateActor':
+				var push = A2(
+					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
+					_elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'uuid',
+								_1: _elm_lang$core$Json_Encode$string(model.selectedActor.uuid)
+							},
+							_1: {ctor: '[]'}
+						}),
+					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'duplicate_actor'));
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{
+						ctor: '::',
+						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
+						_1: {ctor: '[]'}
+					});
+			case 'ChangeQuickTarget':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{quickTarget: _p7._0._1, quickTargetName: _p7._0._0}),
+					{ctor: '[]'});
+			case 'ChangeQuickDamage':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{quickDamage: _p7._0}),
+					{ctor: '[]'});
+			case 'QuickDamage':
+				var push = A2(
+					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
+					_elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'target',
+								_1: _elm_lang$core$Json_Encode$string(model.quickTarget)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'damage',
+									_1: _elm_lang$core$Json_Encode$int(model.quickDamage)
+								},
+								_1: {ctor: '[]'}
+							}
+						}),
+					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'quick_damage'));
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{quickTarget: 'All', quickTargetName: 'All', quickDamage: 0}),
 					{
 						ctor: '::',
 						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
@@ -24347,11 +24458,45 @@ var _user$project$Overdrive$update = F2(
 							{
 								selectedActorIdx: -1,
 								selectedActor: _user$project$Overdrive$Actor('.')('Error')(0)(0)(0)(0)(0)(0)(0)(0)(0)(_user$project$Overdrive$Back)(
-									{ctor: '[]'})(0)(0)
+									{ctor: '[]'})(0)(0)(false)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
+			case 'ToggleVisibility':
+				var maybeActor = A2(
+					_elm_lang$core$Array$get,
+					_p7._0,
+					_elm_lang$core$Array$fromList(model.enemies));
+				var uuid = function () {
+					var _p17 = maybeActor;
+					if (_p17.ctor === 'Just') {
+						return _p17._0.uuid;
+					} else {
+						return 'error';
+					}
+				}();
+				var push = A2(
+					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
+					_elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'uuid',
+								_1: _elm_lang$core$Json_Encode$string(uuid)
+							},
+							_1: {ctor: '[]'}
+						}),
+					A2(_saschatimme$elm_phoenix$Phoenix_Push$init, 'room:lobby', 'toggle_visibility'));
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{
+						ctor: '::',
+						_0: A2(_saschatimme$elm_phoenix$Phoenix$push, _user$project$Overdrive$lobbySocket, push),
+						_1: {ctor: '[]'}
+					});
 			case 'SaveActorChanges':
 				var push = A2(
 					_saschatimme$elm_phoenix$Phoenix_Push$withPayload,
@@ -24367,109 +24512,117 @@ var _user$project$Overdrive$update = F2(
 								ctor: '::',
 								_0: {
 									ctor: '_Tuple2',
-									_0: 'name',
-									_1: _elm_lang$core$Json_Encode$string(model.selectedActor.name)
+									_0: 'visible',
+									_1: _elm_lang$core$Json_Encode$bool(model.selectedActor.visible)
 								},
 								_1: {
 									ctor: '::',
 									_0: {
 										ctor: '_Tuple2',
-										_0: 'team',
-										_1: (_elm_lang$core$Native_Utils.cmp(model.selectedActorIdx, 100) < 0) ? _elm_lang$core$Json_Encode$string('player') : _elm_lang$core$Json_Encode$string('enemy')
+										_0: 'name',
+										_1: _elm_lang$core$Json_Encode$string(model.selectedActor.name)
 									},
 									_1: {
 										ctor: '::',
 										_0: {
 											ctor: '_Tuple2',
-											_0: 'currHP',
-											_1: _elm_lang$core$Json_Encode$int(model.selectedActor.currentHP)
+											_0: 'team',
+											_1: (_elm_lang$core$Native_Utils.cmp(model.selectedActorIdx, 100) < 0) ? _elm_lang$core$Json_Encode$string('player') : _elm_lang$core$Json_Encode$string('enemy')
 										},
 										_1: {
 											ctor: '::',
 											_0: {
 												ctor: '_Tuple2',
-												_0: 'maxHP',
-												_1: _elm_lang$core$Json_Encode$int(model.selectedActor.maxHP)
+												_0: 'currHP',
+												_1: _elm_lang$core$Json_Encode$int(model.selectedActor.currentHP)
 											},
 											_1: {
 												ctor: '::',
 												_0: {
 													ctor: '_Tuple2',
-													_0: 'currMP',
-													_1: _elm_lang$core$Json_Encode$int(model.selectedActor.currentMP)
+													_0: 'maxHP',
+													_1: _elm_lang$core$Json_Encode$int(model.selectedActor.maxHP)
 												},
 												_1: {
 													ctor: '::',
 													_0: {
 														ctor: '_Tuple2',
-														_0: 'maxMP',
-														_1: _elm_lang$core$Json_Encode$int(model.selectedActor.maxMP)
+														_0: 'currMP',
+														_1: _elm_lang$core$Json_Encode$int(model.selectedActor.currentMP)
 													},
 													_1: {
 														ctor: '::',
 														_0: {
 															ctor: '_Tuple2',
-															_0: 'currLP',
-															_1: _elm_lang$core$Json_Encode$int(model.selectedActor.currentLP)
+															_0: 'maxMP',
+															_1: _elm_lang$core$Json_Encode$int(model.selectedActor.maxMP)
 														},
 														_1: {
 															ctor: '::',
 															_0: {
 																ctor: '_Tuple2',
-																_0: 'maxLP',
-																_1: _elm_lang$core$Json_Encode$int(model.selectedActor.maxLP)
+																_0: 'currLP',
+																_1: _elm_lang$core$Json_Encode$int(model.selectedActor.currentLP)
 															},
 															_1: {
 																ctor: '::',
 																_0: {
 																	ctor: '_Tuple2',
-																	_0: 'currDrive',
-																	_1: _elm_lang$core$Json_Encode$int(model.selectedActor.currentDrive)
+																	_0: 'maxLP',
+																	_1: _elm_lang$core$Json_Encode$int(model.selectedActor.maxLP)
 																},
 																_1: {
 																	ctor: '::',
 																	_0: {
 																		ctor: '_Tuple2',
-																		_0: 'maxDrive',
-																		_1: _elm_lang$core$Json_Encode$int(model.selectedActor.maxDrive)
+																		_0: 'currDrive',
+																		_1: _elm_lang$core$Json_Encode$int(model.selectedActor.currentDrive)
 																	},
 																	_1: {
 																		ctor: '::',
 																		_0: {
 																			ctor: '_Tuple2',
-																			_0: 'currAmmo',
-																			_1: _elm_lang$core$Json_Encode$int(model.selectedActor.currentAmmo)
+																			_0: 'maxDrive',
+																			_1: _elm_lang$core$Json_Encode$int(model.selectedActor.maxDrive)
 																		},
 																		_1: {
 																			ctor: '::',
 																			_0: {
 																				ctor: '_Tuple2',
-																				_0: 'maxAmmo',
-																				_1: _elm_lang$core$Json_Encode$int(model.selectedActor.maxAmmo)
+																				_0: 'currAmmo',
+																				_1: _elm_lang$core$Json_Encode$int(model.selectedActor.currentAmmo)
 																			},
 																			_1: {
 																				ctor: '::',
 																				_0: {
 																					ctor: '_Tuple2',
-																					_0: 'initBase',
-																					_1: _elm_lang$core$Json_Encode$int(model.selectedActor.initBase)
+																					_0: 'maxAmmo',
+																					_1: _elm_lang$core$Json_Encode$int(model.selectedActor.maxAmmo)
 																				},
 																				_1: {
 																					ctor: '::',
 																					_0: {
 																						ctor: '_Tuple2',
-																						_0: 'row',
-																						_1: _elm_lang$core$Native_Utils.eq(model.selectedActor.row, _user$project$Overdrive$Front) ? _elm_lang$core$Json_Encode$string('Front') : _elm_lang$core$Json_Encode$string('Back')
+																						_0: 'initBase',
+																						_1: _elm_lang$core$Json_Encode$int(model.selectedActor.initBase)
 																					},
 																					_1: {
 																						ctor: '::',
 																						_0: {
 																							ctor: '_Tuple2',
-																							_0: 'statuses',
-																							_1: _elm_lang$core$Json_Encode$list(
-																								A2(_elm_lang$core$List$map, _user$project$Overdrive$statusEncoder, model.selectedActor.status))
+																							_0: 'row',
+																							_1: _elm_lang$core$Native_Utils.eq(model.selectedActor.row, _user$project$Overdrive$Front) ? _elm_lang$core$Json_Encode$string('Front') : _elm_lang$core$Json_Encode$string('Back')
 																						},
-																						_1: {ctor: '[]'}
+																						_1: {
+																							ctor: '::',
+																							_0: {
+																								ctor: '_Tuple2',
+																								_0: 'statuses',
+																								_1: _elm_lang$core$Json_Encode$list(
+																									A2(_elm_lang$core$List$map, _user$project$Overdrive$statusEncoder, model.selectedActor.status))
+																							},
+																							_1: {ctor: '[]'}
+																						}
 																					}
 																				}
 																			}
@@ -24494,7 +24647,7 @@ var _user$project$Overdrive$update = F2(
 						{
 							selectedActorIdx: -1,
 							selectedActor: _user$project$Overdrive$Actor('.')('Error')(0)(0)(0)(0)(0)(0)(0)(0)(0)(_user$project$Overdrive$Back)(
-								{ctor: '[]'})(0)(0)
+								{ctor: '[]'})(0)(0)(false)
 						}),
 					{
 						ctor: '::',
@@ -24509,7 +24662,7 @@ var _user$project$Overdrive$update = F2(
 						{
 							selectedActorIdx: -1,
 							selectedActor: _user$project$Overdrive$Actor('.')('Error')(0)(0)(0)(0)(0)(0)(0)(0)(0)(_user$project$Overdrive$Back)(
-								{ctor: '[]'})(0)(0)
+								{ctor: '[]'})(0)(0)(false)
 						}),
 					{ctor: '[]'});
 			case 'InitialiseInitRecords':
@@ -24592,10 +24745,10 @@ var _user$project$Overdrive$update = F2(
 						{raised: _p7._0}),
 					{ctor: '[]'});
 			case 'MomentumUpdate':
-				var _p20 = _p7._0;
-				var _p17 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$momentaDecoder, _p20);
-				if (_p17.ctor === 'Ok') {
-					var _p18 = _p17._0;
+				var _p21 = _p7._0;
+				var _p18 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$momentaDecoder, _p21);
+				if (_p18.ctor === 'Ok') {
+					var _p19 = _p18._0;
 					var playerMomenta = A2(
 						_elm_lang$core$List$map,
 						function (mwa) {
@@ -24606,7 +24759,7 @@ var _user$project$Overdrive$update = F2(
 							function (mwa) {
 								return _elm_lang$core$Native_Utils.eq(mwa.actor, 'player');
 							},
-							_p18));
+							_p19));
 					var enemyMomenta = A2(
 						_elm_lang$core$List$map,
 						function (mwa) {
@@ -24617,7 +24770,7 @@ var _user$project$Overdrive$update = F2(
 							function (mwa) {
 								return _elm_lang$core$Native_Utils.eq(mwa.actor, 'enemy');
 							},
-							_p18));
+							_p19));
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
@@ -24625,51 +24778,51 @@ var _user$project$Overdrive$update = F2(
 							{momenta: playerMomenta, enemyMomenta: enemyMomenta}),
 						{ctor: '[]'});
 				} else {
-					var _p19 = A2(
+					var _p20 = A2(
 						_elm_lang$core$Debug$log,
 						'momentumUpdate err',
-						{ctor: '_Tuple2', _0: _p17._0, _1: _p20});
+						{ctor: '_Tuple2', _0: _p18._0, _1: _p21});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
 						{ctor: '[]'});
 				}
 			case 'ActorsUpdate':
-				var _p24 = _p7._0;
-				var _p21 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$actorsDecoder, _p24);
-				if (_p21.ctor === 'Ok') {
-					var _p22 = _p21._0;
+				var _p25 = _p7._0;
+				var _p22 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$actorsDecoder, _p25);
+				if (_p22.ctor === 'Ok') {
+					var _p23 = _p22._0;
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{players: _p22.players, enemies: _p22.enemies}),
+							{players: _p23.players, enemies: _p23.enemies}),
 						{ctor: '[]'});
 				} else {
-					var _p23 = A2(
+					var _p24 = A2(
 						_elm_lang$core$Debug$log,
 						'actorsUpdate err',
-						{ctor: '_Tuple2', _0: _p21._0, _1: _p24});
+						{ctor: '_Tuple2', _0: _p22._0, _1: _p25});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
 						{ctor: '[]'});
 				}
 			case 'InitRecordsUpdate':
-				var _p27 = _p7._0;
-				var _p25 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$initsDecoder, _p27);
-				if (_p25.ctor === 'Ok') {
+				var _p28 = _p7._0;
+				var _p26 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Overdrive$initsDecoder, _p28);
+				if (_p26.ctor === 'Ok') {
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{inits: _p25._0}),
+							{inits: _p26._0}),
 						{ctor: '[]'});
 				} else {
-					var _p26 = A2(
+					var _p27 = A2(
 						_elm_lang$core$Debug$log,
 						'initsUpdate err',
-						{ctor: '_Tuple2', _0: _p25._0, _1: _p27});
+						{ctor: '_Tuple2', _0: _p26._0, _1: _p28});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						model,
@@ -24823,12 +24976,12 @@ var _user$project$Overdrive$statTextField = F4(
 								_1: {
 									ctor: '::',
 									_0: _debois$elm_mdl$Material_Options$onInput(
-										function (_p28) {
+										function (_p29) {
 											return action(
 												A2(
 													_elm_lang$core$Result$withDefault,
 													0,
-													_elm_lang$core$String$toInt(_p28)));
+													_elm_lang$core$String$toInt(_p29)));
 										}),
 									_1: {
 										ctor: '::',
@@ -25141,6 +25294,7 @@ var _user$project$Overdrive$renderInit = F2(
 			});
 	});
 var _user$project$Overdrive$renderInitList = function (model) {
+	var buttonStatus = _user$project$Overdrive$seekrit(model) ? _debois$elm_mdl$Material_Button$raised : _debois$elm_mdl$Material_Button$disabled;
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
@@ -25157,7 +25311,7 @@ var _user$project$Overdrive$renderInitList = function (model) {
 				model.mdl,
 				{
 					ctor: '::',
-					_0: _debois$elm_mdl$Material_Button$raised,
+					_0: buttonStatus,
 					_1: {
 						ctor: '::',
 						_0: _debois$elm_mdl$Material_Button$colored,
@@ -25194,7 +25348,7 @@ var _user$project$Overdrive$renderInitList = function (model) {
 					model.mdl,
 					{
 						ctor: '::',
-						_0: _debois$elm_mdl$Material_Button$raised,
+						_0: buttonStatus,
 						_1: {
 							ctor: '::',
 							_0: _debois$elm_mdl$Material_Button$colored,
@@ -25234,39 +25388,33 @@ var _user$project$Overdrive$renderInitList = function (model) {
 };
 var _user$project$Overdrive$ClearActorChanges = {ctor: 'ClearActorChanges'};
 var _user$project$Overdrive$SaveActorChanges = {ctor: 'SaveActorChanges'};
-var _user$project$Overdrive$SelectActor = function (a) {
-	return {ctor: 'SelectActor', _0: a};
+var _user$project$Overdrive$ToggleVisibility = function (a) {
+	return {ctor: 'ToggleVisibility', _0: a};
 };
-var _user$project$Overdrive$statusCard = F3(
-	function (model, actortype, _p29) {
-		var _p30 = _p29;
-		var _p31 = _p30._1;
-		var dyn_id = _p30._0 + (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? 0 : 100);
-		return A2(
-			_debois$elm_mdl$Material_Card$view,
+var _user$project$Overdrive$visibilityButton = F3(
+	function (model, k, actor) {
+		return A5(
+			_debois$elm_mdl$Material_Button$render,
+			_user$project$Overdrive$Mdl,
 			{
 				ctor: '::',
-				_0: A3(
-					_user$project$Overdrive$dynamic,
-					dyn_id,
-					_user$project$Overdrive$SelectActor(dyn_id),
-					model),
+				_0: k + 19888,
+				_1: {ctor: '[]'}
+			},
+			model.mdl,
+			{
+				ctor: '::',
+				_0: _debois$elm_mdl$Material_Button$icon,
 				_1: {
 					ctor: '::',
-					_0: A2(_debois$elm_mdl$Material_Options$css, 'width', '240px'),
+					_0: A2(_debois$elm_mdl$Material_Options$when, actor.visible, _debois$elm_mdl$Material_Button$accent),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_debois$elm_mdl$Material_Options$css,
-							'margin',
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								'4px 8px 4px ',
-								((_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) && _elm_lang$core$Native_Utils.eq(_p31.row, _user$project$Overdrive$Front)) || (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Enemy) && _elm_lang$core$Native_Utils.eq(_p31.row, _user$project$Overdrive$Back))) ? '35px' : '0px')),
+						_0: _debois$elm_mdl$Material_Options$onClick(
+							_user$project$Overdrive$ToggleVisibility(k)),
 						_1: {
 							ctor: '::',
-							_0: _debois$elm_mdl$Material_Color$background(
-								A2(_debois$elm_mdl$Material_Color$color, _debois$elm_mdl$Material_Color$Blue, _debois$elm_mdl$Material_Color$S500)),
+							_0: A2(_debois$elm_mdl$Material_Options$css, 'margin-right', '45px'),
 							_1: {ctor: '[]'}
 						}
 					}
@@ -25274,121 +25422,185 @@ var _user$project$Overdrive$statusCard = F3(
 			},
 			{
 				ctor: '::',
+				_0: _debois$elm_mdl$Material_Icon$i('visibility'),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$Overdrive$SelectActor = function (a) {
+	return {ctor: 'SelectActor', _0: a};
+};
+var _user$project$Overdrive$statusCard = F3(
+	function (model, actortype, _p30) {
+		var _p31 = _p30;
+		var _p33 = _p31._0;
+		var _p32 = _p31._1;
+		var visible = _user$project$Overdrive$seekrit(model) || ((_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Enemy) && _p32.visible) || _elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player));
+		var dyn_id = _p33 + (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? 0 : 100);
+		return visible ? A2(
+			_debois$elm_mdl$Material_List$li,
+			{ctor: '[]'},
+			{
+				ctor: '::',
 				_0: A2(
-					_debois$elm_mdl$Material_Card$title,
-					{
-						ctor: '::',
-						_0: A2(_debois$elm_mdl$Material_Options$css, 'padding', '5px 8px 0px 8px'),
-						_1: {ctor: '[]'}
-					},
+					_debois$elm_mdl$Material_List$content,
+					{ctor: '[]'},
 					{
 						ctor: '::',
 						_0: A2(
-							_debois$elm_mdl$Material_Card$head,
+							_debois$elm_mdl$Material_Card$view,
 							{
 								ctor: '::',
-								_0: _debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$white),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(_p31.name),
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_debois$elm_mdl$Material_Card$text,
-						{
-							ctor: '::',
-							_0: _debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$white),
-							_1: {
-								ctor: '::',
-								_0: A2(_debois$elm_mdl$Material_Options$css, 'padding', '0px 8px 8px 8px'),
-								_1: {ctor: '[]'}
-							}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
+								_0: A3(
+									_user$project$Overdrive$dynamic,
+									dyn_id,
+									_user$project$Overdrive$SelectActor(dyn_id),
+									model),
+								_1: {
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('render-statcard-block'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$div,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('render-statcard-double'),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: A6(_user$project$Overdrive$renderStat, model, 'HP', _p31.currentHP, _p31.maxHP, actortype, 'left'),
-											_1: {
-												ctor: '::',
-												_0: A6(_user$project$Overdrive$renderStat, model, 'MP', _p31.currentMP, _p31.maxMP, actortype, 'right'),
-												_1: {ctor: '[]'}
-											}
-										}),
+									_0: A2(_debois$elm_mdl$Material_Options$css, 'width', '240px'),
 									_1: {
 										ctor: '::',
 										_0: A2(
-											_elm_lang$html$Html$div,
+											_debois$elm_mdl$Material_Options$css,
+											'margin',
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												'4px 8px 4px ',
+												((_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) && _elm_lang$core$Native_Utils.eq(_p32.row, _user$project$Overdrive$Front)) || (_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Enemy) && _elm_lang$core$Native_Utils.eq(_p32.row, _user$project$Overdrive$Back))) ? '35px' : '0px')),
+										_1: {
+											ctor: '::',
+											_0: _debois$elm_mdl$Material_Color$background(
+												A2(_debois$elm_mdl$Material_Color$color, _debois$elm_mdl$Material_Color$Blue, _debois$elm_mdl$Material_Color$S500)),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_debois$elm_mdl$Material_Card$title,
+									{
+										ctor: '::',
+										_0: A2(_debois$elm_mdl$Material_Options$css, 'padding', '5px 8px 0px 8px'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_debois$elm_mdl$Material_Card$head,
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('render-statcard-double'),
+												_0: _debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$white),
 												_1: {ctor: '[]'}
 											},
 											{
 												ctor: '::',
-												_0: A6(_user$project$Overdrive$renderStat, model, 'LP', _p31.currentLP, _p31.maxLP, actortype, 'left'),
-												_1: {
-													ctor: '::',
-													_0: A6(_user$project$Overdrive$renderStat, model, 'Drive', _p31.currentDrive, _p31.maxDrive, actortype, 'right'),
-													_1: {ctor: '[]'}
-												}
+												_0: _elm_lang$html$Html$text(_p32.name),
+												_1: {ctor: '[]'}
 											}),
-										_1: {
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_debois$elm_mdl$Material_Card$text,
+										{
+											ctor: '::',
+											_0: _debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$white),
+											_1: {
+												ctor: '::',
+												_0: A2(_debois$elm_mdl$Material_Options$css, 'padding', '0px 8px 8px 8px'),
+												_1: {ctor: '[]'}
+											}
+										},
+										{
 											ctor: '::',
 											_0: A2(
 												_elm_lang$html$Html$div,
 												{
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('render-statcard-single'),
+													_0: _elm_lang$html$Html_Attributes$class('render-statcard-block'),
 													_1: {ctor: '[]'}
 												},
 												{
 													ctor: '::',
-													_0: A6(_user$project$Overdrive$renderStat, model, 'Ammo', _p31.currentAmmo, _p31.maxAmmo, actortype, 'left'),
-													_1: {ctor: '[]'}
-												}),
-											_1: {
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$div,
-													{ctor: '[]'},
-													{
+													_0: A2(
+														_elm_lang$html$Html$div,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('render-statcard-double'),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: A6(_user$project$Overdrive$renderStat, model, 'HP', _p32.currentHP, _p32.maxHP, actortype, 'left'),
+															_1: {
+																ctor: '::',
+																_0: A6(_user$project$Overdrive$renderStat, model, 'MP', _p32.currentMP, _p32.maxMP, actortype, 'right'),
+																_1: {ctor: '[]'}
+															}
+														}),
+													_1: {
 														ctor: '::',
-														_0: A3(_user$project$Overdrive$renderStatuses, _p31, model, dyn_id),
-														_1: {ctor: '[]'}
-													}),
-												_1: {ctor: '[]'}
-											}
-										}
-									}
-								}),
-							_1: {ctor: '[]'}
-						}),
+														_0: A2(
+															_elm_lang$html$Html$div,
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$class('render-statcard-double'),
+																_1: {ctor: '[]'}
+															},
+															{
+																ctor: '::',
+																_0: A6(_user$project$Overdrive$renderStat, model, 'LP', _p32.currentLP, _p32.maxLP, actortype, 'left'),
+																_1: {
+																	ctor: '::',
+																	_0: A6(_user$project$Overdrive$renderStat, model, 'Drive', _p32.currentDrive, _p32.maxDrive, actortype, 'right'),
+																	_1: {ctor: '[]'}
+																}
+															}),
+														_1: {
+															ctor: '::',
+															_0: A2(
+																_elm_lang$html$Html$div,
+																{
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$class('render-statcard-single'),
+																	_1: {ctor: '[]'}
+																},
+																{
+																	ctor: '::',
+																	_0: A6(_user$project$Overdrive$renderStat, model, 'Ammo', _p32.currentAmmo, _p32.maxAmmo, actortype, 'left'),
+																	_1: {ctor: '[]'}
+																}),
+															_1: {
+																ctor: '::',
+																_0: A2(
+																	_elm_lang$html$Html$div,
+																	{ctor: '[]'},
+																	{
+																		ctor: '::',
+																		_0: A3(_user$project$Overdrive$renderStatuses, _p32, model, dyn_id),
+																		_1: {ctor: '[]'}
+																	}),
+																_1: {ctor: '[]'}
+															}
+														}
+													}
+												}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: (_user$project$Overdrive$seekrit(model) && _elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Enemy)) ? A3(_user$project$Overdrive$visibilityButton, model, _p33, _p32) : _elm_lang$html$Html$text(''),
 					_1: {ctor: '[]'}
 				}
-			});
+			}) : _elm_lang$html$Html$text('');
 	});
 var _user$project$Overdrive$ChangeSelectedStatusMeta = function (a) {
 	return {ctor: 'ChangeSelectedStatusMeta', _0: a};
@@ -25779,6 +25991,196 @@ var _user$project$Overdrive$ChangeSelectedActorMaxHP = function (a) {
 var _user$project$Overdrive$ChangeSelectedActorName = function (a) {
 	return {ctor: 'ChangeSelectedActorName', _0: a};
 };
+var _user$project$Overdrive$ChangeQuickDamage = function (a) {
+	return {ctor: 'ChangeQuickDamage', _0: a};
+};
+var _user$project$Overdrive$ChangeQuickTarget = function (a) {
+	return {ctor: 'ChangeQuickTarget', _0: a};
+};
+var _user$project$Overdrive$quickDamageEnemyAsMenuItem = function (enemy) {
+	return A2(
+		_debois$elm_mdl$Material_Menu$item,
+		{
+			ctor: '::',
+			_0: _debois$elm_mdl$Material_Menu$onSelect(
+				_user$project$Overdrive$ChangeQuickTarget(
+					{ctor: '_Tuple2', _0: enemy.name, _1: enemy.uuid})),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(enemy.name),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Overdrive$quickDamageTargetSelector = function (model) {
+	return A2(
+		_elm_lang$html$Html$span,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('quick-damage-target'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A5(
+				_debois$elm_mdl$Material_Menu$render,
+				_user$project$Overdrive$Mdl,
+				{
+					ctor: '::',
+					_0: 1247772,
+					_1: {ctor: '[]'}
+				},
+				model.mdl,
+				{
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Menu$bottomLeft,
+					_1: {
+						ctor: '::',
+						_0: A2(_debois$elm_mdl$Material_Options$css, 'margin-top', '16px'),
+						_1: {ctor: '[]'}
+					}
+				},
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					{
+						ctor: '::',
+						_0: A2(
+							_debois$elm_mdl$Material_Menu$item,
+							{
+								ctor: '::',
+								_0: _debois$elm_mdl$Material_Menu$onSelect(
+									_user$project$Overdrive$ChangeQuickTarget(
+										{ctor: '_Tuple2', _0: 'All', _1: 'All'})),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('All'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_debois$elm_mdl$Material_Menu$item,
+								{
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Menu$onSelect(
+										_user$project$Overdrive$ChangeQuickTarget(
+											{ctor: '_Tuple2', _0: 'Front', _1: 'Front'})),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Front'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_debois$elm_mdl$Material_Menu$item,
+									{
+										ctor: '::',
+										_0: _debois$elm_mdl$Material_Menu$onSelect(
+											_user$project$Overdrive$ChangeQuickTarget(
+												{ctor: '_Tuple2', _0: 'Back', _1: 'Back'})),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('Back'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}
+					},
+					A2(_elm_lang$core$List$map, _user$project$Overdrive$quickDamageEnemyAsMenuItem, model.enemies))),
+			_1: {
+				ctor: '::',
+				_0: A3(
+					_debois$elm_mdl$Material_Options$styled,
+					_elm_lang$html$Html$p,
+					{
+						ctor: '::',
+						_0: _debois$elm_mdl$Material_Typography$title,
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(model.quickTargetName),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Overdrive$QuickDamage = {ctor: 'QuickDamage'};
+var _user$project$Overdrive$renderQuickDamage = function (model) {
+	return A2(
+		_elm_lang$html$Html$span,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('quick-damage'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A3(
+				_debois$elm_mdl$Material_Options$styled,
+				_elm_lang$html$Html$p,
+				{
+					ctor: '::',
+					_0: _debois$elm_mdl$Material_Typography$title,
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Quick Damage: '),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A4(_user$project$Overdrive$statTextField, model, 89164, model.quickDamage, _user$project$Overdrive$ChangeQuickDamage),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Overdrive$quickDamageTargetSelector(model),
+					_1: {
+						ctor: '::',
+						_0: A5(
+							_debois$elm_mdl$Material_Button$render,
+							_user$project$Overdrive$Mdl,
+							{
+								ctor: '::',
+								_0: 89163,
+								_1: {ctor: '[]'}
+							},
+							model.mdl,
+							{
+								ctor: '::',
+								_0: _debois$elm_mdl$Material_Button$icon,
+								_1: {
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$QuickDamage),
+									_1: {
+										ctor: '::',
+										_0: A2(_debois$elm_mdl$Material_Options$css, 'margin-top', '16px'),
+										_1: {ctor: '[]'}
+									}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _debois$elm_mdl$Material_Icon$i('colorize'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _user$project$Overdrive$DuplicateActor = {ctor: 'DuplicateActor'};
 var _user$project$Overdrive$RemoveActor = {ctor: 'RemoveActor'};
 var _user$project$Overdrive$editActor = F2(
 	function (model, actortype) {
@@ -25827,15 +26229,11 @@ var _user$project$Overdrive$editActor = F2(
 							_0: _debois$elm_mdl$Material_Button$ripple,
 							_1: {
 								ctor: '::',
-								_0: A2(_debois$elm_mdl$Material_Options$css, 'margin-left', '12px'),
+								_0: A2(_debois$elm_mdl$Material_Options$css, 'margin-top', '10px'),
 								_1: {
 									ctor: '::',
-									_0: A2(_debois$elm_mdl$Material_Options$css, 'margin-top', '10px'),
-									_1: {
-										ctor: '::',
-										_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$SaveActorChanges),
-										_1: {ctor: '[]'}
-									}
+									_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$SaveActorChanges),
+									_1: {ctor: '[]'}
 								}
 							}
 						}
@@ -25930,82 +26328,113 @@ var _user$project$Overdrive$editActor = F2(
 						}),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
+						_0: (!playerSelected) ? A5(
+							_debois$elm_mdl$Material_Button$render,
+							_user$project$Overdrive$Mdl,
 							{
 								ctor: '::',
-								_0: A5(
-									_debois$elm_mdl$Material_Textfield$render,
-									_user$project$Overdrive$Mdl,
-									{
+								_0: 667,
+								_1: {ctor: '[]'}
+							},
+							model.mdl,
+							{
+								ctor: '::',
+								_0: _debois$elm_mdl$Material_Button$raised,
+								_1: {
+									ctor: '::',
+									_0: _debois$elm_mdl$Material_Button$colored,
+									_1: {
 										ctor: '::',
-										_0: 800,
-										_1: {ctor: '[]'}
-									},
-									model.mdl,
-									{
-										ctor: '::',
-										_0: _debois$elm_mdl$Material_Textfield$value(model.selectedActor.name),
+										_0: _debois$elm_mdl$Material_Button$ripple,
 										_1: {
 											ctor: '::',
-											_0: _debois$elm_mdl$Material_Options$onInput(_user$project$Overdrive$ChangeSelectedActorName),
+											_0: A2(_debois$elm_mdl$Material_Options$css, 'margin-left', '3px'),
 											_1: {
 												ctor: '::',
-												_0: A2(_debois$elm_mdl$Material_Options$css, 'width', '255px'),
+												_0: A2(_debois$elm_mdl$Material_Options$css, 'margin-top', '10px'),
 												_1: {
 													ctor: '::',
-													_0: _debois$elm_mdl$Material_Options$input(
-														{
-															ctor: '::',
-															_0: A2(_debois$elm_mdl$Material_Options$css, 'text-align', 'center'),
-															_1: {
-																ctor: '::',
-																_0: A2(_debois$elm_mdl$Material_Options$css, 'width', '255px'),
-																_1: {ctor: '[]'}
-															}
-														}),
+													_0: _debois$elm_mdl$Material_Options$onClick(_user$project$Overdrive$DuplicateActor),
 													_1: {ctor: '[]'}
 												}
 											}
 										}
-									},
-									{ctor: '[]'}),
+									}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('COPY'),
 								_1: {ctor: '[]'}
-							}),
+							}) : _elm_lang$html$Html$text(''),
 						_1: {
 							ctor: '::',
 							_0: A2(
-								_debois$elm_mdl$Material_Table$table,
+								_elm_lang$html$Html$div,
 								{ctor: '[]'},
 								{
 									ctor: '::',
-									_0: A2(
-										_debois$elm_mdl$Material_Table$thead,
-										{ctor: '[]'},
+									_0: A5(
+										_debois$elm_mdl$Material_Textfield$render,
+										_user$project$Overdrive$Mdl,
 										{
 											ctor: '::',
-											_0: A2(
-												_debois$elm_mdl$Material_Table$tr,
-												{ctor: '[]'},
-												{
+											_0: 800,
+											_1: {ctor: '[]'}
+										},
+										model.mdl,
+										{
+											ctor: '::',
+											_0: _debois$elm_mdl$Material_Textfield$value(model.selectedActor.name),
+											_1: {
+												ctor: '::',
+												_0: _debois$elm_mdl$Material_Options$onInput(_user$project$Overdrive$ChangeSelectedActorName),
+												_1: {
 													ctor: '::',
-													_0: A2(
-														_debois$elm_mdl$Material_Table$th,
-														{ctor: '[]'},
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html$text(''),
-															_1: {ctor: '[]'}
-														}),
+													_0: A2(_debois$elm_mdl$Material_Options$css, 'width', '255px'),
 													_1: {
+														ctor: '::',
+														_0: _debois$elm_mdl$Material_Options$input(
+															{
+																ctor: '::',
+																_0: A2(_debois$elm_mdl$Material_Options$css, 'text-align', 'center'),
+																_1: {
+																	ctor: '::',
+																	_0: A2(_debois$elm_mdl$Material_Options$css, 'width', '255px'),
+																	_1: {ctor: '[]'}
+																}
+															}),
+														_1: {ctor: '[]'}
+													}
+												}
+											}
+										},
+										{ctor: '[]'}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_debois$elm_mdl$Material_Table$table,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: A2(
+											_debois$elm_mdl$Material_Table$thead,
+											{ctor: '[]'},
+											{
+												ctor: '::',
+												_0: A2(
+													_debois$elm_mdl$Material_Table$tr,
+													{ctor: '[]'},
+													{
 														ctor: '::',
 														_0: A2(
 															_debois$elm_mdl$Material_Table$th,
 															{ctor: '[]'},
 															{
 																ctor: '::',
-																_0: _elm_lang$html$Html$text('CURR'),
+																_0: _elm_lang$html$Html$text(''),
 																_1: {ctor: '[]'}
 															}),
 														_1: {
@@ -26015,7 +26444,7 @@ var _user$project$Overdrive$editActor = F2(
 																{ctor: '[]'},
 																{
 																	ctor: '::',
-																	_0: _elm_lang$html$Html$text('MAX'),
+																	_0: _elm_lang$html$Html$text('CURR'),
 																	_1: {ctor: '[]'}
 																}),
 															_1: {
@@ -26025,50 +26454,50 @@ var _user$project$Overdrive$editActor = F2(
 																	{ctor: '[]'},
 																	{
 																		ctor: '::',
-																		_0: _elm_lang$html$Html$text('±'),
+																		_0: _elm_lang$html$Html$text('MAX'),
 																		_1: {ctor: '[]'}
 																	}),
-																_1: {ctor: '[]'}
+																_1: {
+																	ctor: '::',
+																	_0: A2(
+																		_debois$elm_mdl$Material_Table$th,
+																		{ctor: '[]'},
+																		{
+																			ctor: '::',
+																			_0: _elm_lang$html$Html$text('±'),
+																			_1: {ctor: '[]'}
+																		}),
+																	_1: {ctor: '[]'}
+																}
 															}
 														}
-													}
-												}),
-											_1: {ctor: '[]'}
-										}),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_debois$elm_mdl$Material_Table$tbody,
-											{ctor: '[]'},
-											A2(
-												_elm_lang$core$List$map,
-												function (_p32) {
-													var _p33 = _p32;
-													var _p37 = _p33._3;
-													var _p36 = _p33._0;
-													var _p35 = _p33._4;
-													var _p34 = _p33._2;
-													return A2(
-														_debois$elm_mdl$Material_Table$tr,
-														{ctor: '[]'},
-														{
-															ctor: '::',
-															_0: A2(
-																_debois$elm_mdl$Material_Table$td,
-																{ctor: '[]'},
-																{
-																	ctor: '::',
-																	_0: _elm_lang$html$Html$text(_p33._1),
-																	_1: {ctor: '[]'}
-																}),
-															_1: {
+													}),
+												_1: {ctor: '[]'}
+											}),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_debois$elm_mdl$Material_Table$tbody,
+												{ctor: '[]'},
+												A2(
+													_elm_lang$core$List$map,
+													function (_p34) {
+														var _p35 = _p34;
+														var _p39 = _p35._3;
+														var _p38 = _p35._0;
+														var _p37 = _p35._4;
+														var _p36 = _p35._2;
+														return A2(
+															_debois$elm_mdl$Material_Table$tr,
+															{ctor: '[]'},
+															{
 																ctor: '::',
 																_0: A2(
 																	_debois$elm_mdl$Material_Table$td,
 																	{ctor: '[]'},
 																	{
 																		ctor: '::',
-																		_0: A4(_user$project$Overdrive$statTextField, model, _p36 * 10, _p34, _p35),
+																		_0: _elm_lang$html$Html$text(_p35._1),
 																		_1: {ctor: '[]'}
 																	}),
 																_1: {
@@ -26078,7 +26507,7 @@ var _user$project$Overdrive$editActor = F2(
 																		{ctor: '[]'},
 																		{
 																			ctor: '::',
-																			_0: A4(_user$project$Overdrive$statTextField, model, _p36 * 100, _p37, _p33._5),
+																			_0: A4(_user$project$Overdrive$statTextField, model, _p38 * 10, _p36, _p37),
 																			_1: {ctor: '[]'}
 																		}),
 																	_1: {
@@ -26088,39 +26517,39 @@ var _user$project$Overdrive$editActor = F2(
 																			{ctor: '[]'},
 																			{
 																				ctor: '::',
-																				_0: A4(_user$project$Overdrive$plusMinusField, model, _p34, _p37, _p35),
+																				_0: A4(_user$project$Overdrive$statTextField, model, _p38 * 100, _p39, _p35._5),
 																				_1: {ctor: '[]'}
 																			}),
-																		_1: {ctor: '[]'}
+																		_1: {
+																			ctor: '::',
+																			_0: A2(
+																				_debois$elm_mdl$Material_Table$td,
+																				{ctor: '[]'},
+																				{
+																					ctor: '::',
+																					_0: A4(_user$project$Overdrive$plusMinusField, model, _p36, _p39, _p37),
+																					_1: {ctor: '[]'}
+																				}),
+																			_1: {ctor: '[]'}
+																		}
 																	}
 																}
-															}
-														});
-												},
-												data)),
-										_1: {
-											ctor: '::',
-											_0: A2(
-												_debois$elm_mdl$Material_Table$tr,
-												{ctor: '[]'},
-												{
-													ctor: '::',
-													_0: A2(
-														_debois$elm_mdl$Material_Table$td,
-														{ctor: '[]'},
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html$text('Init'),
-															_1: {ctor: '[]'}
-														}),
-													_1: {
+															});
+													},
+													data)),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_debois$elm_mdl$Material_Table$tr,
+													{ctor: '[]'},
+													{
 														ctor: '::',
 														_0: A2(
 															_debois$elm_mdl$Material_Table$td,
 															{ctor: '[]'},
 															{
 																ctor: '::',
-																_0: A4(_user$project$Overdrive$statTextField, model, 142526, model.selectedActor.initBase, _user$project$Overdrive$ChangeSelectedActorBaseInit),
+																_0: _elm_lang$html$Html$text('Init'),
 																_1: {ctor: '[]'}
 															}),
 														_1: {
@@ -26130,7 +26559,7 @@ var _user$project$Overdrive$editActor = F2(
 																{ctor: '[]'},
 																{
 																	ctor: '::',
-																	_0: _elm_lang$html$Html$text(''),
+																	_0: A4(_user$project$Overdrive$statTextField, model, 142526, model.selectedActor.initBase, _user$project$Overdrive$ChangeSelectedActorBaseInit),
 																	_1: {ctor: '[]'}
 																}),
 															_1: {
@@ -26143,88 +26572,99 @@ var _user$project$Overdrive$editActor = F2(
 																		_0: _elm_lang$html$Html$text(''),
 																		_1: {ctor: '[]'}
 																	}),
-																_1: {ctor: '[]'}
+																_1: {
+																	ctor: '::',
+																	_0: A2(
+																		_debois$elm_mdl$Material_Table$td,
+																		{ctor: '[]'},
+																		{
+																			ctor: '::',
+																			_0: _elm_lang$html$Html$text(''),
+																			_1: {ctor: '[]'}
+																		}),
+																	_1: {ctor: '[]'}
+																}
 															}
 														}
-													}
-												}),
-											_1: {ctor: '[]'}
-										}
-									}
-								}),
-							_1: {
-								ctor: '::',
-								_0: A5(
-									_debois$elm_mdl$Material_Toggles$switch,
-									_user$project$Overdrive$Mdl,
-									{
-										ctor: '::',
-										_0: 774,
-										_1: {ctor: '[]'}
-									},
-									model.mdl,
-									{
-										ctor: '::',
-										_0: _debois$elm_mdl$Material_Options$onToggle(_user$project$Overdrive$ToggleSelectedActorRow),
-										_1: {
-											ctor: '::',
-											_0: _debois$elm_mdl$Material_Toggles$ripple,
-											_1: {
-												ctor: '::',
-												_0: _debois$elm_mdl$Material_Toggles$value(
-													_elm_lang$core$Native_Utils.eq(model.selectedActor.row, _user$project$Overdrive$Front) ? true : false),
+													}),
 												_1: {ctor: '[]'}
 											}
 										}
-									},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text(
-											_elm_lang$core$Native_Utils.eq(model.selectedActor.row, _user$project$Overdrive$Front) ? 'Front' : 'Back'),
-										_1: {ctor: '[]'}
 									}),
 								_1: {
 									ctor: '::',
-									_0: _user$project$Overdrive$renderEditStatusList(model),
-									_1: {
-										ctor: '::',
-										_0: A5(
-											_debois$elm_mdl$Material_Textfield$render,
-											_user$project$Overdrive$Mdl,
-											{
+									_0: A5(
+										_debois$elm_mdl$Material_Toggles$switch,
+										_user$project$Overdrive$Mdl,
+										{
+											ctor: '::',
+											_0: 774,
+											_1: {ctor: '[]'}
+										},
+										model.mdl,
+										{
+											ctor: '::',
+											_0: _debois$elm_mdl$Material_Options$onToggle(_user$project$Overdrive$ToggleSelectedActorRow),
+											_1: {
 												ctor: '::',
-												_0: 84764,
-												_1: {ctor: '[]'}
-											},
-											model.mdl,
-											{
-												ctor: '::',
-												_0: _debois$elm_mdl$Material_Textfield$label('New Status Metadata'),
+												_0: _debois$elm_mdl$Material_Toggles$ripple,
 												_1: {
 													ctor: '::',
-													_0: _debois$elm_mdl$Material_Textfield$floatingLabel,
+													_0: _debois$elm_mdl$Material_Toggles$value(
+														_elm_lang$core$Native_Utils.eq(model.selectedActor.row, _user$project$Overdrive$Front) ? true : false),
+													_1: {ctor: '[]'}
+												}
+											}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text(
+												_elm_lang$core$Native_Utils.eq(model.selectedActor.row, _user$project$Overdrive$Front) ? 'Front' : 'Back'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {
+										ctor: '::',
+										_0: _user$project$Overdrive$renderEditStatusList(model),
+										_1: {
+											ctor: '::',
+											_0: A5(
+												_debois$elm_mdl$Material_Textfield$render,
+												_user$project$Overdrive$Mdl,
+												{
+													ctor: '::',
+													_0: 84764,
+													_1: {ctor: '[]'}
+												},
+												model.mdl,
+												{
+													ctor: '::',
+													_0: _debois$elm_mdl$Material_Textfield$label('New Status Metadata'),
 													_1: {
 														ctor: '::',
-														_0: _debois$elm_mdl$Material_Textfield$value(model.selectedStatus.meta),
+														_0: _debois$elm_mdl$Material_Textfield$floatingLabel,
 														_1: {
 															ctor: '::',
-															_0: _debois$elm_mdl$Material_Options$input(
-																{
-																	ctor: '::',
-																	_0: A2(_debois$elm_mdl$Material_Options$css, 'text-align', 'center'),
-																	_1: {ctor: '[]'}
-																}),
+															_0: _debois$elm_mdl$Material_Textfield$value(model.selectedStatus.meta),
 															_1: {
 																ctor: '::',
-																_0: _debois$elm_mdl$Material_Options$onInput(_user$project$Overdrive$ChangeSelectedStatusMeta),
-																_1: {ctor: '[]'}
+																_0: _debois$elm_mdl$Material_Options$input(
+																	{
+																		ctor: '::',
+																		_0: A2(_debois$elm_mdl$Material_Options$css, 'text-align', 'center'),
+																		_1: {ctor: '[]'}
+																	}),
+																_1: {
+																	ctor: '::',
+																	_0: _debois$elm_mdl$Material_Options$onInput(_user$project$Overdrive$ChangeSelectedStatusMeta),
+																	_1: {ctor: '[]'}
+																}
 															}
 														}
 													}
-												}
-											},
-											{ctor: '[]'}),
-										_1: {ctor: '[]'}
+												},
+												{ctor: '[]'}),
+											_1: {ctor: '[]'}
+										}
 									}
 								}
 							}
@@ -26248,73 +26688,77 @@ var _user$project$Overdrive$renderStatusList = F2(
 			{ctor: '[]'},
 			{
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{ctor: '[]'},
-					A2(
-						_elm_lang$core$List$map,
-						A2(_user$project$Overdrive$statusCard, model, actortype),
-						_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? A2(
-							_elm_lang$core$List$indexedMap,
-							F2(
-								function (v0, v1) {
-									return {ctor: '_Tuple2', _0: v0, _1: v1};
-								}),
-							model.players) : A2(
-							_elm_lang$core$List$indexedMap,
-							F2(
-								function (v0, v1) {
-									return {ctor: '_Tuple2', _0: v0, _1: v1};
-								}),
-							model.enemies))),
+				_0: (_user$project$Overdrive$seekrit(model) && _elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Enemy)) ? _user$project$Overdrive$renderQuickDamage(model) : _elm_lang$html$Html$text(''),
 				_1: {
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$div,
+						_debois$elm_mdl$Material_List$ul,
 						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: A5(
-								_debois$elm_mdl$Material_Button$render,
-								_user$project$Overdrive$Mdl,
-								{
-									ctor: '::',
-									_0: 998,
-									_1: {ctor: '[]'}
-								},
-								model.mdl,
-								{
-									ctor: '::',
-									_0: _debois$elm_mdl$Material_Button$fab,
-									_1: {
-										ctor: '::',
-										_0: _debois$elm_mdl$Material_Button$colored,
-										_1: {
-											ctor: '::',
-											_0: A2(_debois$elm_mdl$Material_Options$css, 'margin-left', '92px'),
-											_1: {
-												ctor: '::',
-												_0: _debois$elm_mdl$Material_Options$onClick(
-													_user$project$Overdrive$AddActor(actortype)),
-												_1: {ctor: '[]'}
-											}
-										}
-									}
-								},
-								{
-									ctor: '::',
-									_0: _debois$elm_mdl$Material_Icon$i('add'),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}),
+						A2(
+							_elm_lang$core$List$map,
+							A2(_user$project$Overdrive$statusCard, model, actortype),
+							_elm_lang$core$Native_Utils.eq(actortype, _user$project$Overdrive$Player) ? A2(
+								_elm_lang$core$List$indexedMap,
+								F2(
+									function (v0, v1) {
+										return {ctor: '_Tuple2', _0: v0, _1: v1};
+									}),
+								model.players) : A2(
+								_elm_lang$core$List$indexedMap,
+								F2(
+									function (v0, v1) {
+										return {ctor: '_Tuple2', _0: v0, _1: v1};
+									}),
+								model.enemies))),
 					_1: {
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$div,
 							{ctor: '[]'},
-							A2(_user$project$Overdrive$editActor, model, actortype)),
-						_1: {ctor: '[]'}
+							{
+								ctor: '::',
+								_0: A5(
+									_debois$elm_mdl$Material_Button$render,
+									_user$project$Overdrive$Mdl,
+									{
+										ctor: '::',
+										_0: 998,
+										_1: {ctor: '[]'}
+									},
+									model.mdl,
+									{
+										ctor: '::',
+										_0: _debois$elm_mdl$Material_Button$fab,
+										_1: {
+											ctor: '::',
+											_0: _debois$elm_mdl$Material_Button$colored,
+											_1: {
+												ctor: '::',
+												_0: A2(_debois$elm_mdl$Material_Options$css, 'margin-left', '92px'),
+												_1: {
+													ctor: '::',
+													_0: _debois$elm_mdl$Material_Options$onClick(
+														_user$project$Overdrive$AddActor(actortype)),
+													_1: {ctor: '[]'}
+												}
+											}
+										}
+									},
+									{
+										ctor: '::',
+										_0: _debois$elm_mdl$Material_Icon$i('add'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{ctor: '[]'},
+								A2(_user$project$Overdrive$editActor, model, actortype)),
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			});
@@ -26589,68 +27033,78 @@ var _user$project$Overdrive$renderPlayerMomentum = function (model) {
 		});
 };
 var _user$project$Overdrive$view = function (model) {
-	return A3(
-		_debois$elm_mdl$Material_Scheme$topWithScheme,
-		_debois$elm_mdl$Material_Color$Blue,
-		_debois$elm_mdl$Material_Color$Indigo,
-		A4(
-			_debois$elm_mdl$Material_Layout$render,
-			_user$project$Overdrive$Mdl,
-			model.mdl,
-			{
+	return A4(
+		_debois$elm_mdl$Material_Layout$render,
+		_user$project$Overdrive$Mdl,
+		model.mdl,
+		{
+			ctor: '::',
+			_0: _debois$elm_mdl$Material_Layout$fixedHeader,
+			_1: {
 				ctor: '::',
-				_0: _debois$elm_mdl$Material_Layout$fixedHeader,
-				_1: {
-					ctor: '::',
-					_0: _debois$elm_mdl$Material_Layout$fixedDrawer,
-					_1: {ctor: '[]'}
-				}
+				_0: _debois$elm_mdl$Material_Layout$fixedDrawer,
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			header: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$h1,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$style(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'padding', _1: '1rem'},
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('S33D OVERDRIVE'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
 			},
-			{
-				header: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$h1,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$style(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'padding', _1: '1rem'},
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('S33D OVERDRIVE'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				},
-				drawer: {ctor: '[]'},
-				tabs: {
-					ctor: '_Tuple2',
-					_0: {ctor: '[]'},
-					_1: {ctor: '[]'}
-				},
-				main: {
-					ctor: '::',
-					_0: A2(
-						_debois$elm_mdl$Material_Grid$grid,
-						{ctor: '[]'},
-						{
+			drawer: {ctor: '[]'},
+			tabs: {
+				ctor: '_Tuple2',
+				_0: {ctor: '[]'},
+				_1: {ctor: '[]'}
+			},
+			main: {
+				ctor: '::',
+				_0: A2(
+					_debois$elm_mdl$Material_Grid$grid,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: A2(
+							_debois$elm_mdl$Material_Grid$cell,
+							{
+								ctor: '::',
+								_0: A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, 3),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(_user$project$Overdrive$renderStatusList, model, _user$project$Overdrive$Player),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
 							ctor: '::',
 							_0: A2(
 								_debois$elm_mdl$Material_Grid$cell,
 								{
 									ctor: '::',
-									_0: A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, 3),
+									_0: A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, 2),
 									_1: {ctor: '[]'}
 								},
 								{
 									ctor: '::',
-									_0: A2(_user$project$Overdrive$renderStatusList, model, _user$project$Overdrive$Player),
+									_0: _user$project$Overdrive$renderPlayerMomentum(model),
 									_1: {ctor: '[]'}
 								}),
 							_1: {
@@ -26664,7 +27118,7 @@ var _user$project$Overdrive$view = function (model) {
 									},
 									{
 										ctor: '::',
-										_0: _user$project$Overdrive$renderPlayerMomentum(model),
+										_0: _user$project$Overdrive$renderInitList(model),
 										_1: {ctor: '[]'}
 									}),
 								_1: {
@@ -26678,7 +27132,7 @@ var _user$project$Overdrive$view = function (model) {
 										},
 										{
 											ctor: '::',
-											_0: _user$project$Overdrive$renderInitList(model),
+											_0: _user$project$Overdrive$renderEnemyMomentum(model),
 											_1: {ctor: '[]'}
 										}),
 									_1: {
@@ -26687,37 +27141,23 @@ var _user$project$Overdrive$view = function (model) {
 											_debois$elm_mdl$Material_Grid$cell,
 											{
 												ctor: '::',
-												_0: A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, 2),
+												_0: A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, 3),
 												_1: {ctor: '[]'}
 											},
 											{
 												ctor: '::',
-												_0: _user$project$Overdrive$renderEnemyMomentum(model),
+												_0: A2(_user$project$Overdrive$renderStatusList, model, _user$project$Overdrive$Enemy),
 												_1: {ctor: '[]'}
 											}),
-										_1: {
-											ctor: '::',
-											_0: A2(
-												_debois$elm_mdl$Material_Grid$cell,
-												{
-													ctor: '::',
-													_0: A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, 3),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: A2(_user$project$Overdrive$renderStatusList, model, _user$project$Overdrive$Enemy),
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										}
+										_1: {ctor: '[]'}
 									}
 								}
 							}
-						}),
-					_1: {ctor: '[]'}
-				}
-			}));
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
 };
 var _user$project$Overdrive$main = _elm_lang$html$Html$program(
 	{
@@ -26730,7 +27170,7 @@ var _user$project$Overdrive$main = _elm_lang$html$Html$program(
 var Elm = {};
 Elm['Overdrive'] = Elm['Overdrive'] || {};
 if (typeof _user$project$Overdrive$main !== 'undefined') {
-    _user$project$Overdrive$main(Elm['Overdrive'], 'Overdrive', {"types":{"message":"Overdrive.Msg","aliases":{"Material.Msg":{"type":"Material.Component.Msg Material.Button.Msg Material.Textfield.Msg (Material.Menu.Msg m) Material.Layout.Msg Material.Toggles.Msg Material.Tooltip.Msg Material.Tabs.Msg (List m)","args":["m"]},"Json.Decode.Value":{"type":"Json.Encode.Value","args":[]},"Material.Menu.Geometry.Element":{"type":"{ offsetTop : Float , offsetLeft : Float , offsetHeight : Float , bounds : DOM.Rectangle }","args":[]},"Time.Time":{"type":"Float","args":[]},"Material.Menu.Geometry.Geometry":{"type":"{ button : Material.Menu.Geometry.Element , menu : Material.Menu.Geometry.Element , container : Material.Menu.Geometry.Element , offsetTops : List Float , offsetHeights : List Float }","args":[]},"Phoenix.Socket.AbnormalClose":{"type":"{ reconnectAttempt : Int, reconnectWait : Time.Time }","args":[]},"DOM.Rectangle":{"type":"{ top : Float, left : Float, width : Float, height : Float }","args":[]},"Material.Layout.TabScrollState":{"type":"{ canScrollLeft : Bool , canScrollRight : Bool , width : Maybe.Maybe Int }","args":[]},"Material.Button.Msg":{"type":"Material.Ripple.Msg","args":[]},"Overdrive.Momentum":{"type":"{ element : String, strength : Float }","args":[]},"Material.Menu.ItemConfig":{"type":"{ enabled : Bool, divider : Bool, onSelect : Maybe.Maybe m }","args":["m"]},"Html.Attribute":{"type":"VirtualDom.Property msg","args":["msg"]},"Material.Tooltip.DOMState":{"type":"{ rect : DOM.Rectangle, offsetWidth : Float, offsetHeight : Float }","args":[]},"Material.Component.Index":{"type":"List Int","args":[]},"Html.Events.Options":{"type":"{ stopPropagation : Bool, preventDefault : Bool }","args":[]},"Overdrive.Status":{"type":"{ status : String, duration : String, level : Int, meta : String }","args":[]},"Material.Ripple.DOMState":{"type":"{ rect : DOM.Rectangle , clientX : Maybe.Maybe Float , clientY : Maybe.Maybe Float , touchX : Maybe.Maybe Float , touchY : Maybe.Maybe Float , type_ : String }","args":[]},"Material.Options.Internal.Summary":{"type":"{ classes : List String , css : List ( String, String ) , attrs : List (Html.Attribute m) , internal : List (Html.Attribute m) , dispatch : Material.Dispatch.Config m , config : c }","args":["c","m"]},"Mouse.Position":{"type":"{ x : Int, y : Int }","args":[]}},"unions":{"Overdrive.ActorType":{"tags":{"Enemy":[],"Player":[]},"args":[]},"Material.Tooltip.Msg":{"tags":{"Leave":[],"Enter":["Material.Tooltip.DOMState"]},"args":[]},"Json.Decode.Decoder":{"tags":{"Decoder":[]},"args":["a"]},"Material.Textfield.Msg":{"tags":{"Focus":[],"Input":["String"],"Blur":[]},"args":[]},"Material.Layout.Msg":{"tags":{"ScrollPane":["Bool","Float"],"ScrollTab":["Material.Layout.TabScrollState"],"Ripple":["Int","Material.Ripple.Msg"],"TransitionHeader":["{ toCompact : Bool, fixedHeader : Bool }"],"NOP":[],"Resize":["Int"],"ToggleDrawer":[],"TransitionEnd":[]},"args":[]},"Material.Toggles.Msg":{"tags":{"Ripple":["Material.Ripple.Msg"],"SetFocus":["Bool"]},"args":[]},"Material.Tabs.Msg":{"tags":{"Ripple":["Int","Material.Ripple.Msg"]},"args":[]},"VirtualDom.Property":{"tags":{"Property":[]},"args":["msg"]},"Material.Dispatch.Config":{"tags":{"Config":["{ decoders : List ( String , ( Json.Decode.Decoder msg, Maybe.Maybe Html.Events.Options ) ) , lift : Maybe.Maybe (Json.Decode.Decoder (List msg) -> Json.Decode.Decoder msg) }"]},"args":["msg"]},"Material.Menu.Msg":{"tags":{"Open":["Material.Menu.Geometry.Geometry"],"Key":["List (Material.Options.Internal.Summary (Material.Menu.ItemConfig m) m)","Int"],"Ripple":["Int","Material.Ripple.Msg"],"Select":["Int","Maybe.Maybe m"],"Click":["Mouse.Position"],"Tick":[],"Close":[]},"args":["m"]},"Json.Encode.Value":{"tags":{"Value":[]},"args":[]},"Material.Component.Msg":{"tags":{"ButtonMsg":["Material.Component.Index","button"],"MenuMsg":["Material.Component.Index","menu"],"TabsMsg":["Material.Component.Index","tabs"],"Dispatch":["dispatch"],"TextfieldMsg":["Material.Component.Index","textfield"],"TooltipMsg":["Material.Component.Index","tooltip"],"TogglesMsg":["Material.Component.Index","toggles"],"LayoutMsg":["layout"]},"args":["button","textfield","menu","layout","toggles","tooltip","tabs","dispatch"]},"Overdrive.Msg":{"tags":{"RemoveSelectedModelStatus":["Overdrive.Status"],"ClearActorChanges":[],"AddActor":["Overdrive.ActorType"],"SetMomentumType":["String"],"SocketClosedAbnormally":["Phoenix.Socket.AbnormalClose"],"ParseUrlParams":["String"],"ChangeSelectedStatusDuration":["String"],"ChangeSelectedActorCurrentHP":["Int"],"SetEnemyMomentumStrength":["Float"],"Mdl":["Material.Msg Overdrive.Msg"],"RemoveActor":[],"ChangeSelectedActorMaxMP":["Int"],"ConnectionStatusChanged":["Overdrive.ConnectionStatus"],"DecrementInitRecord":["Int"],"ChangeSelectedActorCurrentMP":["Int"],"ChangeSelectedActorMaxHP":["Int"],"SelectActor":["Int"],"AddSelectedModelStatus":[],"ChangeSelectedActorName":["String"],"ChangeSelectedActorCurrentAmmo":["Int"],"ChangeSelectedStatusMeta":["String"],"IncrementInitRecord":["Int"],"MomentumUpdate":["Json.Decode.Value"],"ChangeSelectedActorCurrentDrive":["Int"],"ActorsUpdate":["Json.Decode.Value"],"Raise":["Int"],"ChangeSelectedStatusName":["String"],"ChangeSelectedActorMaxDrive":["Int"],"ChangeSelectedActorMaxLP":["Int"],"RemoveEnemyMomentum":["Overdrive.Momentum"],"SaveActorChanges":[],"SetMomentumStrength":["Float"],"ToggleSelectedActorRow":[],"ClearInitRecords":[],"Tick":["Time.Time"],"ChangeSelectedStatusLevel":["Int"],"InitRecordsUpdate":["Json.Decode.Value"],"InitialiseInitRecords":[],"SetEnemyMomentumType":["String"],"ChangeSelectedActorBaseInit":["Int"],"AddEnemyMomentum":[],"ChangeSelectedActorMaxAmmo":["Int"],"RemoveMomentum":["Overdrive.Momentum"],"AddMomentum":[],"ChangeSelectedActorCurrentLP":["Int"],"ClearMomentum":[]},"args":[]},"Material.Ripple.Msg":{"tags":{"Down":["Material.Ripple.DOMState"],"Tick":[],"Up":[]},"args":[]},"Overdrive.ConnectionStatus":{"tags":{"ScheduledReconnect":["{ time : Time.Time }"],"Connected":[],"Disconnected":[]},"args":[]},"Maybe.Maybe":{"tags":{"Nothing":[],"Just":["a"]},"args":["a"]}}},"versions":{"elm":"0.18.0"}});
+    _user$project$Overdrive$main(Elm['Overdrive'], 'Overdrive', {"types":{"message":"Overdrive.Msg","aliases":{"Material.Msg":{"type":"Material.Component.Msg Material.Button.Msg Material.Textfield.Msg (Material.Menu.Msg m) Material.Layout.Msg Material.Toggles.Msg Material.Tooltip.Msg Material.Tabs.Msg (List m)","args":["m"]},"Json.Decode.Value":{"type":"Json.Encode.Value","args":[]},"Material.Menu.Geometry.Element":{"type":"{ offsetTop : Float , offsetLeft : Float , offsetHeight : Float , bounds : DOM.Rectangle }","args":[]},"Time.Time":{"type":"Float","args":[]},"Material.Menu.Geometry.Geometry":{"type":"{ button : Material.Menu.Geometry.Element , menu : Material.Menu.Geometry.Element , container : Material.Menu.Geometry.Element , offsetTops : List Float , offsetHeights : List Float }","args":[]},"Phoenix.Socket.AbnormalClose":{"type":"{ reconnectAttempt : Int, reconnectWait : Time.Time }","args":[]},"DOM.Rectangle":{"type":"{ top : Float, left : Float, width : Float, height : Float }","args":[]},"Material.Layout.TabScrollState":{"type":"{ canScrollLeft : Bool , canScrollRight : Bool , width : Maybe.Maybe Int }","args":[]},"Material.Button.Msg":{"type":"Material.Ripple.Msg","args":[]},"Overdrive.Momentum":{"type":"{ element : String, strength : Float }","args":[]},"Material.Menu.ItemConfig":{"type":"{ enabled : Bool, divider : Bool, onSelect : Maybe.Maybe m }","args":["m"]},"Html.Attribute":{"type":"VirtualDom.Property msg","args":["msg"]},"Material.Tooltip.DOMState":{"type":"{ rect : DOM.Rectangle, offsetWidth : Float, offsetHeight : Float }","args":[]},"Material.Component.Index":{"type":"List Int","args":[]},"Html.Events.Options":{"type":"{ stopPropagation : Bool, preventDefault : Bool }","args":[]},"Overdrive.Status":{"type":"{ status : String, duration : String, level : Int, meta : String }","args":[]},"Material.Ripple.DOMState":{"type":"{ rect : DOM.Rectangle , clientX : Maybe.Maybe Float , clientY : Maybe.Maybe Float , touchX : Maybe.Maybe Float , touchY : Maybe.Maybe Float , type_ : String }","args":[]},"Material.Options.Internal.Summary":{"type":"{ classes : List String , css : List ( String, String ) , attrs : List (Html.Attribute m) , internal : List (Html.Attribute m) , dispatch : Material.Dispatch.Config m , config : c }","args":["c","m"]},"Mouse.Position":{"type":"{ x : Int, y : Int }","args":[]}},"unions":{"Overdrive.ActorType":{"tags":{"Enemy":[],"Player":[]},"args":[]},"Material.Tooltip.Msg":{"tags":{"Leave":[],"Enter":["Material.Tooltip.DOMState"]},"args":[]},"Json.Decode.Decoder":{"tags":{"Decoder":[]},"args":["a"]},"Material.Textfield.Msg":{"tags":{"Focus":[],"Input":["String"],"Blur":[]},"args":[]},"Material.Layout.Msg":{"tags":{"ScrollPane":["Bool","Float"],"ScrollTab":["Material.Layout.TabScrollState"],"Ripple":["Int","Material.Ripple.Msg"],"TransitionHeader":["{ toCompact : Bool, fixedHeader : Bool }"],"NOP":[],"Resize":["Int"],"ToggleDrawer":[],"TransitionEnd":[]},"args":[]},"Material.Toggles.Msg":{"tags":{"Ripple":["Material.Ripple.Msg"],"SetFocus":["Bool"]},"args":[]},"Material.Tabs.Msg":{"tags":{"Ripple":["Int","Material.Ripple.Msg"]},"args":[]},"VirtualDom.Property":{"tags":{"Property":[]},"args":["msg"]},"Material.Dispatch.Config":{"tags":{"Config":["{ decoders : List ( String , ( Json.Decode.Decoder msg, Maybe.Maybe Html.Events.Options ) ) , lift : Maybe.Maybe (Json.Decode.Decoder (List msg) -> Json.Decode.Decoder msg) }"]},"args":["msg"]},"Material.Menu.Msg":{"tags":{"Open":["Material.Menu.Geometry.Geometry"],"Key":["List (Material.Options.Internal.Summary (Material.Menu.ItemConfig m) m)","Int"],"Ripple":["Int","Material.Ripple.Msg"],"Select":["Int","Maybe.Maybe m"],"Click":["Mouse.Position"],"Tick":[],"Close":[]},"args":["m"]},"Json.Encode.Value":{"tags":{"Value":[]},"args":[]},"Material.Component.Msg":{"tags":{"ButtonMsg":["Material.Component.Index","button"],"MenuMsg":["Material.Component.Index","menu"],"TabsMsg":["Material.Component.Index","tabs"],"Dispatch":["dispatch"],"TextfieldMsg":["Material.Component.Index","textfield"],"TooltipMsg":["Material.Component.Index","tooltip"],"TogglesMsg":["Material.Component.Index","toggles"],"LayoutMsg":["layout"]},"args":["button","textfield","menu","layout","toggles","tooltip","tabs","dispatch"]},"Overdrive.Msg":{"tags":{"DuplicateActor":[],"RemoveSelectedModelStatus":["Overdrive.Status"],"ToggleVisibility":["Int"],"ClearActorChanges":[],"AddActor":["Overdrive.ActorType"],"SetMomentumType":["String"],"ChangeQuickTarget":["( String, String )"],"SocketClosedAbnormally":["Phoenix.Socket.AbnormalClose"],"ParseUrlParams":["String"],"ChangeSelectedStatusDuration":["String"],"ChangeSelectedActorCurrentHP":["Int"],"SetEnemyMomentumStrength":["Float"],"Mdl":["Material.Msg Overdrive.Msg"],"RemoveActor":[],"ChangeSelectedActorMaxMP":["Int"],"ConnectionStatusChanged":["Overdrive.ConnectionStatus"],"DecrementInitRecord":["Int"],"ChangeSelectedActorCurrentMP":["Int"],"ChangeSelectedActorMaxHP":["Int"],"SelectActor":["Int"],"AddSelectedModelStatus":[],"ChangeSelectedActorName":["String"],"ChangeSelectedActorCurrentAmmo":["Int"],"ChangeSelectedStatusMeta":["String"],"IncrementInitRecord":["Int"],"MomentumUpdate":["Json.Decode.Value"],"ChangeSelectedActorCurrentDrive":["Int"],"ActorsUpdate":["Json.Decode.Value"],"Raise":["Int"],"ChangeSelectedStatusName":["String"],"ChangeSelectedActorMaxDrive":["Int"],"ChangeSelectedActorMaxLP":["Int"],"RemoveEnemyMomentum":["Overdrive.Momentum"],"SaveActorChanges":[],"SetMomentumStrength":["Float"],"ToggleSelectedActorRow":[],"ClearInitRecords":[],"Tick":["Time.Time"],"ChangeSelectedStatusLevel":["Int"],"InitRecordsUpdate":["Json.Decode.Value"],"InitialiseInitRecords":[],"SetEnemyMomentumType":["String"],"ChangeQuickDamage":["Int"],"ChangeSelectedActorBaseInit":["Int"],"AddEnemyMomentum":[],"ChangeSelectedActorMaxAmmo":["Int"],"QuickDamage":[],"RemoveMomentum":["Overdrive.Momentum"],"AddMomentum":[],"ChangeSelectedActorCurrentLP":["Int"],"ClearMomentum":[]},"args":[]},"Material.Ripple.Msg":{"tags":{"Down":["Material.Ripple.DOMState"],"Tick":[],"Up":[]},"args":[]},"Overdrive.ConnectionStatus":{"tags":{"ScheduledReconnect":["{ time : Time.Time }"],"Connected":[],"Disconnected":[]},"args":[]},"Maybe.Maybe":{"tags":{"Nothing":[],"Just":["a"]},"args":["a"]}}},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])
